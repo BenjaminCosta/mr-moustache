@@ -61,10 +61,10 @@ export function Location() {
           <li className="flex items-start justify-between">
             <a
               href={business.phone.href}
-              className="grid grid-cols-[2.95rem_1fr] items-center hover:text-teal-dark"
+              className="group grid grid-cols-[2.95rem_1fr] items-center transition-colors duration-200 hover:text-teal-dark focus-visible:text-teal-dark"
               {...analyticsAttributes(ANALYTICS_EVENTS.phoneClick)}
             >
-              <PhoneIcon className="ml-[0.1rem] size-[1.4rem]" />
+              <PhoneIcon className="ml-[0.1rem] size-[1.4rem] origin-bottom-left transition-transform duration-300 ease-out group-hover:-rotate-12" />
               {business.phone.display}
             </a>
             <a
@@ -72,11 +72,11 @@ export function Location() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Get directions in Google Maps (opens in a new tab)"
-              className="-mr-[0.75rem] mt-[0.3rem] flex h-[2.55rem] w-[10.7rem] items-center justify-center gap-[1.3rem] rounded-full border-[1.5px] border-ink text-[0.85rem] font-medium hover:bg-ink hover:text-cold-white"
+              className="btn-sweep btn-sweep--fill-ink group -mr-[0.75rem] mt-[0.3rem] flex h-[2.55rem] w-[10.7rem] items-center justify-center gap-[1.3rem] rounded-full border-[1.5px] border-ink text-[0.85rem] font-medium"
               {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick)}
             >
               Get Directions
-              <ArrowRightIcon className="size-[1rem]" />
+              <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
             </a>
           </li>
         </ul>

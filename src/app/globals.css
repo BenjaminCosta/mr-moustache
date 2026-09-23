@@ -21,6 +21,9 @@
   --star: #f2b33d;
   --focus: var(--cyan);
 
+  --ease-sweep: cubic-bezier(0.7, 0, 0.2, 1);
+  --duration-sweep: 380ms;
+
   --type-body: var(--font-instrument-sans);
   --type-display: var(--font-cherry-swash);
   --type-script: var(--font-comforter-brush);
@@ -87,6 +90,111 @@ button {
 ::selection {
   background: var(--primary);
   color: #000000;
+}
+
+/*
+ * Button hover system.
+ *
+ * `.btn-sweep` paints a layer behind the label that wipes in from the left on
+ * hover and wipes out to the right on leave. Modifiers pick the layer colour
+ * and the label colour it swaps to:
+ *   --invert-primary  solid cyan  -> dark fill, cyan label (the colours swap)
+ *   --fill-primary    cyan outline -> cyan fill, black label
+ *   --fill-ink        ink outline  -> ink fill, cold-white label
+ *   --fill-light      white outline -> white fill, black label (grows radially)
+ *   --row             list rows get a faint cyan tint only
+ * Hover only applies on devices that can hover; touch devices get the same
+ * fill on press (:active) and keyboard users on :focus-visible.
+ *
+ * Kept outside any cascade layer on purpose: unlayered rules win over
+ * Tailwind utilities, so the hover label colour overrides `text-*` classes.
+ */
+.btn-sweep {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* The label colour flips around the moment the fill reaches the middle. */
+  transition:
+    color 180ms ease 110ms,
+    border-color 280ms ease,
+    transform 160ms ease;
+}
+
+.btn-sweep::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background: var(--sweep-bg);
+  transform: scaleX(0);
+  transform-origin: right center;
+  transition: transform var(--duration-sweep) var(--ease-sweep);
+}
+
+.btn-sweep--invert-primary {
+  --sweep-bg: var(--background);
+  --sweep-fg: var(--primary);
+}
+
+.btn-sweep--fill-primary {
+  --sweep-bg: var(--primary);
+  --sweep-fg: var(--black);
+}
+
+.btn-sweep--fill-ink {
+  --sweep-bg: var(--ink);
+  --sweep-fg: var(--cold-white);
+}
+
+.btn-sweep--fill-light {
+  --sweep-bg: var(--cold-white);
+  --sweep-fg: var(--black);
+}
+
+.btn-sweep--fill-light::before {
+  transform: scale(0);
+  transform-origin: center;
+}
+
+.btn-sweep--row {
+  --sweep-bg: color-mix(in srgb, var(--primary) 9%, transparent);
+}
+
+/* Rows keep their own text colours; every other variant swaps the label. */
+.btn-sweep:not(.btn-sweep--row):focus-visible,
+.btn-sweep:not(.btn-sweep--row):active {
+  color: var(--sweep-fg);
+}
+
+.btn-sweep:focus-visible::before,
+.btn-sweep:active::before {
+  transform: scale(1);
+  transform-origin: left center;
+}
+
+.btn-sweep--fill-light:focus-visible::before,
+.btn-sweep--fill-light:active::before {
+  transform-origin: center;
+}
+
+.btn-sweep:active {
+  transform: scale(0.985);
+}
+
+@media (hover: hover) {
+  .btn-sweep:not(.btn-sweep--row):hover {
+    color: var(--sweep-fg);
+  }
+
+  .btn-sweep:hover::before {
+    transform: scale(1);
+    transform-origin: left center;
+  }
+
+  .btn-sweep--fill-light:hover::before {
+    transform-origin: center;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

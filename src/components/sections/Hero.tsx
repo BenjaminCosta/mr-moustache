@@ -55,10 +55,10 @@ export function Hero() {
 
         <a
           href="#services"
-          className="mt-[0.95rem] flex h-[2.35rem] items-center justify-center gap-[1.15rem] rounded-full bg-primary text-[0.72rem] font-medium uppercase tracking-[0.2em] text-white hover:bg-primary-hover"
+          className="btn-sweep btn-sweep--invert-primary group mt-[0.95rem] flex h-[2.35rem] items-center justify-center gap-[1.15rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.72rem] font-medium uppercase tracking-[0.2em] text-white"
         >
           View services &amp; book
-          <ArrowRightIcon className="size-[1rem]" />
+          <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
         </a>
 
         <p className="mt-[0.95rem] flex items-center gap-[0.5rem] text-[0.72rem] leading-none text-foreground">

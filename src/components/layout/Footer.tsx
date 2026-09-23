@@ -89,12 +89,14 @@ export function Footer() {
               target="_blank"
               rel="noopener noreferrer"
               aria-label={ariaLabel}
-              className={`flex flex-col items-center gap-[0.62rem] py-[0.1rem] text-[0.53rem] font-medium uppercase leading-none tracking-[0.12em] ${
-                accent ? "text-primary hover:text-primary-hover" : "text-foreground hover:text-primary"
+              className={`group flex flex-col items-center gap-[0.62rem] py-[0.1rem] text-[0.53rem] font-medium uppercase leading-none tracking-[0.12em] transition-colors duration-200 ${
+                accent
+                  ? "text-primary hover:text-white focus-visible:text-white"
+                  : "text-foreground hover:text-primary focus-visible:text-primary"
               }`}
               {...analyticsAttributes(event)}
             >
-              <Icon className="size-[1.45rem]" />
+              <Icon className="size-[1.45rem] transition-transform duration-300 ease-out group-hover:-translate-y-[0.2rem] group-focus-visible:-translate-y-[0.2rem]" />
               {label}
             </a>
           </li>
@@ -107,25 +109,25 @@ export function Footer() {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={`${addressLines.join(", ")}, get directions (opens in a new tab)`}
-          className="grid grid-cols-[2.25rem_1fr_auto] items-center pb-[0.55rem] pl-[3.55rem] pr-[0.9rem] pt-[1.4rem] hover:text-primary"
+          className="group grid grid-cols-[2.25rem_1fr_auto] items-center pb-[0.55rem] pl-[3.55rem] pr-[0.9rem] pt-[1.4rem] transition-colors duration-200 hover:text-primary focus-visible:text-primary"
           {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick)}
         >
-          <PinIcon className="h-[1.2rem] w-[0.95rem] text-white" />
+          <PinIcon className="h-[1.2rem] w-[0.95rem] text-white transition-transform duration-300 ease-out group-hover:-translate-y-[0.15rem]" />
           <span className="text-[0.74rem] leading-[1.3] tracking-[0.02em]">
             {addressLines[0]}
             <br />
             {addressLines[1]}
           </span>
-          <ChevronRightIcon className="h-[0.85rem] w-[0.5rem]" />
+          <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
         </a>
         <a
           href={business.phone.href}
-          className="grid grid-cols-[2.25rem_1fr_auto] items-center pb-[1.3rem] pl-[3.55rem] pr-[0.9rem] pt-[0.55rem] hover:text-primary"
+          className="group grid grid-cols-[2.25rem_1fr_auto] items-center pb-[1.3rem] pl-[3.55rem] pr-[0.9rem] pt-[0.55rem] transition-colors duration-200 hover:text-primary focus-visible:text-primary"
           {...analyticsAttributes(ANALYTICS_EVENTS.phoneClick)}
         >
-          <PhoneIcon className="size-[1.1rem] text-white" />
+          <PhoneIcon className="size-[1.1rem] origin-bottom-left text-white transition-transform duration-300 ease-out group-hover:-rotate-12" />
           <span className="text-[0.74rem] leading-[1.3] tracking-[0.03em]">{business.phone.display}</span>
-          <ChevronRightIcon className="h-[0.85rem] w-[0.5rem]" />
+          <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
         </a>
         <span aria-hidden="true" className="mx-auto block h-px w-[17.6rem] bg-white/40" />
       </div>

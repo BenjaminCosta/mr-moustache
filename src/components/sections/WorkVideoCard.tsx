@@ -11,7 +11,7 @@ type WorkVideoCardProps = {
 };
 
 const playButtonClasses =
-  "grid size-[3.2rem] place-items-center rounded-full border-[1.5px] border-white bg-black/55 text-white backdrop-blur-[2px] hover:bg-black/70";
+  "btn-sweep btn-sweep--fill-light group grid size-[3.2rem] place-items-center rounded-full border-[1.5px] border-white bg-black/55 text-white backdrop-blur-[2px]";
 
 export function WorkVideoCard({ video, fallbackHref }: WorkVideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -71,7 +71,7 @@ export function WorkVideoCard({ video, fallbackHref }: WorkVideoCardProps) {
             {playing ? (
               <PauseIcon className="size-[1.2rem]" />
             ) : (
-              <PlayIcon className="ml-[0.2rem] size-[1.35rem]" />
+              <PlayIcon className="ml-[0.2rem] size-[1.35rem] transition-transform duration-300 ease-out group-hover:scale-110" />
             )}
           </button>
         ) : (
@@ -82,7 +82,7 @@ export function WorkVideoCard({ video, fallbackHref }: WorkVideoCardProps) {
             className={playButtonClasses}
             aria-label={`Watch ${video.title} on Instagram (opens in a new tab)`}
           >
-            <PlayIcon className="ml-[0.2rem] size-[1.35rem]" />
+            <PlayIcon className="ml-[0.2rem] size-[1.35rem] transition-transform duration-300 ease-out group-hover:scale-110" />
           </a>
         )}
       </div>

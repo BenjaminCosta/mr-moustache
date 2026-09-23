@@ -63,10 +63,10 @@ export function Services() {
               <a
                 {...bookingLinkProps}
                 aria-label={`Book ${service.name} through Square (opens in a new tab)`}
-                className="group grid grid-cols-[1fr_4.625rem_0.5rem] items-center gap-x-[1.25rem] py-[0.72rem] pl-[0.22rem]"
+                className="btn-sweep btn-sweep--row group grid grid-cols-[1fr_4.625rem_0.5rem] items-center gap-x-[1.1rem] py-[0.72rem] pl-[0.22rem] pr-[0.25rem]"
               >
                 <span>
-                  <span className="block font-display text-[1.05rem] font-bold leading-[1.15] text-white">
+                  <span className="block font-display text-[1.05rem] font-bold leading-[1.15] text-white transition-colors duration-300 group-hover:text-primary group-focus-visible:text-primary">
                     {service.name}
                   </span>
                   <span className="mt-[0.15rem] block whitespace-pre-line text-[0.67rem] leading-[1.22] text-foreground/75">
@@ -86,7 +86,7 @@ export function Services() {
                     <span className="pl-[0.15rem] text-[0.78rem]">Price varies</span>
                   )}
                 </span>
-                <ChevronRightIcon className="h-[0.95rem] w-[0.55rem] text-primary transition-transform group-hover:translate-x-0.5" />
+                <ChevronRightIcon className="h-[0.95rem] w-[0.55rem] text-primary transition-transform duration-300 ease-out group-hover:translate-x-[0.2rem] group-focus-visible:translate-x-[0.2rem]" />
               </a>
             </li>
           ))}
@@ -94,13 +94,13 @@ export function Services() {
             <a
               {...bookingLinkProps}
               aria-label="View all services on Square (opens in a new tab)"
-              className="group flex h-[2.75rem] items-center justify-between pl-[0.35rem] text-primary hover:text-primary-hover"
+              className="btn-sweep btn-sweep--row group flex h-[2.75rem] items-center justify-between pl-[0.35rem] text-primary"
             >
               <span className="flex items-center gap-[0.5rem] text-[0.62rem] font-semibold uppercase tracking-[0.15em]">
                 View all services
-                <PlusIcon className="size-[0.6rem]" />
+                <PlusIcon className="size-[0.6rem] transition-transform duration-300 ease-out group-hover:rotate-90 group-focus-visible:rotate-90" />
               </span>
-              <ChevronRightIcon className="mr-[0.25rem] h-[0.95rem] w-[0.55rem] transition-transform group-hover:translate-x-0.5" />
+              <ChevronRightIcon className="mr-[0.25rem] h-[0.95rem] w-[0.55rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
             </a>
           </li>
         </ul>
@@ -108,13 +108,13 @@ export function Services() {
         <a
           {...bookingLinkProps}
           aria-label="Book your appointment through Square (opens in a new tab)"
-          className="mt-[1.05rem] flex h-[2.6rem] items-center justify-center gap-[1.1rem] rounded-[0.1875rem] border-[1.5px] border-primary text-primary hover:bg-primary/10"
+          className="btn-sweep btn-sweep--fill-primary group mt-[1.05rem] flex h-[2.6rem] items-center justify-center gap-[1.1rem] rounded-[0.1875rem] border-[1.5px] border-primary text-primary"
         >
           <CalendarIcon className="mr-[0.1rem] size-[1.3rem]" />
           <span className="mr-[0.15rem] text-[0.62rem] font-semibold uppercase tracking-[0.2em]">
             Book your appointment
           </span>
-          <ArrowRightIcon className="size-[0.8rem]" />
+          <ArrowRightIcon className="size-[0.8rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
         </a>
 
         <div className="mt-[1.6rem] flex flex-col items-center text-foreground/45">

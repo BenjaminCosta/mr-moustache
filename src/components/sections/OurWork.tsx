@@ -36,15 +36,15 @@ export function OurWork() {
         target="_blank"
         rel="noopener noreferrer"
         aria-label="View more on Instagram (opens in a new tab)"
-        className="mt-[1.1rem] flex h-[2.6rem] items-center justify-center rounded-[0.1875rem] border-[1.5px] border-primary text-primary hover:bg-primary/10"
+        className="btn-sweep btn-sweep--fill-primary group mt-[1.1rem] flex h-[2.6rem] items-center justify-center rounded-[0.1875rem] border-[1.5px] border-primary text-primary"
         {...analyticsAttributes(ANALYTICS_EVENTS.instagramClick)}
       >
         <InstagramIcon className="size-[1.15rem]" />
-        <span aria-hidden="true" className="ml-[1.25rem] mr-[1rem] h-[1.2rem] w-px bg-primary/80" />
+        <span aria-hidden="true" className="ml-[1.25rem] mr-[1rem] h-[1.2rem] w-px bg-current opacity-80" />
         <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em]">
           View more on Instagram
         </span>
-        <ArrowUpRightIcon className="ml-[1rem] size-[0.8rem]" />
+        <ArrowUpRightIcon className="ml-[1rem] size-[0.8rem] transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:translate-x-0.5" />
       </a>
     </section>
   );

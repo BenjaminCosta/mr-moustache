@@ -50,11 +50,11 @@ export function SiteMenu() {
       <button
         ref={closeRef}
         type="button"
-        className="absolute right-[0.5rem] top-[1.6rem] grid size-11 place-items-center text-foreground"
+        className="group absolute right-[0.5rem] top-[1.6rem] grid size-11 place-items-center text-foreground transition-colors duration-200 hover:text-primary"
         aria-label="Close menu"
         onClick={() => setOpen(false)}
       >
-        <CloseIcon className="size-6" />
+        <CloseIcon className="size-6 transition-transform duration-300 ease-out group-hover:rotate-90" />
       </button>
       <nav
         aria-label="Primary navigation"
@@ -66,7 +66,7 @@ export function SiteMenu() {
             <li key={item.href}>
               <a
                 href={item.href}
-                className="font-display text-[2rem] font-bold leading-none hover:text-primary"
+                className="font-display text-[2rem] font-bold leading-none transition-colors duration-200 hover:text-primary focus-visible:text-primary"
                 onClick={() => setOpen(false)}
               >
                 {item.label}
@@ -78,7 +78,7 @@ export function SiteMenu() {
           href={business.links.booking}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded-full bg-primary px-8 py-3 text-[0.8125rem] font-semibold uppercase tracking-[0.2em] text-white hover:bg-primary-hover"
+          className="btn-sweep btn-sweep--invert-primary rounded-full border-[1.5px] border-primary bg-primary px-8 py-3 text-[0.8125rem] font-semibold uppercase tracking-[0.2em] text-white"
           aria-label="Book now through Square (opens in a new tab)"
           {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick)}
         >
@@ -93,7 +93,7 @@ export function SiteMenu() {
       <button
         ref={triggerRef}
         type="button"
-        className="-m-3 grid size-11 place-items-center text-foreground"
+        className="group -m-3 grid size-11 place-items-center text-foreground transition-colors duration-200 hover:text-primary"
         aria-expanded={open}
         aria-controls={open ? panelId : undefined}
         aria-label="Open menu"

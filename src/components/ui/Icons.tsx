@@ -12,7 +12,12 @@ const base = {
 export function MenuIcon(props: IconProps) {
   return (
     <svg {...base} viewBox="0 0 18 16" fill="none" stroke="currentColor" strokeWidth="1.4" {...props}>
-      <path d="M0 1h18M0 8h18M0 15h18" />
+      <path d="M0 1h18M0 15h18" />
+      {/* Middle bar shortens from the left when the parent `group` is hovered. */}
+      <path
+        d="M0 8h18"
+        className="origin-right transition-transform duration-300 ease-out [transform-box:fill-box] group-hover:scale-x-[0.6] group-focus-visible:scale-x-[0.6]"
+      />
     </svg>
   );
 }
