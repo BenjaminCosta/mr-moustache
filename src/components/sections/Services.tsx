@@ -28,13 +28,17 @@ export function Services() {
     >
       <div aria-hidden="true" className="absolute inset-0 -z-10">
         {backgrounds.services ? (
-          <Image
-            src={backgrounds.services}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover"
-          />
+          <>
+            <Image
+              src={backgrounds.services}
+              alt=""
+              fill
+              sizes="100vw"
+              className="object-cover"
+            />
+            {/* Tools only peek in at the top and bottom edges, as in the mockup. */}
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.45)_0%,rgba(0,0,0,0.9)_17%,rgba(0,0,0,0.95)_50%,rgba(0,0,0,0.9)_84%,rgba(0,0,0,0.4)_100%)]" />
+          </>
         ) : (
           <div className="absolute inset-0 bg-[radial-gradient(90%_22%_at_30%_0%,#1b1b1b_0%,transparent_100%),radial-gradient(90%_18%_at_80%_100%,#1b1b1b_0%,transparent_100%)] lg:bg-[radial-gradient(45%_55%_at_10%_30%,#1b1b1b_0%,transparent_100%),radial-gradient(35%_45%_at_90%_55%,#161616_0%,transparent_100%)]" />
         )}

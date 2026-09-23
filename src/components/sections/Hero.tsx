@@ -16,14 +16,18 @@ export function Hero() {
     >
       <div aria-hidden="true" className="absolute inset-0 -z-10">
         {backgrounds.hero ? (
-          <Image
-            src={backgrounds.hero}
-            alt=""
-            fill
-            preload
-            sizes="100vw"
-            className="object-cover object-[70%_center] lg:object-center"
-          />
+          // Desktop: the portrait photo sits on the right and fades into the copy.
+          <div className="absolute inset-0 lg:left-auto lg:w-[58%]">
+            <Image
+              src={backgrounds.hero}
+              alt=""
+              fill
+              preload
+              sizes="(min-width: 1024px) 58vw, 100vw"
+              className="object-cover object-[70%_center] lg:object-[center_35%]"
+            />
+            <div className="absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-black to-transparent lg:block" />
+          </div>
         ) : (
           <div className="absolute inset-0 bg-[radial-gradient(120%_70%_at_80%_20%,#2a2a2a_0%,#111_45%,#000_80%)] lg:bg-[radial-gradient(70%_90%_at_75%_35%,#2a2a2a_0%,#111_45%,#000_85%)]" />
         )}

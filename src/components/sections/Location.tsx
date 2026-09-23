@@ -23,7 +23,7 @@ export function Location() {
           alt=""
           fill
           sizes="100vw"
-          className="-z-10 object-cover"
+          className="-z-10 object-cover lg:object-contain lg:object-right-top"
         />
       ) : null}
 
@@ -95,7 +95,7 @@ export function Location() {
           ) : null}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 -z-0 h-1/2 bg-gradient-to-t from-black/25 to-transparent"
+            className="absolute inset-x-0 bottom-0 -z-0 h-1/2 bg-gradient-to-t from-black/25 to-transparent lg:h-2/3 lg:from-black/50"
           />
           <figcaption className="absolute bottom-[1.1rem] left-[0.75rem] text-white lg:bottom-10 lg:left-10">
             <span className="block origin-bottom-left -rotate-[12deg] font-script text-[3.4rem] leading-[0.8] lg:text-[6.5rem]">

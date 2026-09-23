@@ -65,6 +65,12 @@ export function Footer() {
           className="-z-10 object-cover object-bottom"
         />
       ) : null}
+      {backgrounds.footer ? (
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.78)_45%,rgba(0,0,0,0.25)_80%,rgba(0,0,0,0.45)_100%)]"
+        />
+      ) : null}
 
       <RuleLabel
         className="mx-auto w-[17rem] gap-[0.95rem] lg:w-[40rem] lg:gap-8"
