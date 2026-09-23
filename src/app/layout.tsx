@@ -65,14 +65,14 @@ export const metadata: Metadata = {
       "Mr Moustache Barbershop in Broadbeach, Gold Coast. Book online through Square.",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Mr Moustache Barbershop Broadbeach",
     description:
       "Mr Moustache Barbershop in Broadbeach, Gold Coast. Book online through Square.",
   },
-  icons: {
-    icon: "/favicon.svg",
-  },
+  // Favicon, app icons and share images come from the file conventions in
+  // src/app (favicon.ico, icon.png, apple-icon.png, opengraph-image.jpg,
+  // twitter-image.jpg), all generated from the real Mr Moustache logo.
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
