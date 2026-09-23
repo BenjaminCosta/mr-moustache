@@ -1,5 +1,10 @@
 import type { Metadata } from "next";
-import { Cherry_Swash, Comforter_Brush, Instrument_Sans } from "next/font/google";
+import {
+  Cherry_Swash,
+  Comforter_Brush,
+  Instrument_Sans,
+  Roboto,
+} from "next/font/google";
 import { business } from "@/data/business";
 import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
@@ -21,6 +26,14 @@ const cherrySwash = Cherry_Swash({
 const comforterBrush = Comforter_Brush({
   variable: "--font-comforter-brush",
   weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Google's UI typeface, used only inside the Google review cards.
+const roboto = Roboto({
+  variable: "--font-roboto",
+  weight: ["400", "500", "700"],
   subsets: ["latin"],
   display: "swap",
 });
@@ -88,7 +101,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en-AU"
-      className={`${instrumentSans.variable} ${cherrySwash.variable} ${comforterBrush.variable} h-full antialiased`}
+      className={`${instrumentSans.variable} ${cherrySwash.variable} ${comforterBrush.variable} ${roboto.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         {children}

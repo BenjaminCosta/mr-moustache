@@ -12,6 +12,8 @@ export const backgrounds = {
   location: "/images/backgrounds/location-palms.webp" as string | null,
   locationFeature: "/images/backgrounds/location-broadbeach.webp" as string | null,
   footer: "/images/backgrounds/footer.webp" as string | null,
+  // TODO: Add the scissors-on-towel photo for the reviews section.
+  reputation: null as string | null,
 };
 
 export const workVideo = {

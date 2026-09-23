@@ -45,6 +45,26 @@ export type Service = {
   duration: string | null;
 };
 
+export type GoogleRating = {
+  id: string;
+  location: string;
+  rating: number;
+  reviewCount: number;
+  href: string;
+};
+
+export type Review = {
+  id: string;
+  author: string;
+  /** Avatar background, like Google's initial avatars. */
+  avatarColor: string;
+  rating: number;
+  text: string;
+  /** Relative date as shown on Google, e.g. "2 weeks ago". */
+  when: string;
+  location: string;
+};
+
 export type WorkVideo = {
   src: string;
   poster: string | null;

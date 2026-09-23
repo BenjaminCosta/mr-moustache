@@ -21,12 +21,20 @@
   --star: #f2b33d;
   --focus: var(--cyan);
 
+  /* Official Google brand colours, used only for Google review elements. */
+  --google-blue: #4285f4;
+  --google-red: #ea4335;
+  --google-yellow: #fbbc05;
+  --google-green: #34a853;
+  --google-star: #fbbc04;
+
   --ease-sweep: cubic-bezier(0.7, 0, 0.2, 1);
   --duration-sweep: 380ms;
 
   --type-body: var(--font-instrument-sans);
   --type-display: var(--font-cherry-swash);
   --type-script: var(--font-comforter-brush);
+  --type-google: var(--font-roboto);
 }
 
 @theme inline {
@@ -43,10 +51,12 @@
   --color-ink: var(--ink);
   --color-ink-muted: var(--ink-muted);
   --color-star: var(--star);
+  --color-google-star: var(--google-star);
   --color-focus: var(--focus);
   --font-sans: var(--type-body);
   --font-display: var(--type-display);
   --font-script: var(--type-script);
+  --font-google: var(--type-google);
 }
 
 * {

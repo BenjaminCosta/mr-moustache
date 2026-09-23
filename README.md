@@ -43,5 +43,14 @@ keeps its proportions).
 1. Hero (`src/components/sections/Hero.tsx`)
 2. Services + Prices (`src/components/sections/Services.tsx`)
 3. Our Work (`src/components/sections/OurWork.tsx`)
-4. Find Us / Location (`src/components/sections/Location.tsx`)
-5. Footer (`src/components/layout/Footer.tsx`)
+4. Reviews / Reputation (`src/components/sections/Reputation.tsx`)
+5. Find Us / Location (`src/components/sections/Location.tsx`)
+6. Footer (`src/components/layout/Footer.tsx`)
+
+### Google reviews
+
+Ratings and review counts for both locations live in `src/data/reviews.ts`
+(`googleRatings`). Add verified Google reviews, copied word for word, to the
+`reviews` array there. Until at least one real review is listed, the
+"What people are saying" carousel is hidden in production; local development
+shows the mockup's sample reviews so the layout can be reviewed.

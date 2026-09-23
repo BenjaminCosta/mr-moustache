@@ -2,6 +2,7 @@ import { Footer } from "@/components/layout/Footer";
 import { Hero } from "@/components/sections/Hero";
 import { Location } from "@/components/sections/Location";
 import { OurWork } from "@/components/sections/OurWork";
+import { Reputation } from "@/components/sections/Reputation";
 import { Services } from "@/components/sections/Services";
 
 export default function Home() {
@@ -11,6 +12,7 @@ export default function Home() {
         <Hero />
         <Services />
         <OurWork />
+        <Reputation />
         <Location />
       </main>
       <Footer />
