@@ -60,6 +60,13 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Tablets reuse the mobile layout in a centred column, scaled up to read well. */
+@media (width >= 48rem) and (width < 64rem) {
+  html {
+    font-size: 125%;
+  }
+}
+
 body {
   min-width: 20rem;
   background: var(--background);
@@ -69,11 +76,14 @@ body {
   line-height: 1.6;
 }
 
-h1,
-h2 {
-  font-family: var(--type-display), serif;
-  font-weight: 700;
-  text-wrap: balance;
+/* Layered so Tailwind utilities (e.g. whitespace-nowrap) can override. */
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--type-display), serif;
+    font-weight: 700;
+    text-wrap: balance;
+  }
 }
 
 a,
@@ -90,6 +100,23 @@ button {
 ::selection {
   background: var(--primary);
   color: #000000;
+}
+
+/*
+ * Page shell: full width on phones, a centred reading column on tablets and
+ * the desktop grid width from 64rem up. Horizontal padding stays per section.
+ */
+@utility shell {
+  width: 100%;
+  margin-inline: auto;
+
+  @media (width >= 48rem) {
+    max-width: 34rem;
+  }
+
+  @media (width >= 64rem) {
+    max-width: 76rem;
+  }
 }
 
 /*

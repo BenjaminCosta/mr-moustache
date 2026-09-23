@@ -5,13 +5,9 @@ import { createPortal } from "react-dom";
 import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
 import { Moustache } from "@/components/ui/Moustache";
 import { business } from "@/data/business";
+import { navigation } from "@/data/navigation";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 
-const navigation = [
-  { label: "Services", href: "#services" },
-  { label: "Our Work", href: "#work" },
-  { label: "Find Us", href: "#location" },
-];
 
 export function SiteMenu() {
   const [open, setOpen] = useState(false);

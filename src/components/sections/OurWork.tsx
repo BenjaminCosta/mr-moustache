@@ -10,42 +10,50 @@ export function OurWork() {
     <section
       id="work"
       aria-labelledby="work-title"
-      className="bg-background px-[1.25rem] pb-[3.75rem] pt-[2.55rem]"
+      className="bg-background px-[1.25rem] pb-[3.75rem] pt-[2.55rem] lg:px-0 lg:py-32"
     >
-      <RuleLabel className="gap-[1.1rem] px-[0.85rem]" lineClassName="bg-foreground/85">
-        <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground">
-          Our work
-        </p>
-      </RuleLabel>
+      <div className="shell flex flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-x-20 lg:px-10">
+        {/* Mobile: heading, video, button. Desktop: heading + button beside the video. */}
+        <div className="contents lg:block">
+          <RuleLabel
+            className="gap-[1.1rem] px-[0.85rem] lg:gap-5 lg:px-0 lg:[&>span:first-child]:hidden"
+            lineClassName="bg-foreground/85"
+          >
+            <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
+              Our work
+            </p>
+          </RuleLabel>
 
-      <h2
-        id="work-title"
-        className="mt-[1.1rem] text-center text-[2.72rem] leading-[0.9] tracking-[-0.02em] text-white"
-      >
-        Fresh cuts,
-        <br />
-        done properly.
-      </h2>
+          <h2
+            id="work-title"
+            className="mt-[1.1rem] text-center text-[2.72rem] leading-[0.9] tracking-[-0.02em] text-white lg:mt-8 lg:whitespace-nowrap lg:text-left lg:text-[3.6rem] lg:leading-[1.02] xl:text-[4.1rem]"
+          >
+            Fresh cuts,
+            <br />
+            done properly.
+          </h2>
 
-      <div className="mt-[1.3rem]">
-        <WorkVideoCard video={workVideo} fallbackHref={business.links.instagram} />
+          <a
+            href={business.links.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="View more on Instagram (opens in a new tab)"
+            className="btn-sweep btn-sweep--fill-primary group order-last mt-[1.1rem] flex h-[2.6rem] items-center justify-center rounded-[0.1875rem] border-[1.5px] border-primary text-primary lg:mt-12 lg:h-14 lg:max-w-[26rem]"
+            {...analyticsAttributes(ANALYTICS_EVENTS.instagramClick)}
+          >
+            <InstagramIcon className="size-[1.15rem] lg:size-6" />
+            <span aria-hidden="true" className="ml-[1.25rem] mr-[1rem] h-[1.2rem] w-px bg-current opacity-80 lg:ml-6 lg:mr-5 lg:h-6" />
+            <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em] lg:text-[0.78rem] lg:tracking-[0.26em]">
+              View more on Instagram
+            </span>
+            <ArrowUpRightIcon className="ml-[1rem] size-[0.8rem] transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:translate-x-0.5 lg:ml-5 lg:size-4" />
+          </a>
+        </div>
+
+        <div className="mt-[1.3rem] lg:mt-0">
+          <WorkVideoCard video={workVideo} fallbackHref={business.links.instagram} />
+        </div>
       </div>
-
-      <a
-        href={business.links.instagram}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="View more on Instagram (opens in a new tab)"
-        className="btn-sweep btn-sweep--fill-primary group mt-[1.1rem] flex h-[2.6rem] items-center justify-center rounded-[0.1875rem] border-[1.5px] border-primary text-primary"
-        {...analyticsAttributes(ANALYTICS_EVENTS.instagramClick)}
-      >
-        <InstagramIcon className="size-[1.15rem]" />
-        <span aria-hidden="true" className="ml-[1.25rem] mr-[1rem] h-[1.2rem] w-px bg-current opacity-80" />
-        <span className="text-[0.6rem] font-semibold uppercase tracking-[0.22em]">
-          View more on Instagram
-        </span>
-        <ArrowUpRightIcon className="ml-[1rem] size-[0.8rem] transition-transform duration-300 ease-out group-hover:-translate-y-0.5 group-hover:translate-x-0.5 group-focus-visible:-translate-y-0.5 group-focus-visible:translate-x-0.5" />
-      </a>
     </section>
   );
 }
