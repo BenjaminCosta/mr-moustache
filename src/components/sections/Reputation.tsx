@@ -95,7 +95,7 @@ export function Reputation() {
                     />
                   </span>
                   <span className="mt-[0.35rem] block text-[0.52rem] uppercase leading-none tracking-[0.3em] text-foreground lg:mt-3 lg:text-[0.72rem]">
-                    {item.reviewCount}+ reviews
+                    {item.reviewCount} reviews
                   </span>
                 </span>
 

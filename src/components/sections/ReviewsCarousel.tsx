@@ -90,7 +90,9 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                 <GoogleG className="size-[1rem] shrink-0 lg:size-6" />
                 <span className="text-[0.5rem] leading-[1.3] text-[#bdc1c6] lg:text-[0.8rem]">
                   Google review
-                  <span className="block text-[#9aa0a6]">{review.when}</span>
+                  <span className="block text-[#9aa0a6]">
+                    {review.location} · {review.when}
+                  </span>
                 </span>
               </p>
             </figure>

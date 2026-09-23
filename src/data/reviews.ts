@@ -18,53 +18,64 @@ export const googleRatings = [
 ] satisfies GoogleRating[];
 
 /**
- * Verified Google reviews, copied word for word from the Google Business
- * profiles (with the reviewer's first name and last initial).
- * TODO: Add the real reviews here; the carousel only renders what is listed.
+ * Short excerpts from verified public Google reviews, checked 23 September
+ * 2026 against each location's Google Business Profile.
  */
-export const reviews: Review[] = [];
-
-/**
- * Layout samples from the design mockup. They are NOT real reviews, so they
- * only render in local development and never in a production build.
- */
-export const sampleReviews: Review[] = [
+export const reviews: Review[] = [
   {
-    id: "sample-1",
-    author: "Jamie L.",
-    avatarColor: "#1e6b4f",
+    id: "broadbeach-daniel-millward",
+    author: "Daniel Millward",
+    avatarColor: "#1769aa",
     rating: 5,
-    text: "Best barbers on the Gold Coast. Always consistent, great vibes and proper attention to detail.",
-    when: "2 weeks ago",
-    location: "Surfers Paradise",
-  },
-  {
-    id: "sample-2",
-    author: "Matt R.",
-    avatarColor: "#48577f",
-    rating: 5,
-    text: "Been coming for years in Surfers and stoked to have you in Broadbeach now. Same high standard every time.",
-    when: "3 weeks ago",
+    text: "Aitor is a fantastic barber and runs a great operation! Highly recommend this spot!",
+    when: "a day ago",
     location: "Broadbeach",
   },
   {
-    id: "sample-3",
-    author: "Sarah T.",
+    id: "broadbeach-rueben-tauk",
+    author: "Rueben Tauk",
+    avatarColor: "#7444a8",
+    rating: 5,
+    text: "Great haircut. Will be back",
+    when: "a day ago",
+    location: "Broadbeach",
+  },
+  {
+    id: "broadbeach-inaki-garcia-fernandez",
+    author: "Iñaki García Fernández",
+    avatarColor: "#a0445f",
+    rating: 5,
+    text: "Perfect, 10/10 experience",
+    when: "2 days ago",
+    location: "Broadbeach",
+  },
+  {
+    id: "surfers-jose-daniel-suarez-ferro",
+    author: "Jose Daniel Suarez Ferro",
+    avatarColor: "#1e6b4f",
+    rating: 5,
+    text: "Definitely one of the best barbershops around!",
+    when: "5 months ago",
+    location: "Surfers Paradise",
+  },
+  {
+    id: "surfers-jose-dias-serpa",
+    author: "Jose Dias Serpa",
+    avatarColor: "#48577f",
+    rating: 5,
+    text: "Professional, friendly and very attentive to detail.",
+    when: "a month ago",
+    location: "Surfers Paradise",
+  },
+  {
+    id: "surfers-raphael-alvarenga",
+    author: "Raphael Alvarenga",
     avatarColor: "#6a4638",
     rating: 5,
-    text: "My partner always looks sharp after a cut here. Friendly crew, clean shop and consistently top quality.",
-    when: "1 month ago",
+    text: "Professional team, great atmosphere, attention to detail, and consistently excellent results.",
+    when: "3 months ago",
     location: "Surfers Paradise",
   },
 ];
 
-// In development the three samples repeat so the carousel shows three pages,
-// as in the mockup.
-export const displayedReviews =
-  reviews.length > 0
-    ? reviews
-    : process.env.NODE_ENV === "development"
-      ? [0, 1, 2].flatMap((round) =>
-          sampleReviews.map((review) => ({ ...review, id: `${review.id}-${round}` })),
-        )
-      : [];
+export const displayedReviews = reviews;

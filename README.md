@@ -50,7 +50,6 @@ keeps its proportions).
 ### Google reviews
 
 Ratings and review counts for both locations live in `src/data/reviews.ts`
-(`googleRatings`). Add verified Google reviews, copied word for word, to the
-`reviews` array there. Until at least one real review is listed, the
-"What people are saying" carousel is hidden in production; local development
-shows the mockup's sample reviews so the layout can be reviewed.
+(`googleRatings`). The `reviews` array contains short excerpts from verified
+public Google reviews for Broadbeach and Surfers Paradise, with the location
+shown on every card.
