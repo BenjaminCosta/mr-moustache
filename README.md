@@ -14,10 +14,11 @@ Open `http://localhost:3000`.
 ## Before launch
 
 1. Copy `.env.example` to `.env.local` and replace every placeholder URL.
-2. Replace placeholder services, barbers, reviews and opening hours in `src/data`.
-3. Replace placeholder images in `public/images` and update their alt text.
-4. Replace the neutral design tokens in `src/app/globals.css` after brand approval.
-5. Confirm the metadata and LocalBusiness JSON-LD fields in `src/app/layout.tsx`.
+2. Confirm services, prices, phone and opening hours in `src/data`.
+3. Add the background photography and the "Our Work" clip: drop the files in
+   `public/images/backgrounds` and set their paths in `src/data/media.ts`
+   (every slot falls back to a dark gradient while it is `null`).
+4. Confirm the metadata and LocalBusiness JSON-LD fields in `src/app/layout.tsx`.
 
 All booking calls to action read from the single `SQUARE_BOOKING_URL` source in
 `src/lib/constants.ts` (or its matching environment variable).
@@ -26,6 +27,8 @@ All booking calls to action read from the single `SQUARE_BOOKING_URL` source in
 
 - Display type: Cherry Swash for H1, H2 and selected service names.
 - Body/UI type: Instrument Sans.
+- Accent script: Comforter Brush, only for the hand-lettered "Broadbeach" and
+  "Good Hair Better People" taglines.
 - Palette: black `#000000`, dark grey `#1E1E1E`, cold white `#EFF4F5`,
   cyan `#1FA7B3` and dark teal `#006C80`.
 - Direction: classic barber with modern execution; dark, editorial and clean.
@@ -33,9 +36,12 @@ All booking calls to action read from the single `SQUARE_BOOKING_URL` source in
 
 ## Page structure
 
-1. Hero
-2. Services + Prices
-3. Our Work + Barbers
-4. Reputation / Brand Story
-5. Location + Hours
-6. Footer
+Built mobile-first from the mockups in `mr-moustache-material/` (drawn at a
+390px viewport; below that width the root font size scales so every section
+keeps its proportions).
+
+1. Hero (`src/components/sections/Hero.tsx`)
+2. Services + Prices (`src/components/sections/Services.tsx`)
+3. Our Work (`src/components/sections/OurWork.tsx`)
+4. Find Us / Location (`src/components/sections/Location.tsx`)
+5. Footer (`src/components/layout/Footer.tsx`)

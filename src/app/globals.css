@@ -1,26 +1,29 @@
 @import "tailwindcss";
 
 :root {
-  --background: #000000;
-  --foreground: #eff4f5;
-  --surface: #1e1e1e;
-  --muted: color-mix(in srgb, var(--foreground) 68%, transparent);
-  --primary: #1fa7b3;
-  --primary-hover: color-mix(in srgb, var(--primary) 86%, white);
+  /* Approved palette */
+  --black: #000000;
+  --grey-dark: #1e1e1e;
+  --cold-white: #eff4f5;
+  --cyan: #1fa7b3;
   --teal-dark: #006c80;
-  --border: color-mix(in srgb, var(--foreground) 20%, transparent);
-  --focus: #1fa7b3;
 
-  --radius-sm: 0.25rem;
-  --radius-md: 0.375rem;
-  --radius-lg: 0.5rem;
-
-  --space-section: clamp(4rem, 8vw, 7rem);
-  --space-content: clamp(1.25rem, 3vw, 2rem);
-  --container-width: 76rem;
+  --background: var(--black);
+  --foreground: var(--cold-white);
+  --surface: var(--grey-dark);
+  --muted: color-mix(in srgb, var(--foreground) 72%, transparent);
+  --subtle: color-mix(in srgb, var(--foreground) 45%, transparent);
+  --primary: var(--cyan);
+  --primary-hover: color-mix(in srgb, var(--primary) 86%, white);
+  --border: color-mix(in srgb, var(--foreground) 22%, transparent);
+  --ink: #111314;
+  --ink-muted: color-mix(in srgb, var(--ink) 55%, transparent);
+  --star: #f2b33d;
+  --focus: var(--cyan);
 
   --type-body: var(--font-instrument-sans);
   --type-display: var(--font-cherry-swash);
+  --type-script: var(--font-comforter-brush);
 }
 
 @theme inline {
@@ -28,13 +31,19 @@
   --color-foreground: var(--foreground);
   --color-surface: var(--surface);
   --color-muted: var(--muted);
+  --color-subtle: var(--subtle);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
   --color-teal-dark: var(--teal-dark);
+  --color-cold-white: var(--cold-white);
   --color-border: var(--border);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-star: var(--star);
   --color-focus: var(--focus);
   --font-sans: var(--type-body);
   --font-display: var(--type-display);
+  --font-script: var(--type-script);
 }
 
 * {
@@ -42,6 +51,9 @@
 }
 
 html {
+  /* The mobile mockups are drawn at 390px: below that width every rem-based
+     measurement scales down with the viewport so layouts keep their lines. */
+  font-size: min(100%, 4.1026vw);
   scroll-behavior: smooth;
 }
 
@@ -57,6 +69,7 @@ body {
 h1,
 h2 {
   font-family: var(--type-display), serif;
+  font-weight: 700;
   text-wrap: balance;
 }
 

@@ -2,6 +2,8 @@ export const ANALYTICS_EVENTS = {
   bookingClick: "booking_click",
   directionsClick: "directions_click",
   instagramClick: "instagram_click",
+  googleClick: "google_click",
+  phoneClick: "phone_click",
 } as const;
 
 export type AnalyticsEvent =

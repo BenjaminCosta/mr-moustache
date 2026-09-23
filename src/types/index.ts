@@ -2,7 +2,6 @@ export type OpeningHours = {
   day: string;
   opens: string | null;
   closes: string | null;
-  note: string;
 };
 
 export type BusinessInfo = {
@@ -17,13 +16,24 @@ export type BusinessInfo = {
     country: string;
     countryCode: string;
   };
-  phone: string | null;
-  email: string | null;
+  phone: {
+    display: string;
+    href: string;
+  };
+  hours: {
+    summary: string;
+    detail: string;
+  };
   openingHours: OpeningHours[];
+  rating: {
+    score: string;
+    source: string;
+  };
   links: {
     booking: string;
     maps: string;
     instagram: string;
+    google: string;
   };
 };
 
@@ -31,25 +41,14 @@ export type Service = {
   id: string;
   name: string;
   description: string;
-  price: string;
+  price: string | null;
+  duration: string | null;
+};
+
+export type WorkVideo = {
+  src: string | null;
+  poster: string | null;
+  title: string;
+  location: string;
   duration: string;
-  isPlaceholder: boolean;
-};
-
-export type Barber = {
-  id: string;
-  name: string;
-  role: string;
-  bio: string;
-  image: string;
-  imageAlt: string;
-  isPlaceholder: boolean;
-};
-
-export type Review = {
-  id: string;
-  quote: string;
-  author: string;
-  source: string;
-  isPlaceholder: boolean;
 };

@@ -1,29 +1,40 @@
 import type { Service } from "@/types";
 
-// TODO: Replace with the confirmed Square service list, durations and prices.
+// TODO: Keep in sync with the Square service list for Broadbeach.
 export const services = [
   {
-    id: "service-placeholder-1",
-    name: "Service name [Placeholder]",
-    description: "Service description to be confirmed.",
-    price: "Price TBC",
-    duration: "Duration TBC",
-    isPlaceholder: true,
+    id: "standard-haircut",
+    name: "Standard Haircut",
+    description: "(From comb #1)",
+    price: "A$45",
+    duration: "30 min",
   },
   {
-    id: "service-placeholder-2",
-    name: "Service name [Placeholder]",
-    description: "Service description to be confirmed.",
-    price: "Price TBC",
-    duration: "Duration TBC",
-    isPlaceholder: true,
+    id: "zero-fade",
+    name: "Zero Fade",
+    description: "From 0.5 guard fades, burst fades,\ntaper fades, mullets.",
+    price: "A$50",
+    duration: "45 min",
   },
   {
-    id: "service-placeholder-3",
-    name: "Service name [Placeholder]",
-    description: "Service description to be confirmed.",
-    price: "Price TBC",
-    duration: "Duration TBC",
-    isPlaceholder: true,
+    id: "skin-fade",
+    name: "Skin Fade",
+    description: "Clean fade from skin to your\nchosen length on top.",
+    price: "A$55",
+    duration: "45 min",
+  },
+  {
+    id: "beard-trim-line-up",
+    name: "Beard Trim & Line Up",
+    description: "Beard is charged $30 with a haircut.",
+    price: "A$35",
+    duration: "20 min",
+  },
+  {
+    id: "haircut-beard",
+    name: "Haircut & Beard",
+    description: "Cut, beard trim and line up.",
+    price: null,
+    duration: null,
   },
 ] satisfies Service[];

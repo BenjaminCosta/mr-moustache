@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Cherry_Swash, Instrument_Sans } from "next/font/google";
+import { Cherry_Swash, Comforter_Brush, Instrument_Sans } from "next/font/google";
 import { business } from "@/data/business";
 import { SITE_URL } from "@/lib/constants";
 import "./globals.css";
@@ -13,6 +13,14 @@ const instrumentSans = Instrument_Sans({
 const cherrySwash = Cherry_Swash({
   variable: "--font-cherry-swash",
   weight: ["400", "700"],
+  subsets: ["latin"],
+  display: "swap",
+});
+
+// Accent only: the hand-lettered taglines in the location card and footer.
+const comforterBrush = Comforter_Brush({
+  variable: "--font-comforter-brush",
+  weight: "400",
   subsets: ["latin"],
   display: "swap",
 });
@@ -67,14 +75,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       postalCode: business.address.postcode,
       addressCountry: business.address.countryCode,
     },
+    telephone: business.phone.href.replace("tel:", ""),
     areaServed: "Broadbeach, Gold Coast",
-    // TODO: Add confirmed phone, geo, opening hours, price range and public URL.
+    openingHoursSpecification: {
+      "@type": "OpeningHoursSpecification",
+      dayOfWeek: business.openingHours.map((item) => item.day),
+      opens: business.openingHours[0].opens,
+    },
+    // TODO: Add confirmed geo, closing times, price range and public URL.
   };
 
   return (
     <html
       lang="en-AU"
-      className={`${instrumentSans.variable} ${cherrySwash.variable} h-full antialiased`}
+      className={`${instrumentSans.variable} ${cherrySwash.variable} ${comforterBrush.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
         {children}

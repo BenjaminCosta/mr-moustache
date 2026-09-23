@@ -1,6 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" role="img" aria-labelledby="title">
-  <title id="title">Barber portrait placeholder</title>
-  <rect width="800" height="1000" fill="#1E1E1E"/>
-  <path d="M0 0 800 1000M800 0 0 1000" stroke="#EFF4F5" stroke-opacity=".2" stroke-width="3"/>
-  <text x="400" y="515" fill="#EFF4F5" fill-opacity=".68" font-family="Arial, sans-serif" font-size="24" text-anchor="middle">TEAM PORTRAIT</text>
-</svg>
