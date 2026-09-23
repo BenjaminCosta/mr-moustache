@@ -46,9 +46,6 @@ export type Service = {
 };
 
 export type WorkVideo = {
-  src: string | null;
+  src: string;
   poster: string | null;
-  title: string;
-  location: string;
-  duration: string;
 };

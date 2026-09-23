@@ -30,7 +30,7 @@ All booking calls to action read from the single `SQUARE_BOOKING_URL` source in
 - Accent script: Comforter Brush, only for the hand-lettered "Broadbeach" and
   "Good Hair Better People" taglines.
 - Palette: black `#000000`, dark grey `#1E1E1E`, cold white `#EFF4F5`,
-  cyan `#1FA7B3` and dark teal `#006C80`.
+  cyan `#10C0D9` and dark teal `#006C80`.
 - Direction: classic barber with modern execution; dark, editorial and clean.
 - Small corner radius, thin lines, simple cards and large real photography.
 

@@ -14,11 +14,7 @@ export const backgrounds = {
   footer: "/images/backgrounds/footer.webp" as string | null,
 };
 
-// TODO: Add the approved "cut in progress" clip.
 export const workVideo = {
-  src: null,
-  poster: "/images/backgrounds/our-work-poster.webp",
-  title: "Cut in progress",
-  location: "Broadbeach",
-  duration: "0:28",
+  src: "/videos/our-work.mp4",
+  poster: "/images/backgrounds/our-work-poster.jpg",
 } satisfies WorkVideo;

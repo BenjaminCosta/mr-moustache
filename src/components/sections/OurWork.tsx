@@ -51,7 +51,7 @@ export function OurWork() {
         </div>
 
         <div className="mt-[1.3rem] lg:mt-0">
-          <WorkVideoCard video={workVideo} fallbackHref={business.links.instagram} />
+          <WorkVideoCard video={workVideo} />
         </div>
       </div>
     </section>

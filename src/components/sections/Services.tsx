@@ -70,7 +70,7 @@ export function Services() {
           <a
             {...bookingLinkProps}
             aria-label="Book your appointment through Square (opens in a new tab)"
-            className="btn-sweep btn-sweep--fill-primary group order-last mt-[1.05rem] flex h-[2.6rem] items-center justify-center gap-[1.1rem] rounded-[0.1875rem] border-[1.5px] border-primary text-primary lg:mt-10 lg:h-14 lg:gap-4 xl:gap-5"
+            className="btn-sweep btn-sweep--fill-white group order-last mt-[1.05rem] flex h-[2.6rem] items-center justify-center gap-[1.1rem] rounded-[0.1875rem] border-[1.5px] border-foreground text-foreground lg:mt-10 lg:h-14 lg:gap-4 xl:gap-5"
           >
             <CalendarIcon className="mr-[0.1rem] size-[1.3rem] lg:size-6" />
             <span className="mr-[0.15rem] whitespace-nowrap text-[0.62rem] font-semibold uppercase tracking-[0.2em] lg:text-[0.7rem] xl:text-[0.78rem] xl:tracking-[0.26em]">
