@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Hero image placeholder</title>
+  <desc id="desc">Neutral placeholder to be replaced with approved Broadbeach photography.</desc>
+  <rect width="1600" height="1000" fill="#1E1E1E"/>
+  <path d="M0 0 1600 1000M1600 0 0 1000" stroke="#EFF4F5" stroke-opacity=".2" stroke-width="4"/>
+  <rect x="560" y="454" width="480" height="92" rx="6" fill="#000000" stroke="#EFF4F5" stroke-opacity=".2" stroke-width="3"/>
+  <text x="800" y="510" fill="#EFF4F5" fill-opacity=".68" font-family="Arial, sans-serif" font-size="30" text-anchor="middle">REAL PHOTO PLACEHOLDER</text>
+</svg>
