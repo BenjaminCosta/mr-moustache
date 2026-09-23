@@ -17,13 +17,17 @@ export function Reputation() {
     >
       <div aria-hidden="true" className="absolute inset-0 -z-10">
         {backgrounds.reputation ? (
-          <Image
-            src={backgrounds.reputation}
-            alt=""
-            fill
-            sizes="100vw"
-            className="object-cover object-right-top"
-          />
+          // Desktop: the portrait photo sits on the right and fades into the copy.
+          <div className="absolute inset-0 lg:left-auto lg:w-[55%]">
+            <Image
+              src={backgrounds.reputation}
+              alt=""
+              fill
+              sizes="(min-width: 1024px) 55vw, 100vw"
+              className="object-cover object-right-top"
+            />
+            <div className="absolute inset-y-0 left-0 hidden w-1/2 bg-gradient-to-r from-black to-transparent lg:block" />
+          </div>
         ) : (
           <div className="absolute inset-0 bg-[radial-gradient(75%_32%_at_85%_8%,#262626_0%,#101010_45%,transparent_100%)] lg:bg-[radial-gradient(45%_45%_at_85%_15%,#262626_0%,#101010_45%,transparent_100%)]" />
         )}
