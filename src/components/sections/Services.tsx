@@ -3,7 +3,6 @@ import {
   ArrowRightIcon,
   CalendarIcon,
   ChevronRightIcon,
-  PlusIcon,
 } from "@/components/ui/Icons";
 import { Moustache } from "@/components/ui/Moustache";
 import { RuleLabel } from "@/components/ui/RuleLabel";
@@ -36,8 +35,9 @@ export function Services() {
               sizes="100vw"
               className="object-cover"
             />
-            {/* Tools only peek in at the top and bottom edges, as in the mockup. */}
-            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.45)_0%,rgba(0,0,0,0.9)_17%,rgba(0,0,0,0.95)_50%,rgba(0,0,0,0.9)_84%,rgba(0,0,0,0.4)_100%)]" />
+            {/* Tools only peek in at the top and bottom edges, as in the mockup;
+                the very edges fade to black so the section blends into its neighbours. */}
+            <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,1)_0%,rgba(0,0,0,0.5)_9%,rgba(0,0,0,0.9)_19%,rgba(0,0,0,0.95)_50%,rgba(0,0,0,0.9)_82%,rgba(0,0,0,0.45)_92%,rgba(0,0,0,1)_100%)]" />
           </>
         ) : (
           <div className="absolute inset-0 bg-[radial-gradient(90%_22%_at_30%_0%,#1b1b1b_0%,transparent_100%),radial-gradient(90%_18%_at_80%_100%,#1b1b1b_0%,transparent_100%)] lg:bg-[radial-gradient(45%_55%_at_10%_30%,#1b1b1b_0%,transparent_100%),radial-gradient(35%_45%_at_90%_55%,#161616_0%,transparent_100%)]" />
@@ -130,19 +130,6 @@ export function Services() {
               </a>
             </li>
           ))}
-          <li className="border-b border-white/35">
-            <a
-              {...bookingLinkProps}
-              aria-label="View all services on Square (opens in a new tab)"
-              className="btn-sweep btn-sweep--row group flex h-[2.75rem] items-center justify-between pl-[0.35rem] text-primary lg:h-20 lg:pl-4 lg:pr-3"
-            >
-              <span className="flex items-center gap-[0.5rem] text-[0.62rem] font-semibold uppercase tracking-[0.15em] lg:gap-3 lg:text-[0.82rem] lg:tracking-[0.24em]">
-                View all services
-                <PlusIcon className="size-[0.6rem] transition-transform duration-300 ease-out group-hover:rotate-90 group-focus-visible:rotate-90 lg:size-3" />
-              </span>
-              <ChevronRightIcon className="mr-[0.25rem] h-[0.95rem] w-[0.55rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:h-5 lg:w-3" />
-            </a>
-          </li>
         </ul>
       </div>
     </section>

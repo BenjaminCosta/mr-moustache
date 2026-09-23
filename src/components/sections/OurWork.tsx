@@ -38,7 +38,7 @@ export function OurWork() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="View more on Instagram (opens in a new tab)"
-            className="btn-sweep btn-sweep--fill-primary group order-last mt-[1.1rem] flex h-[2.6rem] items-center justify-center rounded-[0.1875rem] border-[1.5px] border-primary text-primary lg:mt-12 lg:h-14 lg:max-w-[26rem]"
+            className="btn-sweep btn-sweep--fill-white group order-last mt-[1.1rem] flex h-[2.6rem] items-center justify-center rounded-[0.1875rem] border-[1.5px] border-foreground text-foreground lg:mt-12 lg:h-14 lg:max-w-[26rem]"
             {...analyticsAttributes(ANALYTICS_EVENTS.instagramClick)}
           >
             <InstagramIcon className="size-[1.15rem] lg:size-6" />

@@ -128,6 +128,7 @@ button {
  *   --invert-primary  solid cyan  -> dark fill, cyan label (the colours swap)
  *   --fill-primary    cyan outline -> cyan fill, black label
  *   --fill-ink        ink outline  -> ink fill, cold-white label
+ *   --fill-white      white outline -> white fill, black label
  *   --fill-light      white outline -> white fill, black label (grows radially)
  *   --row             list rows get a faint cyan tint only
  * Hover only applies on devices that can hover; touch devices get the same
@@ -174,6 +175,7 @@ button {
   --sweep-fg: var(--cold-white);
 }
 
+.btn-sweep--fill-white,
 .btn-sweep--fill-light {
   --sweep-bg: var(--cold-white);
   --sweep-fg: var(--black);

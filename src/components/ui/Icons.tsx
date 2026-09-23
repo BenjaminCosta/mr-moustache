@@ -54,14 +54,6 @@ export function ChevronRightIcon(props: IconProps) {
   );
 }
 
-export function PlusIcon(props: IconProps) {
-  return (
-    <svg {...base} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" {...props}>
-      <path d="M12 4v16M4 12h16" />
-    </svg>
-  );
-}
-
 export function StarIcon(props: IconProps) {
   return (
     <svg {...base} fill="currentColor" {...props}>

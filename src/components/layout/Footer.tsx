@@ -25,7 +25,6 @@ type SocialLink = {
   ariaLabel: string;
   event: AnalyticsEvent;
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
-  accent?: boolean;
 };
 
 const socialLinks: SocialLink[] = [
@@ -49,7 +48,6 @@ const socialLinks: SocialLink[] = [
     ariaLabel: "Book online through Square (opens in a new tab)",
     event: ANALYTICS_EVENTS.bookingClick,
     Icon: CalendarIcon,
-    accent: true,
   },
 ];
 
@@ -98,18 +96,14 @@ export function Footer() {
         <div>
           <ul className="mx-auto mt-[1.15rem] grid w-[19.7rem] grid-cols-3 divide-x divide-white/35 lg:mt-0 lg:w-full">
             {socialLinks.map(
-              ({ label, href, ariaLabel, event, Icon, accent }) => (
+              ({ label, href, ariaLabel, event, Icon }) => (
                 <li key={label} className="flex justify-center">
                   <a
                     href={href}
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={ariaLabel}
-                    className={`group flex flex-col items-center gap-[0.62rem] py-[0.1rem] text-[0.53rem] font-medium uppercase leading-none tracking-[0.12em] transition-colors lg:gap-4 lg:py-1 lg:text-[0.66rem] duration-200 ${
-                      accent
-                        ? "text-primary hover:text-white focus-visible:text-white"
-                        : "text-foreground hover:text-primary focus-visible:text-primary"
-                    }`}
+                    className="group flex flex-col items-center gap-[0.62rem] py-[0.1rem] text-[0.53rem] font-medium uppercase leading-none tracking-[0.12em] text-foreground transition-colors duration-200 hover:text-primary focus-visible:text-primary lg:gap-4 lg:py-1 lg:text-[0.66rem]"
                     {...analyticsAttributes(event)}
                   >
                     <Icon className="size-[1.45rem] lg:size-7 transition-transform duration-300 ease-out group-hover:-translate-y-[0.2rem] group-focus-visible:-translate-y-[0.2rem]" />
