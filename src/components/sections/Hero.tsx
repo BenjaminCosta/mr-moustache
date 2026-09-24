@@ -23,6 +23,7 @@ export function Hero() {
               alt=""
               fill
               preload
+              fetchPriority="high"
               sizes="(min-width: 1024px) 58vw, 100vw"
               className="object-cover object-[70%_center] lg:object-[center_35%]"
             />
@@ -37,7 +38,7 @@ export function Hero() {
 
       <header className="shell flex items-start justify-between pl-[1.625rem] pr-[1.25rem] pt-[1.4375rem] lg:items-center lg:px-10 lg:pt-8">
         <a href="#top" aria-label={`${business.shortName} ${business.locationName}, back to top`}>
-          <Logo size={112} preload className="size-[5.3125rem] lg:size-[7rem]" />
+          <Logo size={112} eager className="size-[5.3125rem] lg:size-[7rem]" />
         </a>
 
         <nav aria-label="Primary navigation" className="hidden lg:block">

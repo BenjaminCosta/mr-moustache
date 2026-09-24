@@ -12,7 +12,7 @@ type WorkVideoCardProps = {
 export function WorkVideoCard({ video }: WorkVideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
-  // The clip only starts downloading once the card is close to the viewport.
+  // The clip and its poster only download once the card nears the viewport.
   const [shouldLoad, setShouldLoad] = useState(false);
 
   useEffect(() => {
@@ -47,7 +47,7 @@ export function WorkVideoCard({ video }: WorkVideoCardProps) {
       <video
         ref={videoRef}
         src={shouldLoad ? video.src : undefined}
-        poster={video.poster ?? undefined}
+        poster={shouldLoad ? (video.poster ?? undefined) : undefined}
         aria-label={video.label}
         autoPlay
         muted

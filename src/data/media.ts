@@ -18,5 +18,5 @@ export const backgrounds = {
 export const workVideo = {
   src: "/videos/mr-moustache-fade-haircut.mp4",
   label: "Fade haircut by a Mr Moustache barber",
-  poster: "/images/backgrounds/mr-moustache-fade-haircut-poster.jpg",
+  poster: "/images/backgrounds/mr-moustache-fade-haircut-poster.webp",
 } satisfies WorkVideo;

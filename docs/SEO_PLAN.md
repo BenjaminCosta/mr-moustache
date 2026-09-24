@@ -119,6 +119,39 @@ de repetir "barber Broadbeach" quince veces ni de rellenar alts con keywords.
 El puntaje de performance móvil sale igual (varía de una corrida a otra). La
 ganancia real es el peso: un 85 % menos de datos móviles en la primera visita.
 
+### Tercera pasada: performance
+
+- **Comforter Brush autoalojada y recortada:** la fuente completa (133 KB) se
+  descargaba igual en la primera carga, porque el navegador la pide en cuanto
+  hay texto que la usa en el DOM. Ahora es un subset con solo los glifos de
+  "Broadbeach" y "Good Hair Better People" (**35 KB**, se ve idéntico). El
+  README de `src/app/fonts/` explica cómo regenerarla si cambian esos textos.
+- **Póster del vídeo:** pasó de JPG 1080p (26 KB) a WebP 720p (**5 KB**) y se
+  carga junto con el vídeo, cuando la tarjeta se acerca a la pantalla.
+- **Hero:** `preload` + `fetchPriority="high"`. Antes el preload a veces salía
+  con prioridad baja.
+- **Logo del header:** `loading="eager"` en vez de `preload`, para que no
+  compita con la imagen del hero.
+- **Carrusel de reviews:** se quitó una medición síncrona al montar, que
+  forzaba un reflow de ~50 ms durante la hidratación.
+- **Caché:** `public/images` y `public/videos` se sirven con
+  `Cache-Control: public, max-age=604800, stale-while-revalidate=86400`.
+- **Probado y descartado:** `experimental.inlineCss`. Next duplica el CSS en el
+  payload RSC (el HTML pasa de 182 KB a 407 KB) y en las mediciones rindió
+  peor (80–94 contra 90–97).
+
+| Lighthouse (4 corridas) | Antes de esta pasada | Después |
+| --- | --- | --- |
+| Peso de la carga inicial | 557 KB | **435 KB** |
+| Performance móvil (simulado) | 85–92 | **89–96** |
+| TBT móvil | 50–140 ms | 60–70 ms |
+| Escritorio | 99 | **100** (LCP 0,7 s) |
+| SEO / Accesibilidad / Buenas prácticas | 100 | 100 |
+
+El LCP móvil que calcula Lighthouse (2,6–3,7 s) es una simulación de 4G
+lenta. El LCP real observado en local es de ~0,2 s. Lo que queda es el
+runtime de React/Next (~140 KB de JS), que es la base de cualquier sitio Next.
+
 ## 4. Pendiente
 
 ### Datos del Square (no accesibles desde este entorno)

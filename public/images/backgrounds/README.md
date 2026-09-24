@@ -8,7 +8,7 @@ for image search); decorative backgrounds keep an empty `alt`.
 | --- | --- | --- |
 | `mr-moustache-broadbeach-barber-haircut.webp` | `bg-hero.png` | Hero background |
 | `barber-scissors-clippers-comb.webp` | `bg-services.png` | Services background (darkened in the middle) |
-| `mr-moustache-fade-haircut-poster.jpg` | `our-work-poster.png` | "Our Work" video poster |
+| `mr-moustache-fade-haircut-poster.webp` | first frame of the clip | "Our Work" video poster (720px, 5 KB) |
 | `palm-tree-silhouettes.webp` | `bg-location-palms.png` | Find Us palms (grey silhouette with transparency) |
 | `broadbeach-gold-coast-aerial.webp` | `location-broadbeach.png` | Find Us "Broadbeach" feature card |
 | `barber-scissors-towel.webp` | `reviews-bg.png` | Reviews section background |

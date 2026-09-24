@@ -1,10 +1,6 @@
 import type { Metadata } from "next";
-import {
-  Cherry_Swash,
-  Comforter_Brush,
-  Instrument_Sans,
-  Roboto,
-} from "next/font/google";
+import { Cherry_Swash, Instrument_Sans, Roboto } from "next/font/google";
+import localFont from "next/font/local";
 import { business } from "@/data/business";
 import { IS_INDEXABLE, SITE_URL } from "@/lib/constants";
 import { localBusinessJsonLd } from "@/lib/structured-data";
@@ -24,11 +20,12 @@ const cherrySwash = Cherry_Swash({
 });
 
 // Accent only: the hand-lettered taglines in the location card and footer.
-// Not preloaded: it is large and only appears below the fold.
-const comforterBrush = Comforter_Brush({
+// Self-hosted subset of Comforter Brush with just those glyphs (35 KB instead
+// of 133 KB); regenerate it if the taglines change (see src/app/fonts).
+const comforterBrush = localFont({
+  src: "./fonts/comforter-brush-taglines.woff2",
   variable: "--font-comforter-brush",
   weight: "400",
-  subsets: ["latin"],
   display: "swap",
   preload: false,
 });

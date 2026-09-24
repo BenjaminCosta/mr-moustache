@@ -35,7 +35,8 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
   useEffect(() => {
     const track = trackRef.current;
     if (!track) return;
-    measure();
+    // ResizeObserver fires once after the first layout, so measuring here too
+    // would only force an extra synchronous reflow during hydration.
     const observer = new ResizeObserver(measure);
     observer.observe(track);
     track.addEventListener("scroll", measure, { passive: true });
