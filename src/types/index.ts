@@ -69,5 +69,7 @@ export type Review = {
 
 export type WorkVideo = {
   src: string;
+  /** Short description of what the clip shows. */
+  label: string;
   poster: string | null;
 };

@@ -1,14 +1,19 @@
 # Background photography
 
 Optimised WebP exports of the photos in `mr-moustache-material/`, wired up in
-`src/data/media.ts`:
+`src/data/media.ts`. File names describe the photo (they are what Google sees
+for image search); decorative backgrounds keep an empty `alt`.
 
 | File | Source | Used in |
 | --- | --- | --- |
-| `hero.webp` | `bg-hero.png` | Hero background |
-| `services.webp` | `bg-services.png` | Services background (darkened in the middle) |
-| `our-work-poster.webp` | `our-work-poster.png` | "Our Work" video poster |
-| `location-palms.webp` | `bg-location-palms.png` | Find Us palms (grey silhouette with transparency) |
-| `location-broadbeach.webp` | `location-broadbeach.png` | Find Us "Broadbeach" feature card |
-| `reviews.webp` | `reviews-bg.png` | Reviews section background |
-| `footer.webp` | `bg-footer.png` | Footer background |
+| `mr-moustache-broadbeach-barber-haircut.webp` | `bg-hero.png` | Hero background |
+| `barber-scissors-clippers-comb.webp` | `bg-services.png` | Services background (darkened in the middle) |
+| `mr-moustache-fade-haircut-poster.jpg` | `our-work-poster.png` | "Our Work" video poster |
+| `palm-tree-silhouettes.webp` | `bg-location-palms.png` | Find Us palms (grey silhouette with transparency) |
+| `broadbeach-gold-coast-aerial.webp` | `location-broadbeach.png` | Find Us "Broadbeach" feature card |
+| `barber-scissors-towel.webp` | `reviews-bg.png` | Reviews section background |
+| `gold-coast-beach-night.webp` | `bg-footer.png` | Footer background |
+
+The "Our Work" clip (`public/videos/mr-moustache-fade-haircut.mp4`) is a 720p
+H.264 export (CRF 27, AAC 96k, faststart) of the original 1080p file, about
+1.6 MB instead of 7.1 MB.

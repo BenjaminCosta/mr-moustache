@@ -76,35 +76,84 @@ de repetir "barber Broadbeach" quince veces ni de rellenar alts con keywords.
   `Disallow` automáticamente en previews de Vercel (`VERCEL_ENV !==
   "production"`). Producción queda `index, follow`.
 
-## 3. Pendiente: datos que necesito para cerrar el on-page
+## 3. Hecho en la segunda pasada (rendimiento, imágenes y links)
 
-| Dato | Dónde va | Por qué |
+- **Vídeo "Our Work":** recomprimido de 1080p a 720p (H.264 CRF 27, AAC 96k,
+  faststart). Pasa de **7,1 MB a 1,6 MB** sin diferencia visible. Además solo
+  se descarga cuando la tarjeta se acerca a la pantalla (`IntersectionObserver`
+  + `preload="none"`). También tiene un `aria-label` que describe el clip.
+- **Imágenes con nombres descriptivos:**
+  `mr-moustache-broadbeach-barber-haircut.webp`,
+  `barber-scissors-clippers-comb.webp`, `broadbeach-gold-coast-aerial.webp`,
+  `gold-coast-beach-night.webp`, `palm-tree-silhouettes.webp`,
+  `barber-scissors-towel.webp`, `mr-moustache-fade-haircut-poster.jpg`,
+  `mr-moustache-fade-haircut.mp4`. Se borró el `our-work-poster.webp`, que no
+  se usaba. Los fondos decorativos siguen con `alt=""`.
+- **AVIF:** `next.config.ts` sirve AVIF (y WebP como alternativa) desde
+  `next/image`.
+- **Fuentes:** Comforter Brush (131 KB) y Roboto (37 KB) ya no se precargan.
+  Solo aparecen debajo del primer pantallazo y competían con la imagen del
+  hero.
+- **Accesibilidad:** las filas de servicios y las tarjetas de rating de Google
+  ahora tienen un nombre accesible que coincide con el texto visible (fallaba
+  `label-content-name-mismatch`).
+- **Links:**
+  - Reservas → `https://mr-moustache-barbershop.square.site/`, el Square
+    Online de Mr Moustache. Con esto el schema publica `ReserveAction`.
+  - Instagram → `https://www.instagram.com/mr.moustache.barbers/`, el handle
+    que figura en los clips descargados de `mr-moustache-material/`.
+    ⚠️ Confirmar que es la cuenta oficial.
+  - El link a Google Maps ahora busca por nombre + dirección
+    ("Mr Moustache Barbershop Broadbeach, Unit 5/2623 Gold Coast Hwy…"), así
+    abre la ficha y no un pin suelto.
+
+**Lighthouse (móvil simulado, build local, 3 corridas cada una):**
+
+| | `main` | esta rama |
 | --- | --- | --- |
-| **Dominio definitivo** (`mrmoustachebroadbeach.com.au`, `mrmoustache.com.au/broadbeach`…) | `NEXT_PUBLIC_SITE_URL` en Vercel | Canonical, sitemap, robots y schema dependen de él. **Bloqueante para lanzar.** |
-| **Horario de cierre** de cada día | `openingHours` en `src/data/business.ts` | Se muestra en la web y activa `openingHoursSpecification`. |
-| **Coordenadas** del pin del GBP (5+ decimales) | `geo` en `src/data/business.ts` | Schema `GeoCoordinates`. |
-| **URL del GBP de Broadbeach** (link "Compartir" de Maps) | `NEXT_PUBLIC_GOOGLE_PROFILE_URL` | Botón Google + `sameAs`. |
-| **Instagram** real | `NEXT_PUBLIC_INSTAGRAM_URL` | Botón + `sameAs`. Agregar Facebook si hay. |
-| **Link de reservas de Square** de Broadbeach | `NEXT_PUBLIC_SQUARE_BOOKING_URL` | Todos los CTA + `ReserveAction`. |
-| **Confirmar teléfono** `0421 574 445` como definitivo de Broadbeach | `src/data/business.ts` | NAP. |
-| **Nombres de servicios** tal cual en Square | `src/data/services.ts` | Hoy: Standard Haircut, Zero Fade, Skin Fade, Beard Trim & Line Up, Haircut & Beard. Si en Square son "Classic Cut", "Taper"… los igualamos. |
+| Peso de la carga inicial | ~3,7 MB | **557 KB** |
+| Performance | 88–92 | 85–92 (dentro del ruido) |
+| SEO / Accesibilidad / Buenas prácticas | 100 / 100 / 100 | 100 / 100 / 100 |
+| Escritorio | — | Performance 99, LCP 0,8 s |
 
-## 4. Siguiente fase técnica (propuesta, sin tocar diseño)
+El puntaje de performance móvil sale igual (varía de una corrida a otra). La
+ganancia real es el peso: un 85 % menos de datos móviles en la primera visita.
 
-1. **Vídeo "Our Work":** recomprimir (objetivo ≤ 2 MB, 720p, sin audio si no
-   hace falta), cargarlo solo cuando entra en pantalla y pasar
-   `preload="auto"` → `"none"`/`"metadata"`. Es el mayor ahorro de
-   rendimiento de la página.
-2. **Nombres de imagen con contenido real:** `hero.webp` →
-   `mr-moustache-broadbeach-skin-fade.webp`, etc. Ayuda poco, pero no cuesta
-   nada. Los fondos decorativos siguen con `alt=""`. Solo las fotos que
-   muestran trabajo real llevan alt descriptivo ("Skin fade at Mr Moustache
-   Broadbeach").
-3. **Sección "Meet Our Broadbeach Barbers"** (H2) cuando haya fotos y nombres
-   (p. ej. Aitor, que ya aparece en las reviews). Aporta texto real y
-   confianza.
-4. **Lighthouse / PageSpeed** en producción: LCP del hero, CLS y peso total.
-5. Validar con **Rich Results Test** y **Schema Markup Validator** con el
+## 4. Pendiente
+
+### Datos del Square (no accesibles desde este entorno)
+
+La política de red del entorno bloquea `mr-moustache-barbershop.square.site`
+(y la búsqueda web lo confunde con un "Mr Moustache" de Orlando, EE. UU.).
+Hace falta, desde Square:
+
+| Dato | Dónde va |
+| --- | --- |
+| **Horario de apertura y cierre de cada día** (Broadbeach) | `openingHours` + `hours` en `src/data/business.ts`. Activa `openingHoursSpecification` en el schema. |
+| **Servicios de Broadbeach**: nombre, descripción, precio y duración exactos | `src/data/services.ts` |
+| **Teléfono** de Broadbeach | `phone` en `src/data/business.ts` |
+| **Link directo a la reserva de Broadbeach** (si el Square Online tiene selector de sede) | `NEXT_PUBLIC_SQUARE_BOOKING_URL` |
+| Facebook / otras redes, si figuran | `links` + `sameAs` |
+
+Para que pueda leerlo directamente hay que habilitar el dominio
+`mr-moustache-barbershop.square.site` (o un nivel de acceso a red más amplio)
+en la configuración del entorno cloud. La otra opción es pegar el contenido
+en el chat.
+
+### Otros
+
+| Dato | Dónde va |
+| --- | --- |
+| **Dominio definitivo** (pendiente por decisión) | `NEXT_PUBLIC_SITE_URL` en Vercel. Bloqueante para lanzar. |
+| **Coordenadas** del pin del GBP (5+ decimales) | `geo` en `src/data/business.ts` |
+| **URL del GBP de Broadbeach** (link "Compartir" de Maps) | `NEXT_PUBLIC_GOOGLE_PROFILE_URL` |
+| Confirmar la dirección exacta del GBP ("Unit 5/2623 …") | `src/data/business.ts` |
+
+### Mejoras opcionales
+
+1. Sección **"Meet Our Broadbeach Barbers"** (H2) cuando haya fotos y nombres
+   (p. ej. Aitor, que ya aparece en las reviews).
+2. Validar con **Rich Results Test** y **Schema Markup Validator** con el
    dominio real.
 
 ## 5. Hosting / dominio (fuera del código)
@@ -165,9 +214,12 @@ Places, Yelp AU, True Local, Hotfrog).
 - [x] Copy local natural
 - [x] Schema `HairSalon` válido
 - [x] Sitemap / robots / canonical / noindex en previews
+- [x] Vídeo optimizado y con carga diferida
+- [x] Imágenes con nombres descriptivos + AVIF
+- [x] Links de reservas (Square) e Instagram
+- [ ] Horarios, servicios y teléfono confirmados desde Square
 - [ ] Dominio + `NEXT_PUBLIC_SITE_URL`
-- [ ] Horario de cierre, geo, URLs reales (GBP, IG, Square)
-- [ ] Vídeo optimizado
+- [ ] Geo + URL del GBP
 - [ ] Redirects de dominio
 - [ ] GBP enlazado y completo
 - [ ] Search Console + sitemap + indexación

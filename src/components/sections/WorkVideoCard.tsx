@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { SpeakerSimpleHighIcon } from "@phosphor-icons/react/dist/csr/SpeakerSimpleHigh";
 import { SpeakerSimpleSlashIcon } from "@phosphor-icons/react/dist/csr/SpeakerSimpleSlash";
 import type { WorkVideo } from "@/types";
@@ -12,6 +12,25 @@ type WorkVideoCardProps = {
 export function WorkVideoCard({ video }: WorkVideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
+  // The clip only starts downloading once the card is close to the viewport.
+  const [shouldLoad, setShouldLoad] = useState(false);
+
+  useEffect(() => {
+    const element = videoRef.current;
+    if (!element) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        setShouldLoad(true);
+        observer.disconnect();
+      },
+      { rootMargin: "400px 0px" },
+    );
+
+    observer.observe(element);
+    return () => observer.disconnect();
+  }, []);
 
   const toggleMuted = () => {
     const element = videoRef.current;
@@ -27,13 +46,14 @@ export function WorkVideoCard({ video }: WorkVideoCardProps) {
     <figure className="relative isolate h-[25.5rem] overflow-hidden rounded-[0.5rem] border border-white/20 bg-[#101010] lg:h-[38rem] lg:rounded-[0.75rem]">
       <video
         ref={videoRef}
-        src={video.src}
+        src={shouldLoad ? video.src : undefined}
         poster={video.poster ?? undefined}
+        aria-label={video.label}
         autoPlay
         muted
         loop
         playsInline
-        preload="auto"
+        preload="none"
         className="absolute inset-0 -z-10 size-full object-cover"
         onCanPlay={(event) => {
           if (event.currentTarget.paused) void event.currentTarget.play();

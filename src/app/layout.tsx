@@ -24,19 +24,22 @@ const cherrySwash = Cherry_Swash({
 });
 
 // Accent only: the hand-lettered taglines in the location card and footer.
+// Not preloaded: it is large and only appears below the fold.
 const comforterBrush = Comforter_Brush({
   variable: "--font-comforter-brush",
   weight: "400",
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
-// Google's UI typeface, used only inside the Google review cards.
+// Google's UI typeface, used only inside the Google review cards (below the fold).
 const roboto = Roboto({
   variable: "--font-roboto",
   weight: ["400", "500", "700"],
   subsets: ["latin"],
   display: "swap",
+  preload: false,
 });
 
 const description =

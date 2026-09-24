@@ -64,7 +64,6 @@ export function Reputation() {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`${item.location}: rated ${item.rating.toFixed(1)} from ${item.reviewCount} Google reviews (opens in a new tab)`}
                 className="btn-sweep btn-sweep--row group grid h-[4.2rem] grid-cols-[7.25rem_1px_1fr_auto] items-center rounded-[0.4rem] border border-white/20 bg-[#0b0b0b]/80 pl-[0.95rem] pr-[0.75rem] lg:h-32 lg:grid-cols-[8.5rem_1px_1fr_auto] lg:rounded-[0.6rem] lg:gap-x-4 lg:pl-6 lg:pr-6 xl:grid-cols-[10.5rem_1px_1fr_auto] xl:pl-8 xl:pr-7"
                 {...analyticsAttributes(ANALYTICS_EVENTS.googleClick)}
               >
@@ -96,6 +95,7 @@ export function Reputation() {
                   </span>
                 </span>
 
+                <span className="sr-only">(opens in a new tab)</span>
                 <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] text-primary transition-transform duration-300 ease-out group-hover:translate-x-[0.2rem] group-focus-visible:translate-x-[0.2rem] lg:h-6 lg:w-3.5" />
               </a>
             </li>
