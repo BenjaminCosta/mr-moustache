@@ -51,20 +51,17 @@ export function Services() {
             className="gap-[0.8rem] px-[0.5rem] lg:gap-5 lg:px-0 lg:[&>span:first-child]:hidden"
             lineClassName="bg-foreground/85"
           >
-            <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              Services
-            </p>
+            <h2 id="services-title" className="text-[0.5rem] font-sans font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
+              Barber services &amp; prices
+            </h2>
           </RuleLabel>
 
-          <h2
-            id="services-title"
-            className="mt-[1.15rem] text-center text-[1.87rem] leading-none tracking-[-0.02em] text-white lg:mt-8 lg:text-left lg:text-[3.25rem] lg:leading-[1.02] xl:text-[4rem]"
-          >
+          <p className="text-balance font-display font-bold mt-[1.15rem] text-center text-[1.87rem] leading-none tracking-[-0.02em] text-white lg:mt-8 lg:text-left lg:text-[3.25rem] lg:leading-[1.02] xl:text-[4rem]">
             Tried. True. <br className="hidden lg:inline" />
             Tailored.
-          </h2>
+          </p>
           <p className="mt-[0.5rem] text-center text-[0.857rem] leading-tight text-foreground/80 lg:mt-6 lg:text-left lg:text-[1.1rem] lg:leading-normal">
-            Choose your service and book your time online.
+            Book your next cut at Mr Moustache Broadbeach.
           </p>
 
           <a

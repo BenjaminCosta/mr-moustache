@@ -18,7 +18,8 @@ Open `http://localhost:3000`.
 3. Add the background photography and the "Our Work" clip: drop the files in
    `public/images/backgrounds` and set their paths in `src/data/media.ts`
    (every slot falls back to a dark gradient while it is `null`).
-4. Confirm the metadata and LocalBusiness JSON-LD fields in `src/app/layout.tsx`.
+4. Confirm the metadata in `src/app/layout.tsx` and the LocalBusiness JSON-LD in
+   `src/lib/structured-data.ts`. The full SEO plan lives in `docs/SEO_PLAN.md`.
 
 All booking calls to action read from the single `SQUARE_BOOKING_URL` source in
 `src/lib/constants.ts` (or its matching environment variable).

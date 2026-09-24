@@ -78,16 +78,17 @@ export function Hero() {
 
       <div className="shell mt-auto px-[1.625rem] pt-12 lg:px-10 lg:pb-14">
         <div className="lg:max-w-[52rem]">
-          <p className="text-[0.6rem] font-medium uppercase leading-none tracking-[0.19em] text-foreground/90 lg:text-[0.8rem] lg:tracking-[0.3em]">
-            {business.shortName} · {business.locationName}
-          </p>
-          <h1 className="mt-[0.4rem] text-[2.4rem] leading-[0.92] tracking-[-0.015em] text-white lg:mt-5 lg:whitespace-nowrap lg:text-[4.5rem] lg:leading-[0.95] xl:text-[5.25rem]">
+          {/* The business name is the page's H1; the headline below stays the visual lead. */}
+          <h1 className="font-sans text-[0.6rem] font-medium uppercase leading-none tracking-[0.19em] text-foreground/90 lg:text-[0.8rem] lg:tracking-[0.3em]">
+            {business.name}
+          </h1>
+          <p className="mt-[0.4rem] text-balance font-display text-[2.4rem] font-bold leading-[0.92] tracking-[-0.015em] text-white lg:mt-5 lg:whitespace-nowrap lg:text-[4.5rem] lg:leading-[0.95] xl:text-[5.25rem]">
             Good cuts.
             <br />
             Good people.
             <br />
             Proper barbering.
-          </h1>
+          </p>
           <p className="mt-[0.55rem] text-[0.865rem] leading-[1.17] text-foreground/85 lg:mt-6 lg:max-w-[30rem] lg:text-[1.2rem] lg:leading-[1.45]">
             Classic cuts, skin fades, tapers and beard trims — right in the heart
             of Broadbeach.

@@ -19,19 +19,16 @@ export function OurWork() {
             className="gap-[1.1rem] px-[0.85rem] lg:gap-5 lg:px-0 lg:[&>span:first-child]:hidden"
             lineClassName="bg-foreground/85"
           >
-            <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
+            <h2 id="work-title" className="text-[0.5rem] font-sans font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
               Our work
-            </p>
+            </h2>
           </RuleLabel>
 
-          <h2
-            id="work-title"
-            className="mt-[1.1rem] text-center text-[2.72rem] leading-[0.9] tracking-[-0.02em] text-white lg:mt-8 lg:whitespace-nowrap lg:text-left lg:text-[3.6rem] lg:leading-[1.02] xl:text-[4.1rem]"
-          >
+          <p className="text-balance font-display font-bold mt-[1.1rem] text-center text-[2.72rem] leading-[0.9] tracking-[-0.02em] text-white lg:mt-8 lg:whitespace-nowrap lg:text-left lg:text-[3.6rem] lg:leading-[1.02] xl:text-[4.1rem]">
             Fresh cuts,
             <br />
             done properly.
-          </h2>
+          </p>
 
           <a
             href={business.links.instagram}

@@ -25,6 +25,8 @@ export type BusinessInfo = {
     detail: string;
   };
   openingHours: OpeningHours[];
+  geo: { latitude: number; longitude: number } | null;
+  priceRange: string;
   rating: {
     score: string;
     source: string;

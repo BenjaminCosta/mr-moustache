@@ -28,6 +28,10 @@ export const SITE_URL = resolveSiteUrl(
   process.env.VERCEL_URL,
 );
 
+// Only the production deployment may be indexed; Vercel previews stay hidden.
+export const IS_INDEXABLE =
+  !process.env.VERCEL_ENV || process.env.VERCEL_ENV === "production";
+
 // TODO: Replace with the confirmed Square deep link for Broadbeach.
 export const SQUARE_BOOKING_URL =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL?.trim() ||
@@ -38,9 +42,14 @@ export const GOOGLE_MAPS_URL =
 
 // TODO: Replace with the Google Business Profile (reviews) URL once confirmed.
 export const GOOGLE_PROFILE_URL =
-  process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL ?? GOOGLE_MAPS_URL;
+  process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL?.trim() || GOOGLE_MAPS_URL;
 
 // TODO: Replace with the confirmed Mr Moustache Instagram profile URL.
 export const INSTAGRAM_URL =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL?.trim() ||
   "https://www.instagram.com/PLACEHOLDER";
+
+/** False while a link still points at a launch placeholder. */
+export function isConfiguredUrl(url: string) {
+  return !/placeholder|example\.com/i.test(url);
+}

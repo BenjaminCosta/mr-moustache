@@ -21,7 +21,7 @@ export const business = {
   shortName: "Mr Moustache",
   locationName: "Broadbeach",
   address: {
-    street: "5/2623 Gold Coast Hwy",
+    street: "Unit 5/2623 Gold Coast Hwy",
     suburb: "Broadbeach",
     state: "QLD",
     postcode: "4218",
@@ -36,8 +36,12 @@ export const business = {
     summary: "Open from 10:00 am",
     detail: "7 days a week",
   },
-  // TODO: Confirm closing times before publishing.
+  // TODO: Confirm closing times before publishing. Structured data only
+  // publishes opening hours once every day has a closing time.
   openingHours: days.map((day) => ({ day, opens: "10:00", closes: null })),
+  // TODO: Add the exact pin from the Google Business Profile (5+ decimals).
+  geo: null as BusinessInfo["geo"],
+  priceRange: "$$",
   rating: {
     score: "5.0",
     source: "Google",

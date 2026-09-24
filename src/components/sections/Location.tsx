@@ -29,17 +29,18 @@ export function Location() {
 
       <div className="shell lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-16 lg:px-10">
         <div className="px-[1.8rem] lg:px-0">
-          <p className="text-[0.66rem] font-semibold uppercase leading-none tracking-[0.5em] text-teal-dark lg:text-[0.78rem]">
-            Find us
-          </p>
-          <h2
-            id="location-title"
-            className="mt-[0.75rem] whitespace-nowrap text-[2.02rem] leading-[1.22] tracking-[-0.03em] text-ink lg:mt-6 lg:text-[2.75rem] lg:leading-[1.15] xl:text-[3.2rem]"
-          >
+          <h2 id="location-title" className="text-[0.66rem] font-sans font-semibold uppercase leading-none tracking-[0.5em] text-teal-dark lg:text-[0.78rem]">
+            Find us in Broadbeach
+          </h2>
+          <p className="text-balance font-display font-bold mt-[0.75rem] whitespace-nowrap text-[2.02rem] leading-[1.22] tracking-[-0.03em] text-ink lg:mt-6 lg:text-[2.75rem] lg:leading-[1.15] xl:text-[3.2rem]">
             Right in the
             <br />
             Heart of Broadbeach
-          </h2>
+          </p>
+          <p className="mt-[0.6rem] text-[0.91rem] leading-[1.25] text-ink-muted lg:mt-5 lg:text-[1.15rem] lg:leading-[1.4]">
+            Looking for a barber in Broadbeach? Find Mr&nbsp;Moustache on
+            the Gold Coast Hwy.
+          </p>
 
           <ul className="mt-[1.5rem] space-y-[1.2rem] text-[0.91rem] leading-[1.15] lg:mt-12 lg:space-y-8 lg:text-[1.15rem] lg:leading-[1.3]">
             <li className="grid grid-cols-[2.95rem_1fr] items-start lg:grid-cols-[3.75rem_1fr]">

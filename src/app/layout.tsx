@@ -6,7 +6,8 @@ import {
   Roboto,
 } from "next/font/google";
 import { business } from "@/data/business";
-import { SITE_URL } from "@/lib/constants";
+import { IS_INDEXABLE, SITE_URL } from "@/lib/constants";
+import { localBusinessJsonLd } from "@/lib/structured-data";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -38,37 +39,34 @@ const roboto = Roboto({
   display: "swap",
 });
 
+const description =
+  `${business.name}. Classic cuts, skin fades, tapers and beard trims at ${business.address.street}. View prices and book online.`;
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Mr Moustache Barbershop Broadbeach",
+    default: "Barber Broadbeach | Mr Moustache Barbershop",
     template: "%s | Mr Moustache Broadbeach",
   },
-  description:
-    "Mr Moustache Barbershop in Broadbeach, Gold Coast. Book men's haircuts and skin fades through Square.",
-  keywords: [
-    "barber Broadbeach",
-    "barbershop Broadbeach",
-    "men's haircut Broadbeach",
-    "skin fade Broadbeach",
-  ],
+  description,
   alternates: {
     canonical: "/",
   },
+  robots: IS_INDEXABLE
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
   openGraph: {
     type: "website",
     locale: "en_AU",
     url: "/",
-    siteName: "Mr Moustache Barbershop Broadbeach",
+    siteName: business.name,
     title: "Mr Moustache Barbershop Broadbeach",
-    description:
-      "Mr Moustache Barbershop in Broadbeach, Gold Coast. Book online through Square.",
+    description,
   },
   twitter: {
     card: "summary_large_image",
     title: "Mr Moustache Barbershop Broadbeach",
-    description:
-      "Mr Moustache Barbershop in Broadbeach, Gold Coast. Book online through Square.",
+    description,
   },
   // Favicon, app icons and share images come from the file conventions in
   // src/app (favicon.ico, icon.png, apple-icon.png, opengraph-image.jpg,
@@ -76,28 +74,6 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
-  const localBusinessJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "BarberShop",
-    name: business.name,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: business.address.street,
-      addressLocality: business.address.suburb,
-      addressRegion: business.address.state,
-      postalCode: business.address.postcode,
-      addressCountry: business.address.countryCode,
-    },
-    telephone: business.phone.href.replace("tel:", ""),
-    areaServed: "Broadbeach, Gold Coast",
-    openingHoursSpecification: {
-      "@type": "OpeningHoursSpecification",
-      dayOfWeek: business.openingHours.map((item) => item.day),
-      opens: business.openingHours[0].opens,
-    },
-    // TODO: Add confirmed geo, closing times, price range and public URL.
-  };
-
   return (
     <html
       lang="en-AU"
@@ -108,7 +84,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(localBusinessJsonLd).replace(/</g, "\\u003c"),
+            __html: JSON.stringify(localBusinessJsonLd()).replace(/</g, "\\u003c"),
           }}
         />
       </body>

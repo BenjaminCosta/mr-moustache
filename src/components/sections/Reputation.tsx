@@ -41,19 +41,16 @@ export function Reputation() {
             className="gap-[0.8rem] px-[1.7rem] lg:gap-5 lg:px-0 lg:[&>span:first-child]:hidden"
             lineClassName="bg-foreground/85"
           >
-            <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              Reputation
-            </p>
+            <h2 id="reviews-title" className="text-[0.5rem] font-sans font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
+              Google reviews
+            </h2>
           </RuleLabel>
 
-          <h2
-            id="reviews-title"
-            className="mt-[0.95rem] whitespace-nowrap px-[1.85rem] text-[2.6rem] leading-[0.84] tracking-[-0.02em] text-white lg:mt-8 lg:px-0 lg:text-[3.6rem] lg:leading-[1.02] xl:text-[4.25rem]"
-          >
+          <p className="text-balance font-display font-bold mt-[0.95rem] whitespace-nowrap px-[1.85rem] text-[2.6rem] leading-[0.84] tracking-[-0.02em] text-white lg:mt-8 lg:px-0 lg:text-[3.6rem] lg:leading-[1.02] xl:text-[4.25rem]">
             Trusted on
             <br />
             the Gold Coast.
-          </h2>
+          </p>
           <p className="mt-[0.6rem] max-w-[21.9rem] px-[1.9rem] text-[0.9rem] leading-[1.15] text-foreground/85 lg:mt-6 lg:max-w-[30rem] lg:px-0 lg:text-[1.15rem] lg:leading-[1.45]">
             Broadbeach is our new home. The standard comes from the reputation
             Mr Moustache has already built in Surfers Paradise.
