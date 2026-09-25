@@ -1,18 +1,20 @@
 import { business } from "@/data/business";
+import { locations } from "@/data/locations";
 import { services } from "@/data/services";
 import { SITE_URL, isConfiguredUrl } from "@/lib/constants";
+import type { ShopLocation } from "@/types";
 
-const BUSINESS_ID = `${SITE_URL}/#barbershop`;
+const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 
 function parsePrice(price: string) {
   return price.replace(/[^\d.]/g, "");
 }
 
-function openingHoursSpecification() {
-  const hours = business.openingHours;
+function openingHoursSpecification(location: ShopLocation) {
+  const hours = location.openingHours;
 
   // Google treats a missing closing time as invalid, so wait for full hours.
-  if (hours.some((item) => !item.opens || !item.closes)) {
+  if (hours.length === 0 || hours.some((item) => !item.opens || !item.closes)) {
     return undefined;
   }
 
@@ -24,29 +26,36 @@ function openingHoursSpecification() {
   }));
 }
 
+const offerCatalog = {
+  "@type": "OfferCatalog",
+  name: "Barber services",
+  itemListElement: services.map((service) => ({
+    "@type": "Offer",
+    itemOffered: { "@type": "Service", name: service.name },
+    ...(service.price && {
+      price: parsePrice(service.price),
+      priceCurrency: "AUD",
+    }),
+  })),
+};
+
 /**
- * LocalBusiness JSON-LD for the Broadbeach shop. Schema.org has no barber
- * type, so HairSalon is the most specific one that applies. Ratings are left
- * out on purpose: Google ignores self-served LocalBusiness reviews.
+ * One HairSalon per shop. Schema.org has no barber type, so HairSalon is the
+ * most specific one that applies. Ratings are left out on purpose: Google
+ * ignores self-served LocalBusiness reviews.
  */
-export function localBusinessJsonLd() {
-  const { address, geo, links } = business;
+function shopJsonLd(location: ShopLocation) {
+  const { address, geo, links } = location;
   const bookingUrl = isConfiguredUrl(links.booking) ? links.booking : undefined;
-  const sameAs = [links.instagram, links.google].filter(
-    (url) => isConfiguredUrl(url) && !url.includes("/maps/search/"),
-  );
 
   return {
-    "@context": "https://schema.org",
     "@type": "HairSalon",
-    "@id": BUSINESS_ID,
-    name: business.name,
-    description:
-      "Barbershop in Broadbeach, Gold Coast offering classic cuts, skin fades, tapers and beard trims.",
-    url: `${SITE_URL}/`,
+    "@id": `${SITE_URL}/#${location.id}`,
+    name: location.fullName,
+    description: `Barbershop in ${address.suburb}, Gold Coast offering classic cuts, skin fades, tapers and beard trims.`,
+    url: `${SITE_URL}/#${location.id}`,
     image: `${SITE_URL}/opengraph-image.jpg`,
-    logo: `${SITE_URL}/images/branding/mr-moustache-logo.webp`,
-    telephone: business.phone.href.replace("tel:", ""),
+    telephone: location.phone.href.replace("tel:", ""),
     priceRange: business.priceRange,
     currenciesAccepted: "AUD",
     address: {
@@ -66,33 +75,39 @@ export function localBusinessJsonLd() {
     }),
     hasMap: links.maps,
     areaServed: [
-      { "@type": "Place", name: "Broadbeach" },
+      { "@type": "Place", name: address.suburb },
       { "@type": "Place", name: "Gold Coast" },
     ],
-    openingHoursSpecification: openingHoursSpecification(),
-    parentOrganization: {
-      "@type": "Organization",
-      name: "Mr Moustache Barbershop",
-    },
-    ...(sameAs.length > 0 && { sameAs }),
+    openingHoursSpecification: openingHoursSpecification(location),
+    parentOrganization: { "@id": ORGANIZATION_ID },
     ...(bookingUrl && {
       acceptsReservations: true,
-      potentialAction: {
-        "@type": "ReserveAction",
-        target: bookingUrl,
-      },
+      potentialAction: { "@type": "ReserveAction", target: bookingUrl },
     }),
-    hasOfferCatalog: {
-      "@type": "OfferCatalog",
-      name: "Barber services",
-      itemListElement: services.map((service) => ({
-        "@type": "Offer",
-        itemOffered: { "@type": "Service", name: service.name },
-        ...(service.price && {
-          price: parsePrice(service.price),
-          priceCurrency: "AUD",
-        }),
-      })),
-    },
+    hasOfferCatalog: offerCatalog,
+  };
+}
+
+export function siteJsonLd() {
+  const sameAs = [business.links.instagram, business.links.google].filter(
+    (url) => isConfiguredUrl(url) && !url.includes("/maps/"),
+  );
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": ORGANIZATION_ID,
+        name: business.name,
+        url: `${SITE_URL}/`,
+        logo: `${SITE_URL}/images/branding/mr-moustache-logo.webp`,
+        ...(sameAs.length > 0 && { sameAs }),
+        subOrganization: locations.map((location) => ({
+          "@id": `${SITE_URL}/#${location.id}`,
+        })),
+      },
+      ...locations.map(shopJsonLd),
+    ],
   };
 }

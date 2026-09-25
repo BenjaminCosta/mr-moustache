@@ -11,7 +11,8 @@ import {
 import { Logo } from "@/components/ui/Logo";
 import { Moustache } from "@/components/ui/Moustache";
 import { RuleLabel } from "@/components/ui/RuleLabel";
-import { addressLines, business } from "@/data/business";
+import { business } from "@/data/business";
+import { addressLines, locations } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import {
   ANALYTICS_EVENTS,
@@ -84,7 +85,7 @@ export function Footer() {
             {business.shortName}
           </p>
           <p className="mt-[0.55rem] text-[0.58rem] uppercase leading-none tracking-[0.38em] lg:mt-3 lg:text-[0.7rem]">
-            Broadbeach · Gold Coast
+            Surfers Paradise · Broadbeach
           </p>
           <p className="mt-[1.25rem] text-[0.55rem] uppercase leading-[1.95] tracking-[0.46em] text-foreground/90 lg:mt-6 lg:text-[0.64rem]">
             Two Gold Coast locations.
@@ -115,30 +116,41 @@ export function Footer() {
           </ul>
 
           <div className="mx-auto mt-[1.3rem] w-[18.8rem] border-t border-white/40 lg:mt-8 lg:w-full">
+            {locations.map((location, index) => {
+              const [street, suburb] = addressLines(location);
+              return (
+                <a
+                  key={location.id}
+                  href={location.links.directions}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Mr Moustache ${location.name}, ${street}, ${suburb}: get directions (opens in a new tab)`}
+                  className={`group grid grid-cols-[2.25rem_1fr_auto] items-center pb-[0.55rem] pl-[3.55rem] pr-[0.9rem] transition-colors lg:grid-cols-[2.75rem_1fr_auto] lg:pb-3 lg:pl-6 lg:pr-4 duration-200 hover:text-primary focus-visible:text-primary ${
+                    index === 0 ? "pt-[1.4rem] lg:pt-7" : "pt-[0.55rem] lg:pt-3"
+                  }`}
+                  {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick)}
+                >
+                  <PinIcon className="h-[1.2rem] w-[0.95rem] text-white transition-transform duration-300 ease-out group-hover:-translate-y-[0.15rem]" />
+                  <span className="text-[0.74rem] leading-[1.3] tracking-[0.02em] lg:text-[0.95rem]">
+                    <span className="block text-[0.5rem] font-medium uppercase tracking-[0.3em] text-foreground/60 lg:text-[0.62rem]">
+                      {location.name}
+                    </span>
+                    {street}
+                    <br />
+                    {suburb}
+                  </span>
+                  <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
+                </a>
+              );
+            })}
             <a
-              href={business.links.maps}
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label={`${addressLines.join(", ")}, get directions (opens in a new tab)`}
-              className="group grid grid-cols-[2.25rem_1fr_auto] items-center pb-[0.55rem] pl-[3.55rem] pr-[0.9rem] pt-[1.4rem] transition-colors lg:grid-cols-[2.75rem_1fr_auto] lg:pb-3 lg:pl-6 lg:pr-4 lg:pt-7 duration-200 hover:text-primary focus-visible:text-primary"
-              {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick)}
-            >
-              <PinIcon className="h-[1.2rem] w-[0.95rem] text-white transition-transform duration-300 ease-out group-hover:-translate-y-[0.15rem]" />
-              <span className="text-[0.74rem] leading-[1.3] tracking-[0.02em] lg:text-[0.95rem]">
-                {addressLines[0]}
-                <br />
-                {addressLines[1]}
-              </span>
-              <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
-            </a>
-            <a
-              href={business.phone.href}
+              href={locations[0].phone.href}
               className="group grid grid-cols-[2.25rem_1fr_auto] items-center pb-[1.3rem] pl-[3.55rem] pr-[0.9rem] pt-[0.55rem] transition-colors lg:grid-cols-[2.75rem_1fr_auto] lg:pb-7 lg:pl-6 lg:pr-4 lg:pt-3 duration-200 hover:text-primary focus-visible:text-primary"
               {...analyticsAttributes(ANALYTICS_EVENTS.phoneClick)}
             >
               <PhoneIcon className="size-[1.1rem] origin-bottom-left text-white transition-transform duration-300 ease-out group-hover:-rotate-12" />
               <span className="text-[0.74rem] leading-[1.3] tracking-[0.03em] lg:text-[0.95rem]">
-                {business.phone.display}
+                {locations[0].phone.display}
               </span>
               <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
             </a>

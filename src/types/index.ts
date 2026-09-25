@@ -4,39 +4,50 @@ export type OpeningHours = {
   closes: string | null;
 };
 
+export type Address = {
+  street: string;
+  suburb: string;
+  state: string;
+  postcode: string;
+  country: string;
+  countryCode: string;
+};
+
+/** Brand-level details shared by both barbershops. */
 export type BusinessInfo = {
   name: string;
   shortName: string;
-  locationName: string;
-  address: {
-    street: string;
-    suburb: string;
-    state: string;
-    postcode: string;
-    country: string;
-    countryCode: string;
-  };
-  phone: {
-    display: string;
-    href: string;
-  };
-  hours: {
-    summary: string;
-    detail: string;
-  };
-  openingHours: OpeningHours[];
-  geo: { latitude: number; longitude: number } | null;
   priceRange: string;
-  rating: {
-    score: string;
-    source: string;
-  };
   links: {
     booking: string;
-    maps: string;
     instagram: string;
     google: string;
   };
+};
+
+export type LocationId = "surfers-paradise" | "broadbeach";
+
+/** One Mr Moustache barbershop. */
+export type ShopLocation = {
+  id: LocationId;
+  name: string;
+  fullName: string;
+  address: Address;
+  phone: { display: string; href: string };
+  /**
+   * Opening hours as shown on the page, or null while they are unconfirmed
+   * (the UI then shows a clearly marked "to be confirmed" line).
+   */
+  hours: { summary: string; detail: string } | null;
+  /** Structured hours; only published in JSON-LD once every day has a close. */
+  openingHours: OpeningHours[];
+  geo: { latitude: number; longitude: number } | null;
+  links: {
+    booking: string;
+    maps: string;
+    directions: string;
+  };
+  image: { src: string; alt: string; position: string };
 };
 
 export type Service = {

@@ -61,7 +61,7 @@ export function Services() {
             Tailored.
           </p>
           <p className="mt-[0.5rem] text-center text-[0.857rem] leading-tight text-foreground/80 lg:mt-6 lg:text-left lg:text-[1.1rem] lg:leading-normal">
-            Book your next cut at Mr Moustache Broadbeach.
+            Book your next cut at Mr Moustache.
           </p>
 
           <a
@@ -87,7 +87,7 @@ export function Services() {
               Mr Moustache
             </p>
             <p className="mt-[0.4rem] text-[0.34rem] uppercase leading-none tracking-[0.45em] lg:mt-2 lg:text-[0.5rem]">
-              Broadbeach
+              Gold Coast
             </p>
           </div>
         </div>

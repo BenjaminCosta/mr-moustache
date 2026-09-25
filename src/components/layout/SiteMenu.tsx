@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
@@ -7,7 +8,6 @@ import { Moustache } from "@/components/ui/Moustache";
 import { business } from "@/data/business";
 import { navigation } from "@/data/navigation";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
-
 
 export function SiteMenu() {
   const [open, setOpen] = useState(false);
@@ -60,13 +60,13 @@ export function SiteMenu() {
         <ul className="flex flex-col gap-6">
           {navigation.map((item) => (
             <li key={item.href}>
-              <a
+              <Link
                 href={item.href}
                 className="font-display text-[2rem] font-bold leading-none transition-colors duration-200 hover:text-primary focus-visible:text-primary"
                 onClick={() => setOpen(false)}
               >
                 {item.label}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

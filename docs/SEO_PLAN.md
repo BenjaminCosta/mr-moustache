@@ -1,5 +1,12 @@
 # Plan SEO — Mr Moustache Barbershop Broadbeach
 
+> **Actualización (septiembre 2026):** el cliente pasó la web de landing solo
+> de Broadbeach a landing de la marca con sus dos barberías. Title, meta
+> description y JSON-LD ahora cubren Mr Moustache Barbershop, con un
+> `HairSalon` para Surfers Paradise y otro para Broadbeach
+> (`src/lib/structured-data.ts`). Las notas específicas de Broadbeach que
+> siguen quedan como historial.
+
 Objetivo: que Google entienda sin dudas que esta landing es **la web oficial de
 una barbería física en Broadbeach**, qué servicios ofrece y que es el mismo
 negocio que el Google Business Profile (GBP) de Broadbeach.

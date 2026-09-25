@@ -32,23 +32,56 @@ export const SITE_URL = resolveSiteUrl(
 export const IS_INDEXABLE =
   !process.env.VERCEL_ENV || process.env.VERCEL_ENV === "production";
 
-// Mr Moustache's Square Online booking site. A Broadbeach-only deep link can
-// override it through the environment.
+// Mr Moustache's Square Online booking site, covering both barbershops.
 export const SQUARE_BOOKING_URL =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL?.trim() ||
   "https://mr-moustache-barbershop.square.site/";
 
-// Searching by name and address opens the Broadbeach listing, not a bare pin.
-export const GOOGLE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+// TODO: Replace with each shop's own Square Appointments deep link. Until then
+// both fall back to the shared Square site above.
+export const SQUARE_BOOKING_URL_SURFERS_PARADISE =
+  process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL_SURFERS_PARADISE?.trim() ||
+  SQUARE_BOOKING_URL;
+
+export const SQUARE_BOOKING_URL_BROADBEACH =
+  process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL_BROADBEACH?.trim() ||
+  SQUARE_BOOKING_URL;
+
+function mapsSearchUrl(query: string, placeId?: string) {
+  const params = new URLSearchParams({ api: "1", query });
+  if (placeId) params.set("query_place_id", placeId);
+  return `https://www.google.com/maps/search/?${params}`;
+}
+
+function mapsDirectionsUrl(destination: string) {
+  const params = new URLSearchParams({ api: "1", destination });
+  return `https://www.google.com/maps/dir/?${params}`;
+}
+
+// Searching by name and address opens each shop's listing, not a bare pin.
+export const GOOGLE_MAPS_URL_SURFERS_PARADISE = mapsSearchUrl(
+  "Mr. Moustache Barbershop Surfers Paradise",
+  "ChIJMUVO7fEFkWsRsYBHrfV0y7Y",
+);
+
+export const GOOGLE_MAPS_URL_BROADBEACH = mapsSearchUrl(
   "Mr Moustache Barbershop Broadbeach, Unit 5/2623 Gold Coast Hwy, Broadbeach QLD 4218",
-)}`;
+);
+
+export const DIRECTIONS_URL_SURFERS_PARADISE = mapsDirectionsUrl(
+  "Mr. Moustache Barbershop, 3 Orchid Ave, Surfers Paradise QLD 4217, Australia",
+);
+
+export const DIRECTIONS_URL_BROADBEACH = mapsDirectionsUrl(
+  "Mr. Moustache Barbershop, Unit 5/2623 Gold Coast Hwy, Broadbeach QLD 4218, Australia",
+);
 
 // TODO: Replace with the Google Business Profile (reviews) URL once confirmed.
 export const GOOGLE_PROFILE_URL =
-  process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL?.trim() || GOOGLE_MAPS_URL;
+  process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL?.trim() ||
+  GOOGLE_MAPS_URL_SURFERS_PARADISE;
 
 // Handle taken from the downloaded clips in mr-moustache-material/.
-// TODO: Confirm it is the account that should represent Broadbeach.
 export const INSTAGRAM_URL =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL?.trim() ||
   "https://www.instagram.com/mr.moustache.barbers/";

@@ -3,7 +3,7 @@ import { Cherry_Swash, Instrument_Sans, Roboto } from "next/font/google";
 import localFont from "next/font/local";
 import { business } from "@/data/business";
 import { IS_INDEXABLE, SITE_URL } from "@/lib/constants";
-import { localBusinessJsonLd } from "@/lib/structured-data";
+import { siteJsonLd } from "@/lib/structured-data";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -40,13 +40,13 @@ const roboto = Roboto({
 });
 
 const description =
-  `${business.name}. Classic cuts, skin fades, tapers and beard trims at ${business.address.street}. View prices and book online.`;
+  `${business.name} on the Gold Coast, with barbershops in Surfers Paradise and Broadbeach. Classic cuts, skin fades, tapers and beard trims. View prices and book online.`;
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Barber Broadbeach | Mr Moustache Barbershop",
-    template: "%s | Mr Moustache Broadbeach",
+    default: "Mr Moustache Barbershop | Surfers Paradise & Broadbeach Barbers",
+    template: "%s | Mr Moustache Barbershop",
   },
   description,
   alternates: {
@@ -60,12 +60,12 @@ export const metadata: Metadata = {
     locale: "en_AU",
     url: "/",
     siteName: business.name,
-    title: "Mr Moustache Barbershop Broadbeach",
+    title: "Mr Moustache Barbershop | Surfers Paradise & Broadbeach",
     description,
   },
   twitter: {
     card: "summary_large_image",
-    title: "Mr Moustache Barbershop Broadbeach",
+    title: "Mr Moustache Barbershop | Surfers Paradise & Broadbeach",
     description,
   },
   // Favicon, app icons and share images come from the file conventions in
@@ -84,7 +84,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
-            __html: JSON.stringify(localBusinessJsonLd()).replace(/</g, "\\u003c"),
+            __html: JSON.stringify(siteJsonLd()).replace(/</g, "\\u003c"),
           }}
         />
       </body>

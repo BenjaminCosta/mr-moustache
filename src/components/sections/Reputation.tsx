@@ -52,8 +52,8 @@ export function Reputation() {
             the Gold Coast.
           </p>
           <p className="mt-[0.6rem] max-w-[21.9rem] px-[1.9rem] text-[0.9rem] leading-[1.15] text-foreground/85 lg:mt-6 lg:max-w-[30rem] lg:px-0 lg:text-[1.15rem] lg:leading-[1.45]">
-            Broadbeach is our new home. The standard comes from the reputation
-            Mr Moustache has already built in Surfers Paradise.
+            From Surfers Paradise to Broadbeach, both shops carry the
+            reputation Mr Moustache has built on the Gold Coast.
           </p>
         </div>
 
@@ -129,7 +129,7 @@ export function Reputation() {
           Mr Moustache
         </p>
         <p className="mt-[0.4rem] text-[0.34rem] uppercase leading-none tracking-[0.45em] text-foreground/55 lg:mt-2 lg:text-[0.5rem]">
-          Broadbeach
+          Gold Coast
         </p>
       </div>
     </section>
