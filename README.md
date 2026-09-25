@@ -1,7 +1,8 @@
 # Mr Moustache Barbershop
 
 Brand landing for Mr Moustache Barbershop and its two Gold Coast shops,
-Surfers Paradise and Broadbeach, plus a `/work-with-us` careers page.
+Surfers Paradise and Broadbeach, with a careers section at the end of the
+landing page.
 
 ## Local development
 
@@ -32,7 +33,7 @@ the shared Square site.
 
 ## Work With Us form
 
-`/work-with-us` posts to a Server Action (`src/app/work-with-us/actions.ts`)
+The `#work-with-us` section posts to a Server Action (`src/app/work-with-us/actions.ts`)
 that validates the fields and emails the application through
 [Resend](https://resend.com) (plain `fetch`, no extra dependency). To turn it on,
 set in Vercel:
@@ -72,7 +73,8 @@ keeps its proportions).
 4. Reviews / Reputation (`src/components/sections/Reputation.tsx`)
 5. Find Us, both shops with hours and directions; anchors `#surfers-paradise`
    and `#broadbeach` (`src/components/sections/Location.tsx`)
-6. Footer (`src/components/layout/Footer.tsx`)
+6. Work With Us (`src/components/sections/WorkWithUs.tsx`)
+7. Footer (`src/components/layout/Footer.tsx`)
 
 ### Google reviews
 
