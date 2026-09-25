@@ -1,9 +1,11 @@
 import Image from "next/image";
 import { SiteHeader } from "@/components/layout/SiteHeader";
-import { ArrowRightIcon, ChevronRightIcon, StarIcon } from "@/components/ui/Icons";
+import { ArrowRightIcon, StarIcon } from "@/components/ui/Icons";
+import { Moustache } from "@/components/ui/Moustache";
+import { Palm } from "@/components/ui/Palm";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { business } from "@/data/business";
-import { addressLines, locations } from "@/data/locations";
+import { locations } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import { googleRatings } from "@/data/reviews";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
@@ -23,7 +25,7 @@ const ratingSummary = locations
 
 export function Hero() {
   return (
-    <section id="top" className="relative isolate overflow-hidden bg-background pb-[1.9rem] lg:pb-24">
+    <section id="top" className="relative isolate overflow-hidden bg-background">
       <div className="relative isolate flex min-h-[38rem] flex-col lg:min-h-[max(40rem,calc(100svh-12rem))]">
         <div aria-hidden="true" className="absolute inset-0 -z-10">
           {backgrounds.hero ? (
@@ -94,69 +96,67 @@ export function Hero() {
         </div>
       </div>
 
-      {/* Location selector: stacked cards on phones, a split pair from 64rem. */}
-      <div className="shell mt-[1.25rem] px-[1.1rem] lg:mt-6 lg:px-10">
+      <div className="bg-background">
+        <div className="shell grid grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] items-center px-[1.625rem] py-[1.1rem] lg:min-h-[5.5rem] lg:px-10 lg:py-0">
+          <div className="grid min-w-0 grid-cols-[1.85rem_1fr] items-center gap-x-[0.8rem] pr-5 lg:grid-cols-[3.4rem_1fr] lg:gap-x-6 lg:pr-16">
+            <Palm width={27} className="text-primary lg:w-10" />
+            <div>
+              <p className="text-[0.38rem] font-medium uppercase leading-none tracking-[0.2em] text-foreground/70 lg:text-[0.68rem] lg:tracking-[0.34em]">
+                Our second location
+              </p>
+              <p className="mt-[0.3rem] font-sans text-[0.68rem] font-semibold uppercase leading-none tracking-[0.13em] text-foreground lg:mt-2 lg:text-[1.2rem] lg:tracking-[0.24em]">
+                Broadbeach
+              </p>
+              <p className="mt-[0.26rem] text-[0.35rem] font-medium uppercase leading-none tracking-[0.18em] text-foreground/70 lg:mt-2 lg:text-[0.62rem] lg:tracking-[0.32em]">
+                After Surfers Paradise
+              </p>
+            </div>
+          </div>
+
+          <div className="grid min-w-0 grid-cols-[1.85rem_1fr] items-center gap-x-[0.8rem] border-l border-white/45 pl-5 lg:grid-cols-[3.4rem_1fr] lg:gap-x-6 lg:pl-16">
+            <Moustache width={34} className="text-foreground lg:w-14" />
+            <p className="text-[0.4rem] font-medium uppercase leading-[1.45] tracking-[0.18em] text-foreground lg:text-[0.7rem] lg:leading-[1.45] lg:tracking-[0.34em]">
+              Same standards.
+              <br />
+              A fresh spot.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div className="shell mt-[1.25rem] px-[1.625rem] lg:mt-10 lg:px-10">
         <RuleLabel className="gap-[0.8rem] px-[0.4rem] lg:gap-6 lg:px-0" lineClassName="bg-foreground/85">
           <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-            Choose your barbershop
+            Our locations
           </p>
         </RuleLabel>
 
-        <ul className="mt-[0.9rem] grid gap-[0.5rem] lg:mt-10 lg:grid-cols-2 lg:gap-6">
+        <ul className="mt-[1rem] border-b border-white/25 lg:mt-10">
           {locations.map((location) => (
             <li
               key={location.id}
-              className="relative isolate flex h-[13.5rem] flex-col justify-end overflow-hidden rounded-[0.5rem] border border-white/20 bg-[#101010] lg:h-[26rem] lg:rounded-[0.75rem]"
+              className="border-white/25 [&:not(:first-child)]:border-t"
             >
-              <Image
-                src={location.image.src}
-                alt={location.image.alt}
-                fill
-                sizes="(min-width: 1024px) 50vw, 100vw"
-                className="-z-10 object-cover"
-                style={{ objectPosition: location.image.position }}
-              />
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 -z-10 bg-[linear-gradient(0deg,rgba(0,0,0,0.92)_0%,rgba(0,0,0,0.7)_42%,rgba(0,0,0,0.3)_100%)]"
-              />
-
-              <div className="px-[1.05rem] pb-[1.05rem] lg:px-7 lg:pb-7 xl:px-9 xl:pb-9">
-                <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-primary lg:text-[0.72rem]">
-                  {locationTags[location.id]}
-                </p>
-                <h2 className="mt-[0.55rem] font-display text-[1.9rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-4 lg:whitespace-nowrap lg:text-[2.5rem] xl:text-[3.25rem]">
-                  {location.name}
-                </h2>
-                <p className="mt-[0.5rem] text-[0.6rem] uppercase leading-snug tracking-[0.2em] text-foreground/85 lg:mt-4 lg:text-[0.8rem] lg:tracking-[0.24em]">
-                  {addressLines(location).join(" · ")}
-                </p>
-
-                <div className="mt-[0.85rem] flex items-center justify-between gap-[0.75rem] lg:mt-8">
-                  <a
-                    href={location.links.booking}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Book now at ${location.name} through Square (opens in a new tab)`}
-                    className="btn-sweep btn-sweep--invert-primary group flex h-[2.35rem] items-center gap-[0.85rem] whitespace-nowrap rounded-full border-[1.5px] border-primary bg-primary px-[1.35rem] text-[0.66rem] font-medium uppercase tracking-[0.2em] text-white lg:h-14 lg:gap-4 lg:px-7 lg:text-[0.78rem] lg:tracking-[0.22em] xl:gap-5 xl:px-9 xl:text-[0.85rem] xl:tracking-[0.24em]"
-                    {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick)}
-                  >
-                    Book Now
-                    <ArrowRightIcon className="size-[0.9rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
-                  </a>
-                  <a
-                    href={`#${location.id}`}
-                    className="group flex items-center gap-[0.45rem] whitespace-nowrap text-[0.6rem] font-medium uppercase tracking-[0.2em] text-foreground transition-colors duration-200 hover:text-primary focus-visible:text-primary lg:gap-3 lg:text-[0.7rem] xl:text-[0.78rem]"
-                  >
-                    Hours &amp; directions
-                    <ChevronRightIcon className="h-[0.7rem] w-[0.4rem] transition-transform duration-300 ease-out group-hover:translate-x-[0.2rem] group-focus-visible:translate-x-[0.2rem] lg:h-4 lg:w-2.5" />
-                  </a>
-                </div>
-              </div>
+              <a
+                href={`#${location.id}`}
+                aria-label={`View Mr Moustache ${location.name} hours and directions`}
+                className="group flex items-center justify-between gap-5 py-[1.2rem] text-left text-foreground lg:py-9"
+              >
+                <span>
+                  <span className="block text-[0.47rem] font-medium uppercase leading-none tracking-[0.3em] text-primary lg:text-[0.74rem] lg:tracking-[0.4em]">
+                    {locationTags[location.id]}
+                  </span>
+                  <span className="mt-[0.58rem] block font-display text-[2rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-4 lg:text-[3.5rem] xl:text-[4rem]">
+                    {location.name}
+                  </span>
+                </span>
+                <ArrowRightIcon className="size-[1.7rem] shrink-0 text-foreground transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-10" />
+              </a>
             </li>
           ))}
         </ul>
       </div>
+
     </section>
   );
 }
