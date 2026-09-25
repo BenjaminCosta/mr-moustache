@@ -23,7 +23,7 @@ export function Services() {
     <section
       id="services"
       aria-labelledby="services-title"
-      className="relative isolate overflow-clip bg-background pb-[1.9rem] pt-[4.6rem] lg:py-32"
+      className="relative isolate overflow-clip bg-background pb-[2.65rem] pt-[5rem] lg:py-32"
     >
       <div aria-hidden="true" className="absolute inset-0 -z-10">
         {backgrounds.services ? (

@@ -8,7 +8,7 @@ export function Location() {
     <section
       id="location"
       aria-labelledby="location-title"
-      className="relative isolate overflow-hidden bg-cold-white pb-[1.5rem] pt-[3.3rem] text-ink lg:pb-14 lg:pt-32"
+      className="relative isolate overflow-hidden bg-cold-white pb-[2.25rem] pt-[4rem] text-ink lg:pb-14 lg:pt-32"
     >
       {backgrounds.location ? (
         <Image

@@ -10,7 +10,7 @@ export function OurWork() {
     <section
       id="work"
       aria-labelledby="work-title"
-      className="bg-background px-[1.25rem] pb-[3.75rem] pt-[2.55rem] lg:px-0 lg:py-32"
+      className="bg-background px-[1.25rem] pb-[4.5rem] pt-[3.25rem] lg:px-0 lg:py-32"
     >
       <div className="shell flex flex-col lg:grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-center lg:gap-x-20 lg:px-10">
         {/* Mobile: heading, video, button. Desktop: heading + button beside the video. */}

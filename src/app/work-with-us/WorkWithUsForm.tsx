@@ -54,7 +54,7 @@ function SelectChevron() {
   return (
     <ChevronRightIcon
       aria-hidden="true"
-      className="pointer-events-none absolute right-[0.95rem] top-1/2 mt-[0.28rem] h-[0.7rem] w-[0.4rem] rotate-90 text-foreground/70 lg:right-5 lg:mt-1.5"
+      className="pointer-events-none absolute right-[1rem] top-1/2 h-[0.8rem] w-[0.45rem] -translate-y-1/2 rotate-90 text-foreground/65 transition-[transform,color] duration-200 ease-out will-change-transform group-hover:scale-110 group-hover:text-foreground group-focus-within:rotate-[270deg] group-focus-within:text-primary motion-reduce:transition-none lg:right-5"
     />
   );
 }
@@ -100,7 +100,7 @@ export function WorkWithUsForm() {
         </Field>
         <Field name="experience" label="Experience" error={errors.experience}>
           {(props) => (
-            <span className="relative block">
+            <span className="group relative block">
               <select {...props} required defaultValue={values.experience} className={`${controlClasses} h-[2.9rem] appearance-none pr-10 lg:h-14`}>
                 <option value="" disabled>
                   Select
@@ -119,7 +119,7 @@ export function WorkWithUsForm() {
 
       <Field name="location" label="Preferred location" error={errors.location}>
         {(props) => (
-          <span className="relative block">
+          <span className="group relative block">
             <select {...props} required defaultValue={values.location} className={`${controlClasses} h-[2.9rem] appearance-none pr-10 lg:h-14`}>
               <option value="" disabled>
                 Select

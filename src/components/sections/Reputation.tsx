@@ -13,7 +13,7 @@ export function Reputation() {
     <section
       id="reviews"
       aria-labelledby="reviews-title"
-      className="relative isolate overflow-hidden bg-background pb-[1.6rem] pt-[3.4rem] lg:py-32"
+      className="relative isolate overflow-hidden bg-background pb-[2.35rem] pt-[4.1rem] lg:py-32"
     >
       <div aria-hidden="true" className="absolute inset-0 -z-10">
         {backgrounds.reputation ? (
