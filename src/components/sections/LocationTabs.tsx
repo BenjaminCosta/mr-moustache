@@ -80,7 +80,7 @@ export function LocationTabs() {
       <div
         role="tablist"
         aria-label="Choose a barbershop"
-        className="flex gap-[1.8rem] border-b border-ink/20 lg:gap-12"
+        className="flex gap-[1.8rem] lg:gap-12"
       >
         {locations.map((location) => {
           const selected = location.id === active;
@@ -98,7 +98,7 @@ export function LocationTabs() {
               tabIndex={selected ? 0 : -1}
               onClick={() => select(location.id)}
               onKeyDown={onKeyDown}
-              className={`-mb-px scroll-mt-6 whitespace-nowrap border-b-[2.5px] px-[0.1rem] pb-[0.7rem] text-[0.9rem] leading-none transition-colors duration-200 lg:pb-5 lg:text-[1.2rem] ${
+              className={`scroll-mt-6 whitespace-nowrap border-b-[2.5px] px-[0.1rem] pb-[0.7rem] text-[0.9rem] leading-none transition-colors duration-200 lg:pb-5 lg:text-[1.2rem] ${
                 selected
                   ? "border-primary font-semibold text-ink"
                   : "border-transparent font-medium text-ink/55 hover:text-ink focus-visible:text-ink"

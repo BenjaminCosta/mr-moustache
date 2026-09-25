@@ -27,7 +27,20 @@ export function WorkWithUs() {
         <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.62)_40%,rgba(0,0,0,1)_100%)]" />
       </div>
 
-      <div className="shell px-[1.35rem] lg:grid lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:items-start lg:gap-x-14 lg:px-10 xl:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] xl:gap-x-24">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-[4.75rem] -top-[3.75rem] z-0 size-[13.5rem] opacity-[0.12] lg:-right-8 lg:-top-12 lg:size-[21rem]"
+      >
+        <Image
+          src="/images/branding/mr-moustache-logo.webp"
+          alt=""
+          fill
+          sizes="(min-width: 1024px) 21rem, 13.5rem"
+          className="object-contain"
+        />
+      </div>
+
+      <div className="shell relative z-10 px-[1.35rem] lg:grid lg:grid-cols-[minmax(0,19rem)_minmax(0,1fr)] lg:items-start lg:gap-x-14 lg:px-10 xl:grid-cols-[minmax(0,25rem)_minmax(0,1fr)] xl:gap-x-24">
         <div>
           <RuleLabel
             className="gap-[0.8rem] px-[0.5rem] lg:gap-5 lg:px-0 lg:[&>span:first-child]:hidden"
