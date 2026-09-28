@@ -8,16 +8,6 @@ import {
   SQUARE_BOOKING_URL_SURFERS_PARADISE,
 } from "@/lib/constants";
 
-const days = [
-  "Monday",
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday",
-  "Sunday",
-];
-
 // Listed for Surfers Paradise first: it is the original shop.
 export const locations = [
   {
@@ -34,11 +24,18 @@ export const locations = [
     },
     // TODO: Confirm; this number is currently listed for both shops.
     phone: { display: "0421 574 445", href: "tel:+61421574445" },
-    // TODO: Add the confirmed Surfers Paradise opening hours. Filling
-    // openingHours for all 7 days (use { closed: true } for closed days)
-    // switches the Find Us tab to the collapsible weekly hours.
-    hours: null,
-    openingHours: [],
+    hours: null as ShopLocation["hours"],
+    // Read from Square Appointments availability (any staff), 28 Sep 2026.
+    // TODO: Confirm with the client they match the official shop hours.
+    openingHours: [
+      { day: "Monday", opens: null, closes: null, closed: true },
+      { day: "Tuesday", opens: "09:00", closes: "18:00" },
+      { day: "Wednesday", opens: "09:00", closes: "18:00" },
+      { day: "Thursday", opens: "09:00", closes: "18:00" },
+      { day: "Friday", opens: "09:00", closes: "18:30" },
+      { day: "Saturday", opens: "09:00", closes: "17:00" },
+      { day: "Sunday", opens: "10:00", closes: "15:00" },
+    ],
     geo: null,
     links: {
       booking: SQUARE_BOOKING_URL_SURFERS_PARADISE,
@@ -65,10 +62,18 @@ export const locations = [
       countryCode: "AU",
     },
     phone: { display: "0421 574 445", href: "tel:+61421574445" },
-    hours: { summary: "Open from 10:00 am", detail: "7 days a week" },
-    // TODO: Confirm closing times. Structured data only publishes opening
-    // hours once every day has a closing time.
-    openingHours: days.map((day) => ({ day, opens: "10:00", closes: null })),
+    hours: null as ShopLocation["hours"],
+    // Read from Square Appointments availability (any staff), 28 Sep 2026.
+    // TODO: Confirm with the client they match the official shop hours.
+    openingHours: [
+      { day: "Monday", opens: null, closes: null, closed: true },
+      { day: "Tuesday", opens: "10:00", closes: "18:30" },
+      { day: "Wednesday", opens: "10:00", closes: "18:30" },
+      { day: "Thursday", opens: "09:30", closes: "19:00" },
+      { day: "Friday", opens: "09:00", closes: "19:00" },
+      { day: "Saturday", opens: "09:00", closes: "16:00" },
+      { day: "Sunday", opens: null, closes: null, closed: true },
+    ],
     // TODO: Add the exact pin from the Google Business Profile (5+ decimals).
     geo: null,
     links: {
