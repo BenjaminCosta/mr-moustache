@@ -2,6 +2,7 @@ import { business } from "@/data/business";
 import { locations } from "@/data/locations";
 import { services } from "@/data/services";
 import { SITE_URL, isConfiguredUrl } from "@/lib/constants";
+import { hasFullWeek } from "@/lib/opening-hours";
 import type { ShopLocation } from "@/types";
 
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
@@ -14,11 +15,11 @@ function openingHoursSpecification(location: ShopLocation) {
   const hours = location.openingHours;
 
   // Google treats a missing closing time as invalid, so wait for full hours.
-  if (hours.length === 0 || hours.some((item) => !item.opens || !item.closes)) {
+  if (!hasFullWeek(hours)) {
     return undefined;
   }
 
-  return hours.map((item) => ({
+  return hours.filter((item) => !item.closed).map((item) => ({
     "@type": "OpeningHoursSpecification",
     dayOfWeek: `https://schema.org/${item.day}`,
     opens: item.opens,
@@ -52,12 +53,13 @@ function shopJsonLd(location: ShopLocation) {
     "@type": "HairSalon",
     "@id": `${SITE_URL}/#${location.id}`,
     name: location.fullName,
-    description: `Barbershop in ${address.suburb}, Gold Coast offering classic cuts, skin fades, tapers and beard trims.`,
+    description: `Barbershop in ${address.suburb}, Gold Coast with Spanish-speaking barbers, offering classic cuts, skin fades, taper fades and beard trims.`,
     url: `${SITE_URL}/#${location.id}`,
     image: `${SITE_URL}/opengraph-image.jpg`,
     telephone: location.phone.href.replace("tel:", ""),
     priceRange: business.priceRange,
     currenciesAccepted: "AUD",
+    knowsLanguage: ["en", "es"],
     address: {
       "@type": "PostalAddress",
       streetAddress: address.street,

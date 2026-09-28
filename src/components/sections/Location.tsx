@@ -11,16 +11,23 @@ export function Location() {
       className="relative isolate overflow-hidden bg-cold-white pb-[2.25rem] pt-[4rem] text-ink lg:pb-14 lg:pt-32"
     >
       {backgrounds.location ? (
-        <Image
-          src={backgrounds.location}
-          alt=""
-          fill
-          sizes="100vw"
-          className="-z-10 object-cover lg:object-contain lg:object-right-top"
-        />
+        // Fixed-height box (the section's closed height) so opening the hours
+        // dropdown grows the section without rescaling the palms.
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 -z-10 h-[56.6rem] [mask-image:linear-gradient(to_bottom,black_85%,transparent)] lg:h-[60rem]"
+        >
+          <Image
+            src={backgrounds.location}
+            alt=""
+            fill
+            sizes="100vw"
+            className="object-cover lg:object-contain lg:object-right-top"
+          />
+        </div>
       ) : null}
 
-      <div className="shell lg:grid lg:grid-cols-2 lg:items-center lg:gap-x-16 lg:px-10">
+      <div className="shell lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-16 lg:px-10">
         <div className="px-[1.8rem] lg:px-0">
           <h2 id="location-title" className="text-[0.66rem] font-sans font-semibold uppercase leading-none tracking-[0.5em] text-teal-dark lg:text-[0.78rem]">
             Find us
@@ -37,7 +44,7 @@ export function Location() {
           <LocationTabs />
         </div>
 
-        <figure className="relative isolate mx-[0.85rem] mt-[1.25rem] h-[18rem] overflow-hidden rounded-[0.8rem] bg-[linear-gradient(180deg,#9fc3d6_0%,#d9e6ea_34%,#2e8a98_58%,#136d7c_100%)] lg:mx-0 lg:mt-0 lg:h-[36rem] lg:rounded-[1rem]">
+        <figure className="relative isolate mx-[0.85rem] mt-[1.25rem] h-[18rem] overflow-hidden rounded-[0.8rem] bg-[linear-gradient(180deg,#9fc3d6_0%,#d9e6ea_34%,#2e8a98_58%,#136d7c_100%)] lg:mx-0 lg:mt-[3.25rem] lg:h-[36rem] lg:rounded-[1rem]">
           {backgrounds.locationFeature ? (
             <Image
               src={backgrounds.locationFeature}

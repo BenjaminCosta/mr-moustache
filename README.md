@@ -30,25 +30,24 @@ Open `http://localhost:3000`.
 Booking calls to action read from `src/lib/constants.ts`:
 `SQUARE_BOOKING_URL` for the general "Book Now" buttons and
 `SQUARE_BOOKING_URL_SURFERS_PARADISE` / `SQUARE_BOOKING_URL_BROADBEACH` for each
-shop's buttons. Until each shop has its own Square deep link, both fall back to
-the shared Square site.
+shop's buttons (the "Book Now" in each Find Us tab), which open that shop's own
+Square Appointments page.
 
 ## Work With Us form
 
-The `#work-with-us` section posts to a Server Action (`src/app/work-with-us/actions.ts`)
-that validates the fields and emails the application through
-[Resend](https://resend.com) (plain `fetch`, no extra dependency). To turn it on,
-set in Vercel:
+The careers form validates in the browser and emails each application through
+[FormSubmit](https://formsubmit.co)'s AJAX endpoint (`src/app/work-with-us/submit.ts`).
+No account, API key or server is needed.
 
-- `RESEND_API_KEY`: API key from a Resend account.
-- `WORK_WITH_US_TO_EMAIL`: the client's inbox (comma-separated for several).
-- `WORK_WITH_US_FROM_EMAIL` (optional): a sender on a domain verified in
-  Resend, e.g. `Mr Moustache <jobs@yourdomain.com>`. Without it Resend's test
-  sender `onboarding@resend.dev` is used, which only delivers to the Resend
-  account owner.
-
-Until those variables exist, the form validates as normal but tells the visitor
-that online applications aren't connected yet, so nothing is lost silently.
+- The inbox is `FORMSUBMIT_TARGET` in `src/lib/constants.ts`
+  (`mr.moustache.barbers@gmail.com` by default, overridable with
+  `NEXT_PUBLIC_FORMSUBMIT_TARGET`).
+- **Activation:** the first application sends FormSubmit's confirmation email
+  to that inbox. Applications are only delivered after the link in it is
+  clicked, so send one test application right after launch and activate it.
+- After activation FormSubmit shows a random alias for the inbox; setting it as
+  `NEXT_PUBLIC_FORMSUBMIT_TARGET` keeps the address out of the page source.
+- Reply-to is set to the applicant's email, so replying answers them directly.
 
 ## Approved design foundation
 

@@ -2,7 +2,7 @@
 
 import { useActionState, type ReactNode } from "react";
 import { ArrowRightIcon, ChevronRightIcon } from "@/components/ui/Icons";
-import { submitApplication } from "./actions";
+import { submitApplication } from "./submit";
 import {
   EXPERIENCE_OPTIONS,
   LOCATION_OPTIONS,

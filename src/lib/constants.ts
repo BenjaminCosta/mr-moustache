@@ -37,15 +37,30 @@ export const SQUARE_BOOKING_URL =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL?.trim() ||
   "https://mr-moustache-barbershop.square.site/";
 
-// TODO: Replace with each shop's own Square Appointments deep link. Until then
-// both fall back to the shared Square site above.
+// Square Appointments for Mr Moustache and each shop's Square location ID.
+const SQUARE_APPOINTMENTS_URL = "https://book.squareup.com/appointments/o0xkg1fz5zxow7";
+
+export const SQUARE_LOCATION_IDS = {
+  "surfers-paradise": "LA3KEKYDA4KV3",
+  broadbeach: "LS4XGMYEDQ5ER",
+} as const;
+
+/** Square page for one service at one shop: opens straight on "choose a barber". */
+export function squareServiceUrl(
+  location: keyof typeof SQUARE_LOCATION_IDS,
+  squareServiceId: string,
+) {
+  return `${SQUARE_APPOINTMENTS_URL}/location/${SQUARE_LOCATION_IDS[location]}/services/${squareServiceId}`;
+}
+
+// Each shop's Square Appointments page: opens straight on that shop's services.
 export const SQUARE_BOOKING_URL_SURFERS_PARADISE =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL_SURFERS_PARADISE?.trim() ||
-  SQUARE_BOOKING_URL;
+  `${SQUARE_APPOINTMENTS_URL}/location/${SQUARE_LOCATION_IDS["surfers-paradise"]}`;
 
 export const SQUARE_BOOKING_URL_BROADBEACH =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL_BROADBEACH?.trim() ||
-  SQUARE_BOOKING_URL;
+  `${SQUARE_APPOINTMENTS_URL}/location/${SQUARE_LOCATION_IDS.broadbeach}`;
 
 function mapsSearchUrl(query: string, placeId?: string) {
   const params = new URLSearchParams({ api: "1", query });
@@ -85,6 +100,16 @@ export const GOOGLE_PROFILE_URL =
 export const INSTAGRAM_URL =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL?.trim() ||
   "https://www.instagram.com/mr.moustache.barbers/";
+
+// Work With Us applications are emailed through FormSubmit. The target can be
+// the inbox address or, once activated, the random alias FormSubmit provides
+// (keeps the address out of the page source).
+// TODO: Confirm the inbox with the client.
+export const FORMSUBMIT_TARGET =
+  process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() ||
+  "mr.moustache.barbers@gmail.com";
+
+export const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORMSUBMIT_TARGET}`;
 
 /** False while a link still points at a launch placeholder. */
 export function isConfiguredUrl(url: string) {

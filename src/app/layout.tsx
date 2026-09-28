@@ -40,12 +40,12 @@ const roboto = Roboto({
 });
 
 const description =
-  `${business.name} on the Gold Coast, with barbershops in Surfers Paradise and Broadbeach. Classic cuts, skin fades, tapers and beard trims. View prices and book online.`;
+  "Gold Coast barbers in Surfers Paradise and Broadbeach. Skin fades, taper fades, classic cuts and beard trims by Spanish-speaking barbers. View prices and book online.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Mr Moustache Barbershop | Surfers Paradise & Broadbeach Barbers",
+    default: "Mr Moustache Barbershop | Gold Coast Barbers in Surfers Paradise & Broadbeach",
     template: "%s | Mr Moustache Barbershop",
   },
   description,

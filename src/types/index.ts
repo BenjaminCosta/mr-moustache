@@ -1,7 +1,10 @@
 export type OpeningHours = {
   day: string;
+  /** 24-hour "HH:MM", or null when unknown or closed. */
   opens: string | null;
   closes: string | null;
+  /** True when the shop is closed all day. */
+  closed?: boolean;
 };
 
 export type Address = {
@@ -55,7 +58,8 @@ export type Service = {
   name: string;
   description: string;
   price: string | null;
-  duration: string | null;
+  /** Square Appointments service ID; the same at both shops. */
+  squareId: string;
 };
 
 export type GoogleRating = {
