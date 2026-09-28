@@ -27,7 +27,7 @@ export function WorkWithUs() {
             <div className="absolute inset-y-0 left-0 hidden w-1/2 bg-gradient-to-r from-black to-transparent lg:block" />
           </div>
         ) : null}
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.62)_40%,rgba(0,0,0,1)_100%)]" />
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(0,0,0,0.6)_0%,rgba(0,0,0,0.7)_40%,rgba(0,0,0,1)_100%)] lg:bg-[linear-gradient(180deg,rgba(0,0,0,0.48)_0%,rgba(0,0,0,0.62)_40%,rgba(0,0,0,1)_100%)]" />
       </div>
 
       <div

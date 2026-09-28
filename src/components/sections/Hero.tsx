@@ -40,8 +40,9 @@ export function Hero() {
                 sizes="(min-width: 1024px) 58vw, 100vw"
                 className="object-cover object-[72%_center] lg:object-[60%_30%]"
               />
-              {/* The shop photo is bright and warm; tone it down so white copy stays crisp. */}
-              <div className="absolute inset-0 bg-black/25" />
+              {/* The shop photo is bright and warm; tone it down (a touch more on mobile,
+                  where the copy sits over the photo) so white text stays crisp. */}
+              <div className="absolute inset-0 bg-black/35 lg:bg-black/25" />
               <div className="absolute inset-y-0 left-0 hidden w-1/2 bg-gradient-to-r from-black via-black/60 to-transparent lg:block" />
             </div>
           ) : (
