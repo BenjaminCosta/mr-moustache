@@ -65,8 +65,8 @@ export function Hero() {
               Proper barbering.
             </p>
             <p className="mt-[0.55rem] text-[0.865rem] leading-[1.17] text-foreground/85 lg:mt-6 lg:max-w-[30rem] lg:text-[1.2rem] lg:leading-[1.45]">
-              Classic cuts, skin fades, tapers and beard trims — in Surfers
-              Paradise and Broadbeach.
+              Classic cuts, skin fades, taper fades and beard trims — in
+              Surfers Paradise and Broadbeach.
             </p>
 
             <a
@@ -91,6 +91,12 @@ export function Hero() {
             </p>
             <p className="mt-[0.35rem] text-[0.66rem] leading-tight tracking-[0.03em] text-foreground/80 lg:mt-3 lg:text-[0.9rem]">
               Two Gold Coast barbershops. One Mr Moustache.
+            </p>
+            <p className="mt-[0.35rem] text-[0.66rem] leading-tight tracking-[0.03em] text-foreground/80 lg:mt-2 lg:text-[0.9rem]">
+              Spanish-speaking barbers ·{" "}
+              <span lang="es" className="text-primary">
+                Hablamos español
+              </span>
             </p>
           </div>
         </div>

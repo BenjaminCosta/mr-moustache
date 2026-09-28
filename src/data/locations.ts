@@ -34,7 +34,9 @@ export const locations = [
     },
     // TODO: Confirm; this number is currently listed for both shops.
     phone: { display: "0421 574 445", href: "tel:+61421574445" },
-    // TODO: Add the confirmed Surfers Paradise opening hours.
+    // TODO: Add the confirmed Surfers Paradise opening hours. Filling
+    // openingHours for all 7 days (use { closed: true } for closed days)
+    // switches the Find Us tab to the collapsible weekly hours.
     hours: null,
     openingHours: [],
     geo: null,

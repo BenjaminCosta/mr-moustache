@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/Icons";
 import { addressLines, locations } from "@/data/locations";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import { hasFullWeek } from "@/lib/opening-hours";
 import type { LocationId } from "@/types";
+import { OpeningHoursDetails } from "./OpeningHoursDetails";
 
 const ids = locations.map((location) => location.id) as LocationId[];
 
@@ -136,7 +138,9 @@ export function LocationTabs() {
               </li>
               <li className="grid grid-cols-[2.95rem_1fr] items-start lg:grid-cols-[3.75rem_1fr]">
                 <ClockIcon className="-mt-[0.05rem] size-[1.55rem] lg:size-7" />
-                {location.hours ? (
+                {hasFullWeek(location.openingHours) ? (
+                  <OpeningHoursDetails hours={location.openingHours} />
+                ) : location.hours ? (
                   <p>
                     {location.hours.summary}
                     <span className="mt-[0.2rem] block text-ink-muted">

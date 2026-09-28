@@ -1,7 +1,10 @@
 export type OpeningHours = {
   day: string;
+  /** 24-hour "HH:MM", or null when unknown or closed. */
   opens: string | null;
   closes: string | null;
+  /** True when the shop is closed all day. */
+  closed?: boolean;
 };
 
 export type Address = {

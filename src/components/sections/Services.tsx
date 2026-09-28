@@ -111,10 +111,12 @@ export function Services() {
                   {service.price ? (
                     <>
                       <span className="text-[0.8rem] lg:text-[1.1rem] xl:text-[1.2rem]">{service.price}</span>
-                      <span className="text-[0.71rem] lg:text-[0.92rem] xl:text-[1rem]">
-                        <span className="px-[0.3rem] lg:px-2">·</span>
-                        {service.duration}
-                      </span>
+                      {service.duration ? (
+                        <span className="text-[0.71rem] lg:text-[0.92rem] xl:text-[1rem]">
+                          <span className="px-[0.3rem] lg:px-2">·</span>
+                          {service.duration}
+                        </span>
+                      ) : null}
                     </>
                   ) : (
                     <span className="pl-[0.15rem] text-[0.78rem] lg:pl-0 lg:text-[1.1rem]">
