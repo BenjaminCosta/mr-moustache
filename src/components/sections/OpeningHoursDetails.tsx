@@ -36,17 +36,28 @@ export function OpeningHoursDetails({ hours }: { hours: OpeningHours[] }) {
         />
       </summary>
 
-      <dl className="mt-[0.8rem] grid max-w-[17rem] grid-cols-[1fr_auto] gap-x-6 gap-y-[0.45rem] text-[0.84rem] lg:mt-5 lg:max-w-[22rem] lg:gap-y-3 lg:text-[1.05rem]">
+      {/* Solid panel so the hours stay readable over the palm backdrop. */}
+      <dl className="mt-[0.8rem] divide-y divide-ink/10 rounded-[0.5rem] border border-ink/10 bg-white px-[0.9rem] py-[0.2rem] text-[0.88rem] leading-[1.2] shadow-[0_1px_2px_rgba(17,19,20,0.06)] lg:mt-5 lg:max-w-[23rem] lg:px-5 lg:py-1 lg:text-[1.05rem]">
         {WEEK.map((day) => {
           const item = hours.find((entry) => entry.day === day);
           const isToday = now?.day === day;
+          const closed = !item || item.closed;
           return (
-            <div key={day} className={`contents ${isToday ? "font-semibold text-teal-dark" : ""}`}>
-              <dt>
+            <div
+              key={day}
+              className={`flex items-center justify-between gap-3 py-[0.55rem] lg:gap-6 lg:py-3 ${
+                isToday ? "text-teal-dark" : "text-ink"
+              }`}
+            >
+              <dt className={`flex items-center gap-[0.4rem] ${isToday ? "font-semibold" : ""}`}>
                 {day}
-                {isToday ? <span className="sr-only"> (today)</span> : null}
+                {isToday ? (
+                  <span className="rounded-full bg-teal-dark px-[0.35rem] py-[0.15rem] text-[0.5rem] font-semibold uppercase leading-none tracking-[0.12em] text-white lg:text-[0.62rem]">
+                    Today
+                  </span>
+                ) : null}
               </dt>
-              <dd className={`text-right ${isToday ? "" : "text-ink-muted"}`}>
+              <dd className={`whitespace-nowrap text-right tabular-nums ${closed && !isToday ? "text-ink/55" : ""}`}>
                 {item ? formatRange(item) : "Closed"}
               </dd>
             </div>

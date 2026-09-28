@@ -143,42 +143,21 @@ export function Hero() {
               key={location.id}
               className="border-white/25 [&:not(:first-child)]:border-t"
             >
-              <div className="py-[1.2rem] lg:py-9">
-                <a
-                  href={`#${location.id}`}
-                  aria-label={`View Mr Moustache ${location.name} hours and directions`}
-                  className="group flex items-center justify-between gap-5 text-left text-foreground"
-                >
-                  <span>
-                    <span className="block text-[0.47rem] font-medium uppercase leading-none tracking-[0.3em] text-primary lg:text-[0.74rem] lg:tracking-[0.4em]">
-                      {locationTags[location.id]}
-                    </span>
-                    <span className="mt-[0.58rem] block font-display text-[2rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-4 lg:text-[3.5rem] xl:text-[4rem]">
-                      {location.name}
-                    </span>
+              <a
+                href={`#${location.id}`}
+                aria-label={`View Mr Moustache ${location.name} hours and directions`}
+                className="group flex items-center justify-between gap-5 py-[1.2rem] text-left text-foreground lg:py-9"
+              >
+                <span>
+                  <span className="block text-[0.47rem] font-medium uppercase leading-none tracking-[0.3em] text-primary lg:text-[0.74rem] lg:tracking-[0.4em]">
+                    {locationTags[location.id]}
                   </span>
-                  <ArrowRightIcon className="size-[1.7rem] shrink-0 text-foreground transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-10" />
-                </a>
-                <div className="mt-[0.9rem] flex items-center gap-[1.1rem] lg:mt-6 lg:gap-8">
-                  <a
-                    href={location.links.booking}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label={`Book now at ${location.name} through Square (opens in a new tab)`}
-                    className="btn-sweep btn-sweep--invert-primary group flex h-[2.1rem] items-center gap-[0.8rem] whitespace-nowrap rounded-full border-[1.5px] border-primary bg-primary px-[1.2rem] text-[0.62rem] font-medium uppercase tracking-[0.2em] text-white lg:h-12 lg:gap-4 lg:px-8 lg:text-[0.78rem] lg:tracking-[0.24em]"
-                    {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick)}
-                  >
-                    Book Now
-                    <ArrowRightIcon className="size-[0.85rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-4" />
-                  </a>
-                  <a
-                    href={`#${location.id}`}
-                    className="whitespace-nowrap text-[0.55rem] font-medium uppercase tracking-[0.2em] text-foreground/75 transition-colors duration-200 hover:text-primary focus-visible:text-primary lg:text-[0.72rem] lg:tracking-[0.24em]"
-                  >
-                    Hours &amp; directions
-                  </a>
-                </div>
-              </div>
+                  <span className="mt-[0.58rem] block font-display text-[2rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-4 lg:text-[3.5rem] xl:text-[4rem]">
+                    {location.name}
+                  </span>
+                </span>
+                <ArrowRightIcon className="size-[1.7rem] shrink-0 text-foreground transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-10" />
+              </a>
             </li>
           ))}
         </ul>
