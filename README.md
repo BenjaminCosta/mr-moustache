@@ -28,8 +28,8 @@ Open `http://localhost:3000`.
 Booking calls to action read from `src/lib/constants.ts`:
 `SQUARE_BOOKING_URL` for the general "Book Now" buttons and
 `SQUARE_BOOKING_URL_SURFERS_PARADISE` / `SQUARE_BOOKING_URL_BROADBEACH` for each
-shop's buttons. Until each shop has its own Square deep link, both fall back to
-the shared Square site.
+shop's buttons (the "Book Now" in each Find Us tab), which open that shop's own
+Square Appointments page.
 
 ## Work With Us form
 

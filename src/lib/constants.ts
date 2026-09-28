@@ -37,15 +37,14 @@ export const SQUARE_BOOKING_URL =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL?.trim() ||
   "https://mr-moustache-barbershop.square.site/";
 
-// TODO: Replace with each shop's own Square Appointments deep link. Until then
-// both fall back to the shared Square site above.
+// Each shop's Square Appointments page: opens straight on that shop's services.
 export const SQUARE_BOOKING_URL_SURFERS_PARADISE =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL_SURFERS_PARADISE?.trim() ||
-  SQUARE_BOOKING_URL;
+  "https://book.squareup.com/appointments/o0xkg1fz5zxow7/location/LA3KEKYDA4KV3";
 
 export const SQUARE_BOOKING_URL_BROADBEACH =
   process.env.NEXT_PUBLIC_SQUARE_BOOKING_URL_BROADBEACH?.trim() ||
-  SQUARE_BOOKING_URL;
+  "https://book.squareup.com/appointments/o0xkg1fz5zxow7/location/LS4XGMYEDQ5ER";
 
 function mapsSearchUrl(query: string, placeId?: string) {
   const params = new URLSearchParams({ api: "1", query });
