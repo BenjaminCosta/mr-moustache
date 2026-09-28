@@ -38,13 +38,17 @@ export function Hero() {
                 preload
                 fetchPriority="high"
                 sizes="(min-width: 1024px) 58vw, 100vw"
-                className="object-cover object-[70%_center] lg:object-[center_35%]"
+                className="object-cover object-[72%_center] lg:object-[60%_30%]"
               />
-              <div className="absolute inset-y-0 left-0 hidden w-2/5 bg-gradient-to-r from-black to-transparent lg:block" />
+              {/* The shop photo is bright and warm; tone it down so white copy stays crisp. */}
+              <div className="absolute inset-0 bg-black/25" />
+              <div className="absolute inset-y-0 left-0 hidden w-1/2 bg-gradient-to-r from-black via-black/60 to-transparent lg:block" />
             </div>
           ) : (
             <div className="absolute inset-0 bg-[radial-gradient(120%_70%_at_80%_20%,#2a2a2a_0%,#111_45%,#000_80%)] lg:bg-[radial-gradient(70%_90%_at_75%_35%,#2a2a2a_0%,#111_45%,#000_85%)]" />
           )}
+          {/* Keeps the logo, menu and nav links legible over the light shop wall. */}
+          <div className="absolute inset-x-0 top-0 h-[9rem] bg-gradient-to-b from-black/70 to-transparent lg:h-[11rem] lg:from-black/75" />
           <div className="absolute inset-x-0 bottom-0 h-[70%] bg-gradient-to-b from-transparent via-black/75 to-black lg:h-1/2 lg:via-black/40" />
           <div className="absolute inset-y-0 left-0 hidden w-[65%] bg-gradient-to-r from-black/85 via-black/45 to-transparent lg:block" />
         </div>

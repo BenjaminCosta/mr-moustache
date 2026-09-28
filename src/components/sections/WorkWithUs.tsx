@@ -12,14 +12,17 @@ export function WorkWithUs() {
       className="relative isolate overflow-hidden bg-background pb-[4.1rem] pt-[4.1rem] lg:py-32"
     >
       <div aria-hidden="true" className="absolute inset-0 -z-10">
-        {backgrounds.reputation ? (
-          <div className="absolute inset-0 lg:left-auto lg:w-[55%]">
+        {backgrounds.workWithUs ? (
+          // Mobile: the landscape team photo is a band behind the heading that fades
+          // out before the form, so it is not stretched soft over the whole section.
+          // Desktop: it sits on the right behind the form and fades into the copy.
+          <div className="absolute inset-x-0 top-0 h-[27rem] [mask-image:linear-gradient(to_bottom,black_45%,transparent)] lg:inset-y-0 lg:left-auto lg:h-auto lg:w-[55%] lg:[mask-image:none]">
             <Image
-              src={backgrounds.reputation}
+              src={backgrounds.workWithUs}
               alt=""
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"
-              className="object-cover object-right-top"
+              className="object-cover object-[72%_center] lg:object-center"
             />
             <div className="absolute inset-y-0 left-0 hidden w-1/2 bg-gradient-to-r from-black to-transparent lg:block" />
           </div>
