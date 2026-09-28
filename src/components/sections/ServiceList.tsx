@@ -18,7 +18,7 @@ export function ServiceList() {
 
   return (
     <div className="mt-[1.3rem] lg:mt-0">
-      <div role="group" aria-label="Book at" className="flex items-end gap-[1.5rem] border-b border-white/35 lg:gap-10">
+      <div role="group" aria-label="Book at" className="flex items-end gap-[1.5rem] lg:gap-10">
         <span className="pb-[0.7rem] text-[0.5rem] font-medium uppercase leading-none tracking-[0.3em] text-foreground/60 lg:pb-5 lg:text-[0.68rem]">
           Book at
         </span>
@@ -30,7 +30,7 @@ export function ServiceList() {
               type="button"
               aria-pressed={selected}
               onClick={() => setLocation(item.id)}
-              className={`-mb-px whitespace-nowrap border-b-[2.5px] px-[0.1rem] pb-[0.7rem] text-[0.86rem] leading-none transition-colors duration-200 lg:pb-5 lg:text-[1.1rem] ${
+              className={`whitespace-nowrap border-b-[2.5px] px-[0.1rem] pb-[0.7rem] text-[0.86rem] leading-none transition-colors duration-200 lg:pb-5 lg:text-[1.1rem] ${
                 selected
                   ? "border-primary font-semibold text-white"
                   : "border-transparent font-medium text-foreground/55 hover:text-white focus-visible:text-white"
@@ -62,15 +62,7 @@ export function ServiceList() {
                 </span>
                 <span className="whitespace-nowrap text-foreground">
                   {service.price ? (
-                    <>
-                      <span className="text-[0.8rem] lg:text-[1.1rem] xl:text-[1.2rem]">{service.price}</span>
-                      {service.duration ? (
-                        <span className="text-[0.71rem] lg:text-[0.92rem] xl:text-[1rem]">
-                          <span className="px-[0.3rem] lg:px-2">·</span>
-                          {service.duration}
-                        </span>
-                      ) : null}
-                    </>
+                    <span className="text-[0.8rem] lg:text-[1.1rem] xl:text-[1.2rem]">{service.price}</span>
                   ) : (
                     <span className="pl-[0.15rem] text-[0.78rem] lg:pl-0 lg:text-[1.1rem]">
                       Price varies

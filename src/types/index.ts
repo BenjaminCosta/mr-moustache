@@ -58,7 +58,6 @@ export type Service = {
   name: string;
   description: string;
   price: string | null;
-  duration: string | null;
   /** Square Appointments service ID; the same at both shops. */
   squareId: string;
 };
