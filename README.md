@@ -24,6 +24,8 @@ Open `http://localhost:3000`.
    (every slot falls back to a dark gradient while it is `null`).
 4. Confirm the metadata in `src/app/layout.tsx` and the LocalBusiness JSON-LD in
    `src/lib/structured-data.ts`. The full SEO plan lives in `docs/SEO_PLAN.md`.
+5. Square booking automation (review requests and rebooking reminders) is
+   documented in `docs/AUTOMATION.md`.
 
 Booking calls to action read from `src/lib/constants.ts`:
 `SQUARE_BOOKING_URL` for the general "Book Now" buttons and

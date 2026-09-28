@@ -1,0 +1,134 @@
+# Automatización de reservas (Square → Firestore → Resend)
+
+Después de cada visita pagada por Square Appointments, la web:
+
+1. **Pide una reseña de Google**: `REVIEW_DELAY_HOURS` después de que termina
+   el turno (24 h por defecto).
+2. **Programa un recordatorio para volver a reservar**: `REBOOKING_DELAY_DAYS`
+   después de la visita (28 días por defecto). Se cancela solo si el cliente
+   reserva antes.
+
+Todo corre en Vercel (`syd1`), guarda estado en Firestore (`australia-southeast1`)
+y envía con Resend. Ningún envío sale mientras los flags
+`REVIEW_AUTOMATION_ENABLED` / `REBOOKING_AUTOMATION_ENABLED` estén en `false`.
+
+## Flujo
+
+```
+Square ──booking.created/updated──▶ /api/square/webhook ──▶ Firestore bookings/
+                                                              │
+Vercel Cron (20:00 AEST) ─▶ /api/cron/booking-automation ─────┤
+   1. refresca tokens de Square (duran 30 días; se renuevan cada ~7)
+   2. re-sincroniza reservas de -2 a +28 días (por si se perdió un webhook)
+   3. procesa visitas terminadas: vuelve a leer la reserva y el cliente en
+      Square, decide y programa los emails en Resend (scheduledAt)
+```
+
+- **Cancelación o no-show** (`booking.updated`): se cancelan en Resend los
+  emails todavía programados de esa reserva.
+- **Nueva reserva futura** del mismo cliente: se cancela su recordatorio de
+  rebooking pendiente.
+- **Baja**: cada email lleva un link firmado y el header `List-Unsubscribe`
+  (one-click). La baja cancela el recordatorio pendiente y bloquea futuros
+  envíos. También se respeta la preferencia `email_unsubscribed` de Square.
+
+### Reglas de envío (`src/lib/automation/schedule.ts`)
+
+| Regla | Efecto |
+|---|---|
+| Estado distinto de `ACCEPTED` (cancelada, no-show, rechazada) | no se envía nada |
+| Visita procesada más de 7 días después de terminar | se saltea (evita mandar backlog viejo) |
+| Local sin `SQUARE_LOCATION_ID_*` configurado | se saltea |
+| Cliente sin email o dado de baja | se saltea |
+| Reseña pedida en los últimos 180 días | no se vuelve a pedir |
+| El cliente ya tiene otra reserva futura | no hay recordatorio de rebooking |
+| Rebooking a más de 29 días | se saltea (Resend programa hasta 30 días) |
+
+Las visitas procesadas con los flags apagados quedan marcadas como `skipped`
+(`disabled`). Encender los flags después **no** manda emails retroactivos.
+
+## Rutas
+
+| Ruta | Protección | Uso |
+|---|---|---|
+| `GET /api/square/oauth/start?key=…` | `SQUARE_CONNECT_SECRET` (404 si no coincide) | conectar el comercio |
+| `GET /api/square/oauth/callback` | `state` en cookie `httpOnly` | guarda los tokens cifrados y lista los IDs de locales |
+| `POST /api/square/webhook` | HMAC-SHA256 de Square + dedupe por `event_id` | reservas en tiempo real |
+| `GET /api/square/webhook` | pública | health-check (`{ ok: true }`) |
+| `GET /api/cron/booking-automation` | `Authorization: Bearer $CRON_SECRET` | job diario |
+| `GET/POST /api/automation/unsubscribe` | firma HMAC | baja (GET muestra botón, POST ejecuta) |
+
+## Firestore
+
+| Colección | Contenido |
+|---|---|
+| `squareConnections/{merchantId}` | tokens OAuth cifrados con AES-256-GCM, vencimiento, locales |
+| `squareEvents/{eventId}` | marca de dedupe del webhook, se borra por TTL (`expireAt`, 30 días) |
+| `bookings/{bookingId}` | última versión de la reserva + estado de `review` y `rebooking` |
+| `customers/{merchantId}_{customerId}` | baja, última reseña pedida, recordatorio pendiente |
+
+Las reglas (`firestore.rules`) niegan todo acceso de cliente; solo el Admin SDK
+del servidor lee y escribe. Los índices compuestos y la política TTL están en
+`firestore.indexes.json`. Se crean desde la consola o con
+`firebase deploy --only firestore:indexes`.
+
+## Variables de entorno (Vercel → Production)
+
+| Variable | Valor |
+|---|---|
+| `SQUARE_ENVIRONMENT` | `production` |
+| `SQUARE_APPLICATION_ID` | `sq0idp-G6mu7_lz8zL09H36QAnmhA` |
+| `SQUARE_APPLICATION_SECRET` | Square Developer → OAuth → Production Application secret |
+| `SQUARE_OAUTH_REDIRECT_URL` | `https://mr-moustache.vercel.app/api/square/oauth/callback` |
+| `SQUARE_WEBHOOK_NOTIFICATION_URL` | `https://mr-moustache.vercel.app/api/square/webhook` (tiene que coincidir **exacto** con la del webhook en Square) |
+| `SQUARE_WEBHOOK_SIGNATURE_KEY` | la muestra Square al crear el webhook |
+| `SQUARE_TOKEN_ENCRYPTION_KEY` | `openssl rand -base64 32` |
+| `SQUARE_CONNECT_SECRET` | `openssl rand -base64 32` |
+| `CRON_SECRET` | `openssl rand -hex 32` |
+| `MARKETING_UNSUBSCRIBE_SECRET` | `openssl rand -base64 32` |
+| `FIREBASE_PROJECT_ID` | `mr-moustache-automation` |
+| `FIREBASE_CLIENT_EMAIL` | `mr-moustache-vercel@mr-moustache-automation.iam.gserviceaccount.com` |
+| `FIREBASE_PRIVATE_KEY` | campo `private_key` del JSON de la cuenta de servicio (con los `\n`) |
+| `SQUARE_LOCATION_ID_SURFERS_PARADISE` / `_BROADBEACH` | los muestra la página de callback |
+| `GOOGLE_REVIEW_URL_SURFERS_PARADISE` / `_BROADBEACH` | link "Pedir reseñas" de cada Google Business Profile |
+| `NEXT_PUBLIC_SITE_URL` | dominio real; se usa para armar los links de baja |
+| `RESEND_API_KEY` | key de envío limitada al dominio verificado |
+| `CUSTOMER_EMAIL_FROM` | p. ej. `Mr Moustache <hello@dominio>` (dominio verificado en Resend) |
+| `CUSTOMER_EMAIL_REPLY_TO` | email real del negocio |
+| `REVIEW_AUTOMATION_ENABLED` / `REBOOKING_AUTOMATION_ENABLED` | `false` hasta la prueba final |
+
+Rotar `SQUARE_TOKEN_ENCRYPTION_KEY` deja ilegibles los tokens guardados. En ese
+caso hay que volver a conectar Square con `/api/square/oauth/start`. Rotar
+`MARKETING_UNSUBSCRIBE_SECRET` invalida los links de baja de emails ya enviados.
+
+## Puesta en marcha
+
+1. Cargar las variables de Square (menos la signature key), Firebase, los
+   secretos generados y los flags en `false`. Desplegar.
+2. Comprobar que `GET /api/square/webhook` responde `{ "ok": true }`.
+3. En Square Developer → Webhooks → Production, crear la suscripción a
+   `https://mr-moustache.vercel.app/api/square/webhook` con `booking.created`
+   y `booking.updated`. Copiar la signature key a Vercel y redesplegar.
+   Mandar un test event: debe responder 200.
+4. Abrir `/api/square/oauth/start?key=<SQUARE_CONNECT_SECRET>` con la cuenta del
+   dueño en Square y aceptar. La página final muestra el merchant y los IDs
+   de local. Cargarlos en `SQUARE_LOCATION_ID_*` y redesplegar.
+5. En Firestore, crear los índices de `firestore.indexes.json`. La TTL de
+   `squareEvents.expireAt` es opcional: sin ella, esos documentos chicos
+   simplemente se acumulan.
+6. Dejar correr el cron unos días con los flags apagados y revisar que
+   `bookings/` se llene y que las visitas queden `skipped: disabled`.
+7. Con el dominio verificado en Resend: cargar la key y el `from`, y activar
+   primero `REVIEW_AUTOMATION_ENABLED` y después `REBOOKING_AUTOMATION_ENABLED`.
+
+Para correr el cron a mano:
+`curl -H "Authorization: Bearer $CRON_SECRET" https://mr-moustache.vercel.app/api/cron/booking-automation`.
+Devuelve un resumen y responde 500 si hubo errores parciales (detalle en los
+logs de Vercel).
+
+## Desarrollo
+
+```bash
+npm test       # tests unitarios (node:test + tsx)
+npm run check  # lint + tests + build
+```
