@@ -59,6 +59,8 @@ export type Service = {
   description: string;
   price: string | null;
   duration: string | null;
+  /** Square Appointments service ID; the same at both shops. */
+  squareId: string;
 };
 
 export type GoogleRating = {
