@@ -1,11 +1,4 @@
-function escapeHtml(value: string) {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#039;");
-}
+import { escapeHtml } from "./html";
 
 function layout(preview: string, heading: string, message: string, cta: string, href: string, footer?: string) {
   const safeHref = escapeHtml(href);
@@ -27,14 +20,24 @@ function layout(preview: string, heading: string, message: string, cta: string, 
 </html>`;
 }
 
-export function reviewEmailContent(name: string | undefined, locationName: string, reviewUrl: string) {
+function unsubscribeFooter(label: string, unsubscribeUrl: string) {
+  return `${escapeHtml(label)} <a href="${escapeHtml(unsubscribeUrl)}" style="color:#91a1a5">Unsubscribe</a>.`;
+}
+
+export function reviewEmailContent(
+  name: string | undefined,
+  locationName: string,
+  reviewUrl: string,
+  unsubscribeUrl: string,
+) {
   const greeting = name ? `Thanks for visiting, ${name}` : "Thanks for visiting";
   const message = `We hope you enjoyed your cut at Mr Moustache ${locationName}. If you have a minute, a Google review helps our local barbershop more than you might think.`;
+  const footer = unsubscribeFooter("Prefer not to get emails like this?", unsubscribeUrl);
 
   return {
     subject: `How was your visit to Mr Moustache ${locationName}?`,
-    html: layout("Tell us how we did", greeting, message, "Leave a Google review", reviewUrl),
-    text: `${greeting}\n\n${message}\n\nLeave a Google review: ${reviewUrl}`,
+    html: layout("Tell us how we did", greeting, message, "Leave a Google review", reviewUrl, footer),
+    text: `${greeting}\n\n${message}\n\nLeave a Google review: ${reviewUrl}\n\nUnsubscribe: ${unsubscribeUrl}`,
   };
 }
 
@@ -46,7 +49,7 @@ export function rebookingEmailContent(
 ) {
   const greeting = name ? `Ready for your next cut, ${name}?` : "Ready for your next cut?";
   const message = `It has been a few weeks since your visit to Mr Moustache ${locationName}. Book your next appointment whenever you are ready.`;
-  const unsubscribe = `Don't want rebooking reminders? <a href="${escapeHtml(unsubscribeUrl)}" style="color:#91a1a5">Unsubscribe</a>.`;
+  const unsubscribe = unsubscribeFooter("Prefer not to get emails like this?", unsubscribeUrl);
 
   return {
     subject: "Ready for your next cut?",

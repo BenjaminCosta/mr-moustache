@@ -16,6 +16,8 @@ export interface CustomerEmail {
   text: string;
   scheduledAt?: string;
   idempotencyKey: string;
+  /** Adds RFC 8058 one-click unsubscribe headers when set. */
+  unsubscribeUrl?: string;
   tags: Array<{ name: string; value: string }>;
 }
 
@@ -30,6 +32,12 @@ export async function sendCustomerEmail(email: CustomerEmail) {
       replyTo: optionalEnv("CUSTOMER_EMAIL_REPLY_TO"),
       scheduledAt: email.scheduledAt,
       tags: email.tags,
+      headers: email.unsubscribeUrl
+        ? {
+            "List-Unsubscribe": `<${email.unsubscribeUrl}>`,
+            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+          }
+        : undefined,
     },
     { idempotencyKey: email.idempotencyKey },
   );

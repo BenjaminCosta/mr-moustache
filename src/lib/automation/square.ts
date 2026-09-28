@@ -25,7 +25,15 @@ export interface SquareBooking {
   start_at?: string;
   status?: string;
   version?: number;
+  created_at?: string;
+  updated_at?: string;
   appointment_segments?: SquareAppointmentSegment[];
+}
+
+export interface SquareLocation {
+  id: string;
+  name?: string;
+  status?: string;
 }
 
 export interface SquareCustomer {
@@ -177,6 +185,52 @@ export async function retrieveBooking(
 
   if (!payload.booking) throw new Error(`Square booking ${bookingId} was not returned`);
   return payload.booking;
+}
+
+export async function listLocations(environment: SquareEnvironment, accessToken: string) {
+  const payload = await squareApi<{ locations?: SquareLocation[] }>(
+    environment,
+    accessToken,
+    "/v2/locations",
+  );
+
+  return payload.locations || [];
+}
+
+/**
+ * Lists every booking of a location that starts inside [startAtMin, startAtMax).
+ * Square caps the window at 31 days; APPOINTMENTS_ALL_READ returns all staff.
+ */
+export async function listBookings(
+  environment: SquareEnvironment,
+  accessToken: string,
+  locationId: string,
+  startAtMin: Date,
+  startAtMax: Date,
+) {
+  const bookings: SquareBooking[] = [];
+  let cursor: string | undefined;
+
+  do {
+    const params = new URLSearchParams({
+      location_id: locationId,
+      start_at_min: startAtMin.toISOString(),
+      start_at_max: startAtMax.toISOString(),
+      limit: "100",
+    });
+    if (cursor) params.set("cursor", cursor);
+
+    const payload = await squareApi<{ bookings?: SquareBooking[]; cursor?: string }>(
+      environment,
+      accessToken,
+      `/v2/bookings?${params}`,
+    );
+
+    bookings.push(...(payload.bookings || []));
+    cursor = payload.cursor || undefined;
+  } while (cursor);
+
+  return bookings;
 }
 
 export async function retrieveCustomer(
