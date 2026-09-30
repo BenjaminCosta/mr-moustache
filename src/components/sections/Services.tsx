@@ -3,18 +3,27 @@ import { ArrowRightIcon, CalendarIcon } from "@/components/ui/Icons";
 import { Moustache } from "@/components/ui/Moustache";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { business } from "@/data/business";
+import { getLocation } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import type { LocationId } from "@/types";
 import { ServiceList } from "./ServiceList";
+import { ServiceRows } from "./ServiceRows";
 
-const bookingLinkProps = {
-  href: business.links.booking,
-  target: "_blank",
-  rel: "noopener noreferrer",
-  ...analyticsAttributes(ANALYTICS_EVENTS.bookingClick),
-} as const;
+type ServicesProps = {
+  /** On a shop's page: that shop's prices and booking links, no shop switch. */
+  location?: LocationId;
+};
 
-export function Services() {
+export function Services({ location }: ServicesProps) {
+  const shop = location ? getLocation(location) : undefined;
+  const bookingLinkProps = {
+    href: shop ? shop.links.booking : business.links.booking,
+    target: "_blank",
+    rel: "noopener noreferrer",
+    ...analyticsAttributes(ANALYTICS_EVENTS.bookingClick, location),
+  } as const;
+
   return (
     <section
       id="services"
@@ -26,6 +35,7 @@ export function Services() {
           <>
             <Image
               src={backgrounds.services}
+              quality={50}
               alt=""
               fill
               sizes="100vw"
@@ -48,7 +58,7 @@ export function Services() {
             lineClassName="bg-foreground/85"
           >
             <h2 id="services-title" className="text-[0.5rem] font-sans font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              Barber services &amp; prices
+              {shop ? `${shop.name} barber prices` : "Barber services & prices"}
             </h2>
           </RuleLabel>
 
@@ -57,7 +67,7 @@ export function Services() {
             Tailored.
           </p>
           <p className="mt-[0.5rem] text-center text-[0.857rem] leading-tight text-foreground/80 lg:mt-6 lg:text-left lg:text-[1.1rem] lg:leading-normal">
-            Book your next cut at Mr Moustache.
+            Book your next cut at Mr Moustache{shop ? ` ${shop.name}` : ""}.
           </p>
 
           <a
@@ -88,7 +98,13 @@ export function Services() {
           </div>
         </div>
 
-        <ServiceList />
+        {location ? (
+          <div className="mt-[1.3rem] lg:mt-0">
+            <ServiceRows location={location} />
+          </div>
+        ) : (
+          <ServiceList />
+        )}
       </div>
     </section>
   );

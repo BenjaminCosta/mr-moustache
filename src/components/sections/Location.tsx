@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { RuleLabel } from "@/components/ui/RuleLabel";
+import { ScriptText } from "@/components/ui/ScriptText";
 import { backgrounds } from "@/data/media";
 import { LocationTabs } from "./LocationTabs";
 
@@ -19,6 +20,7 @@ export function Location() {
         >
           <Image
             src={backgrounds.location}
+            quality={50}
             alt=""
             fill
             sizes="100vw"
@@ -59,9 +61,9 @@ export function Location() {
             className="absolute inset-x-0 bottom-0 -z-0 h-1/2 bg-gradient-to-t from-black/25 to-transparent lg:h-2/3 lg:from-black/50"
           />
           <figcaption className="absolute bottom-[1.1rem] left-[0.75rem] text-white lg:bottom-10 lg:left-10">
-            <span className="block origin-bottom-left -rotate-[12deg] font-script text-[3.4rem] leading-[0.8] lg:text-[6.5rem]">
+            <ScriptText className="block origin-bottom-left -rotate-[12deg] text-[3.4rem] leading-[0.8] lg:text-[6.5rem]">
               Gold Coast
-            </span>
+            </ScriptText>
             <span className="mt-[0.4rem] block pl-[1rem] font-display text-[0.79rem] uppercase leading-[1.25] tracking-[0.42em] lg:mt-4 lg:pl-8 lg:text-[1.2rem]">
               Good looks
               <br />

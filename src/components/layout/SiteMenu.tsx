@@ -6,10 +6,17 @@ import { createPortal } from "react-dom";
 import { CloseIcon, MenuIcon } from "@/components/ui/Icons";
 import { Moustache } from "@/components/ui/Moustache";
 import { business } from "@/data/business";
-import { navigation } from "@/data/navigation";
+import { navigationFor } from "@/data/navigation";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import type { LocationId } from "@/types";
 
-export function SiteMenu() {
+type SiteMenuProps = {
+  location?: LocationId;
+  bookingUrl?: string;
+};
+
+export function SiteMenu({ location, bookingUrl = business.links.booking }: SiteMenuProps) {
+  const navigation = navigationFor(location);
   const [open, setOpen] = useState(false);
   const panelId = useId();
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -62,6 +69,7 @@ export function SiteMenu() {
             <li key={item.href}>
               <Link
                 href={item.href}
+                aria-current={item.current ? "page" : undefined}
                 className="font-display text-[2rem] font-bold leading-none transition-colors duration-200 hover:text-primary focus-visible:text-primary"
                 onClick={() => setOpen(false)}
               >
@@ -71,12 +79,12 @@ export function SiteMenu() {
           ))}
         </ul>
         <a
-          href={business.links.booking}
+          href={bookingUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="btn-sweep btn-sweep--invert-primary rounded-full border-[1.5px] border-primary bg-primary px-8 py-3 text-[0.8125rem] font-semibold uppercase tracking-[0.2em] text-white"
           aria-label="Book now through Square (opens in a new tab)"
-          {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick)}
+          {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick, location)}
         >
           Book Now
         </a>

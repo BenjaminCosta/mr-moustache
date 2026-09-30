@@ -1,4 +1,6 @@
-const FALLBACK_SITE_URL = "https://example.com";
+// The site's public domain: canonical URLs, sitemap, share images and JSON-LD
+// all point here, whichever deployment builds the page.
+const PRODUCTION_SITE_URL = "https://moustachebarbersgc.com";
 
 function resolveSiteUrl(...candidates: Array<string | undefined>) {
   for (const candidate of candidates) {
@@ -19,14 +21,11 @@ function resolveSiteUrl(...candidates: Array<string | undefined>) {
     }
   }
 
-  return FALLBACK_SITE_URL;
+  return PRODUCTION_SITE_URL;
 }
 
-export const SITE_URL = resolveSiteUrl(
-  process.env.NEXT_PUBLIC_SITE_URL,
-  process.env.VERCEL_PROJECT_PRODUCTION_URL,
-  process.env.VERCEL_URL,
-);
+// NEXT_PUBLIC_SITE_URL only overrides the domain (e.g. for a staging site).
+export const SITE_URL = resolveSiteUrl(process.env.NEXT_PUBLIC_SITE_URL);
 
 // Only the production deployment may be indexed; Vercel previews stay hidden.
 export const IS_INDEXABLE =

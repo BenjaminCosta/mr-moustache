@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Cherry_Swash, Instrument_Sans, Roboto } from "next/font/google";
 import localFont from "next/font/local";
+import { Analytics } from "@/components/Analytics";
 import { business } from "@/data/business";
 import { IS_INDEXABLE, SITE_URL } from "@/lib/constants";
-import { siteJsonLd } from "@/lib/structured-data";
+import { HOME_DESCRIPTION, HOME_TITLE } from "@/lib/seo";
 import "./globals.css";
 
 const instrumentSans = Instrument_Sans({
@@ -39,35 +40,28 @@ const roboto = Roboto({
   preload: false,
 });
 
-const description =
-  "Gold Coast barbers in Surfers Paradise and Broadbeach. Skin fades, taper fades, classic cuts and beard trims by Spanish-speaking barbers. View prices and book online.";
+const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION?.trim();
 
+// Site-wide defaults. Every page sets its own title, description, canonical
+// and Open Graph tags through pageMetadata() in src/lib/seo.ts.
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Mr Moustache Barbershop | Gold Coast Barbers in Surfers Paradise & Broadbeach",
+    default: HOME_TITLE,
     template: "%s | Mr Moustache Barbershop",
   },
-  description,
-  alternates: {
-    canonical: "/",
-  },
+  description: HOME_DESCRIPTION,
+  applicationName: business.name,
   robots: IS_INDEXABLE
-    ? { index: true, follow: true }
+    ? { index: true, follow: true, "max-image-preview": "large" }
     : { index: false, follow: false },
   openGraph: {
     type: "website",
     locale: "en_AU",
-    url: "/",
     siteName: business.name,
-    title: "Mr Moustache Barbershop | Surfers Paradise & Broadbeach",
-    description,
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "Mr Moustache Barbershop | Surfers Paradise & Broadbeach",
-    description,
-  },
+  // Search Console "HTML tag" verification, if the DNS record is not an option.
+  ...(googleSiteVerification && { verification: { google: googleSiteVerification } }),
   // Favicon, app icons and share images come from the file conventions in
   // src/app (favicon.ico, icon.png, apple-icon.png, opengraph-image.jpg,
   // twitter-image.jpg), all generated from the real Mr Moustache logo.
@@ -81,12 +75,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="flex min-h-full flex-col">
         {children}
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(siteJsonLd()).replace(/</g, "\\u003c"),
-          }}
-        />
+        <Analytics />
       </body>
     </html>
   );

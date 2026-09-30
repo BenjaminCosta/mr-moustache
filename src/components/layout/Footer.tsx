@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { ComponentType, SVGProps } from "react";
 import {
   CalendarIcon,
@@ -11,8 +12,9 @@ import {
 import { Logo } from "@/components/ui/Logo";
 import { Moustache } from "@/components/ui/Moustache";
 import { RuleLabel } from "@/components/ui/RuleLabel";
+import { ScriptText } from "@/components/ui/ScriptText";
 import { business } from "@/data/business";
-import { addressLines, locations } from "@/data/locations";
+import { addressLines, locationPath, locations } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import {
   ANALYTICS_EVENTS,
@@ -58,6 +60,7 @@ export function Footer() {
       {backgrounds.footer ? (
         <Image
           src={backgrounds.footer}
+          quality={50}
           alt=""
           fill
           sizes="100vw"
@@ -84,9 +87,21 @@ export function Footer() {
           <p className="mt-[0.6rem] font-display text-[2.15rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-5 lg:whitespace-nowrap lg:text-[2.25rem] xl:text-[2.6rem]">
             {business.shortName}
           </p>
-          <p className="mt-[0.55rem] text-[0.58rem] uppercase leading-none tracking-[0.38em] lg:mt-3 lg:text-[0.7rem]">
-            Surfers Paradise · Broadbeach
-          </p>
+          <nav aria-label="Our barbershops">
+            <ul className="mt-[0.55rem] flex items-center gap-[0.6em] text-[0.58rem] uppercase leading-none tracking-[0.38em] lg:mt-3 lg:text-[0.7rem]">
+              {locations.map((location, index) => (
+                <li key={location.id} className="flex items-center gap-[0.6em]">
+                  {index > 0 ? <span aria-hidden="true">·</span> : null}
+                  <Link
+                    href={locationPath(location.id)}
+                    className="py-[0.4rem] transition-colors duration-200 hover:text-primary focus-visible:text-primary"
+                  >
+                    {location.name}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </nav>
           <p className="mt-[1.25rem] text-[0.55rem] uppercase leading-[1.95] tracking-[0.46em] text-foreground/90 lg:mt-6 lg:text-[0.64rem]">
             Two Gold Coast locations.
             <br />
@@ -124,11 +139,10 @@ export function Footer() {
                   href={location.links.directions}
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label={`Mr Moustache ${location.name}, ${street}, ${suburb}: get directions (opens in a new tab)`}
                   className={`group grid grid-cols-[2.25rem_1fr_auto] items-center pb-[0.55rem] pl-[3.55rem] pr-[0.9rem] transition-colors lg:grid-cols-[2.75rem_1fr_auto] lg:pb-3 lg:pl-6 lg:pr-4 duration-200 hover:text-primary focus-visible:text-primary ${
                     index === 0 ? "pt-[1.4rem] lg:pt-7" : "pt-[0.55rem] lg:pt-3"
                   }`}
-                  {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick)}
+                  {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick, location.id)}
                 >
                   <PinIcon className="h-[1.2rem] w-[0.95rem] text-white transition-transform duration-300 ease-out group-hover:-translate-y-[0.15rem]" />
                   <span className="text-[0.74rem] leading-[1.3] tracking-[0.02em] lg:text-[0.95rem]">
@@ -138,6 +152,7 @@ export function Footer() {
                     {street}
                     <br />
                     {suburb}
+                    <span className="sr-only">: get directions (opens in a new tab)</span>
                   </span>
                   <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
                 </a>
@@ -161,7 +176,10 @@ export function Footer() {
           </div>
         </div>
 
-        <p className="relative mx-auto mt-[1.6rem] w-fit -rotate-[14deg] pr-[1.2rem] font-script text-[2.6rem] leading-[1] text-foreground/70 lg:mt-0 lg:text-[4rem]">
+        <ScriptText
+          as="p"
+          className="relative mx-auto mt-[1.6rem] w-fit -rotate-[14deg] pr-[1.2rem] text-[2.6rem] leading-[1] text-foreground/70 lg:mt-0 lg:text-[4rem]"
+        >
           Good Hair
           <br />
           <span className="pl-[0.2rem]">Better People</span>
@@ -179,7 +197,7 @@ export function Footer() {
               strokeLinecap="round"
             />
           </svg>
-        </p>
+        </ScriptText>
       </div>
 
       <div className="shell lg:px-10">
