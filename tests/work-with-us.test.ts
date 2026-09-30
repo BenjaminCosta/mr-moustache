@@ -71,13 +71,14 @@ describe("work with us route", () => {
     mockFormSubmit(200, JSON.stringify({ success: "false", message: "This form needs Activation." }));
     const response = await post(application);
     assert.equal(response.status, 502);
-    assert.deepEqual(await response.json(), { ok: false });
+    assert.deepEqual(await response.json(), { ok: false, reason: "This form needs Activation." });
   });
 
   it("reports non-JSON error pages", async () => {
     mockFormSubmit(403, "<html>Forbidden</html>");
     const response = await post(application);
     assert.equal(response.status, 502);
+    assert.equal((await response.json()).reason, "FormSubmit answered HTTP 403: <html>Forbidden</html>");
   });
 
   it("rejects invalid applications without calling FormSubmit", async () => {

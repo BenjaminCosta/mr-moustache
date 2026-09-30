@@ -47,13 +47,16 @@ export async function submitApplication(
       body: JSON.stringify({ ...values, company: formData.get("company") ?? "" }),
     });
     const result = (await response.json().catch(() => null)) as
-      | { ok?: boolean; fieldErrors?: ApplicationState["fieldErrors"] }
+      | { ok?: boolean; reason?: string; fieldErrors?: ApplicationState["fieldErrors"] }
       | null;
 
     if (result?.fieldErrors && Object.keys(result.fieldErrors).length > 0) {
       return { ...failure, message: "Please check the highlighted fields.", fieldErrors: result.fieldErrors };
     }
-    if (!response.ok || result?.ok !== true) return failure;
+    if (!response.ok || result?.ok !== true) {
+      console.warn("[work-with-us] Application not sent:", result?.reason ?? response.status);
+      return failure;
+    }
   } catch (error) {
     console.error("[work-with-us] Application request failed", error);
     return failure;

@@ -88,11 +88,14 @@ export async function POST(request: Request) {
         response.status,
         result ?? raw.slice(0, 500),
       );
-      return Response.json({ ok: false }, { status: 502 });
+      // FormSubmit's own answer (e.g. "This form needs Activation"), so the
+      // cause shows in the browser's Network tab without opening Vercel logs.
+      const reason = result?.message || `FormSubmit answered HTTP ${response.status}: ${raw.slice(0, 120)}`;
+      return Response.json({ ok: false, reason: reason.slice(0, 300) }, { status: 502 });
     }
   } catch (error) {
     console.error("[work-with-us] FormSubmit request failed", error);
-    return Response.json({ ok: false }, { status: 502 });
+    return Response.json({ ok: false, reason: "Could not reach FormSubmit." }, { status: 502 });
   }
 
   return Response.json({ ok: true });
