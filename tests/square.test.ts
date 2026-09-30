@@ -4,6 +4,8 @@ import { before, describe, it } from "node:test";
 
 import {
   bookingEndAt,
+  exchangeAuthorizationCode,
+  refreshAccessToken,
   squareAuthorizationUrl,
   verifySquareWebhookSignature,
 } from "../src/lib/automation/square";
@@ -71,5 +73,45 @@ describe("squareAuthorizationUrl", () => {
     );
     assert.equal(url.searchParams.get("state"), "state123");
     assert.equal(url.searchParams.get("session"), "false");
+  });
+});
+
+describe("OAuth token requests", () => {
+  const originalFetch = globalThis.fetch;
+
+  async function capturedBody(run: () => Promise<unknown>) {
+    let body: Record<string, unknown> = {};
+    globalThis.fetch = (async (_url: string | URL | Request, init?: RequestInit) => {
+      body = JSON.parse(String(init?.body));
+      return Response.json({ access_token: "a", refresh_token: "r", expires_at: "2026-11-01T00:00:00Z", merchant_id: "M" });
+    }) as typeof fetch;
+    try {
+      await run();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+    return body;
+  }
+
+  before(() => {
+    process.env.SQUARE_ENVIRONMENT = "production";
+    process.env.SQUARE_APPLICATION_ID = "sq0idp-test";
+    process.env.SQUARE_APPLICATION_SECRET = "secret";
+    process.env.SQUARE_OAUTH_REDIRECT_URL = "https://mr-moustache.vercel.app/api/square/oauth/callback";
+  });
+
+  it("sends the same redirect_uri when exchanging the authorization code", async () => {
+    const body = await capturedBody(() => exchangeAuthorizationCode("code123"));
+    assert.equal(body.grant_type, "authorization_code");
+    assert.equal(body.code, "code123");
+    assert.equal(body.redirect_uri, "https://mr-moustache.vercel.app/api/square/oauth/callback");
+    assert.equal(body.redirect_uri, squareAuthorizationUrl("s").searchParams.get("redirect_uri"));
+  });
+
+  it("refreshes without a redirect_uri", async () => {
+    const body = await capturedBody(() => refreshAccessToken("production", "refresh123"));
+    assert.equal(body.grant_type, "refresh_token");
+    assert.equal(body.refresh_token, "refresh123");
+    assert.equal(body.redirect_uri, undefined);
   });
 });
