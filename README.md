@@ -35,18 +35,22 @@ Square Appointments page.
 
 ## Work With Us form
 
-The careers form validates in the browser and emails each application through
-[FormSubmit](https://formsubmit.co)'s AJAX endpoint (`src/app/work-with-us/submit.ts`).
-No account, API key or server is needed.
+The careers form validates in the browser and posts to `/api/work-with-us`
+(`src/app/api/work-with-us/route.ts`), which validates again and emails the
+application through [FormSubmit](https://formsubmit.co)'s AJAX endpoint from the
+server. Calling FormSubmit from the browser failed with CORS errors whenever it
+answered with anything but a plain success; server-side there is no CORS, and
+FormSubmit's real answer is logged (`[work-with-us]` in the Vercel logs). No
+account or API key is needed.
 
-- The inbox is `FORMSUBMIT_TARGET` in `src/lib/constants.ts`
-  (`aitgv0@gmail.com` by default, overridable with
-  `NEXT_PUBLIC_FORMSUBMIT_TARGET`).
+- The inbox is `aitgv0@gmail.com` by default, overridable with the server-only
+  `FORMSUBMIT_TARGET` (the older `NEXT_PUBLIC_FORMSUBMIT_TARGET` still works;
+  remove it if it still holds an old address).
 - **Activation:** the first application sends FormSubmit's confirmation email
   to that inbox. Applications are only delivered after the link in it is
   clicked, so send one test application right after launch and activate it.
-- After activation FormSubmit shows a random alias for the inbox; setting it as
-  `NEXT_PUBLIC_FORMSUBMIT_TARGET` keeps the address out of the page source.
+- After activation FormSubmit shows a random alias for the inbox, which can be
+  used as `FORMSUBMIT_TARGET` instead of the address.
 - Reply-to is set to the applicant's email, so replying answers them directly.
 
 ## Approved design foundation

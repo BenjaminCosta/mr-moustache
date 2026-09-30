@@ -121,15 +121,6 @@ export const INSTAGRAM_URL =
   process.env.NEXT_PUBLIC_INSTAGRAM_URL?.trim() ||
   "https://www.instagram.com/mr.moustache.barbers/";
 
-// Work With Us applications are emailed through FormSubmit. The target can be
-// the inbox address or, once activated, the random alias FormSubmit provides
-// (keeps the address out of the page source). Inbox confirmed by the client.
-export const FORMSUBMIT_TARGET =
-  process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() ||
-  "aitgv0@gmail.com";
-
-export const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORMSUBMIT_TARGET}`;
-
 /** False while a link still points at a launch placeholder. */
 export function isConfiguredUrl(url: string) {
   return !/placeholder|example\.com/i.test(url);
