@@ -35,27 +35,23 @@ Square Appointments page.
 
 ## Work With Us form
 
-The careers form is a plain HTML form posted straight to
-[FormSubmit](https://formsubmit.co), as FormSubmit documents it
-(`src/app/work-with-us/WorkWithUsForm.tsx`): `required` fields checked by the
-browser, `_captcha=false`, a fixed `_subject` and `_next` back to
-`/?application=sent#work-with-us`, which shows the thank-you message. No
-JavaScript sends it, and no account or API key is needed.
+The careers form sends each application from the browser to
+[FormSubmit](https://formsubmit.co)'s AJAX endpoint
+(`src/app/work-with-us/WorkWithUsForm.tsx`), so the visitor stays on the page
+and sees "Application sent". The browser checks the required fields. No
+account or API key is needed.
 
 A server-side call (Vercel API route) is not an option: FormSubmit sits behind
 Cloudflare, which answers requests from servers with a "Just a moment..." bot
 challenge (HTTP 403).
 
 - The inbox is `FORMSUBMIT_TARGET` in `src/lib/constants.ts`
-  (`aitgv0@gmail.com` by default, overridable with
-  `NEXT_PUBLIC_FORMSUBMIT_TARGET`).
-- **Activation:** the first application sends FormSubmit's activation email to
-  that inbox. Applications are only
-  delivered after its "Activate Form" link is clicked, so send the first test
-  application yourself right after launch and activate it.
-- After activation FormSubmit shows a random alias for the inbox; setting it as
-  `NEXT_PUBLIC_FORMSUBMIT_TARGET` keeps the address out of the page source.
-- Reply-to is set to the applicant's email, so replying answers them directly.
+  (`benjacostm100@gmail.com` while testing; the client's inbox is
+  `aitgv0@gmail.com`), overridable with `NEXT_PUBLIC_FORMSUBMIT_TARGET`.
+- **Activation:** the first application to a new inbox sends FormSubmit's
+  activation email; applications are only delivered after its "Activate Form"
+  link is clicked.
+- Reply-to is the applicant's email (the `email` field).
 
 ## Approved design foundation
 

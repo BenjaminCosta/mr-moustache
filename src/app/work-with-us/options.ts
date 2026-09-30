@@ -13,6 +13,3 @@ export const LOCATION_OPTIONS = [
 ];
 
 export type ApplicationField = "name" | "email" | "experience" | "location" | "message";
-
-/** Query flag FormSubmit's `_next` redirect brings the visitor back with. */
-export const SENT_PARAM = "application";

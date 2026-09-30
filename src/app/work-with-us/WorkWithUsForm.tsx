@@ -1,17 +1,9 @@
 "use client";
 
-import { useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { useState, type FormEvent, type ReactNode } from "react";
 import { ArrowRightIcon, ChevronRightIcon } from "@/components/ui/Icons";
-import { FORMSUBMIT_ACTION } from "@/lib/constants";
-import { EXPERIENCE_OPTIONS, LOCATION_OPTIONS, SENT_PARAM, type ApplicationField } from "./options";
-
-// Read once when the page loads (FormSubmit's redirect is a full page load),
-// so the flag survives removing it from the address bar below.
-const arrivedAfterSending =
-  typeof window !== "undefined" &&
-  new URLSearchParams(window.location.search).get(SENT_PARAM) === "sent";
-
-const noSubscription = () => () => {};
+import { FORMSUBMIT_ENDPOINT } from "@/lib/constants";
+import { EXPERIENCE_OPTIONS, LOCATION_OPTIONS, type ApplicationField } from "./options";
 
 const labelClasses =
   "block text-[0.55rem] font-medium uppercase leading-none tracking-[0.3em] text-foreground/80 lg:text-[0.68rem]";
@@ -47,25 +39,30 @@ function SelectChevron() {
 }
 
 /**
- * A plain HTML form posted straight to FormSubmit (https://formsubmit.co), as
- * FormSubmit documents it. The browser validates the required fields; after
- * delivering the email FormSubmit redirects to `nextUrl`, which brings the
- * visitor back here with the thank-you message.
+ * Sends the application to FormSubmit's AJAX endpoint (https://formsubmit.co)
+ * from the browser, so the visitor stays on the page. The browser checks the
+ * required fields before the submit handler runs.
  */
-export function WorkWithUsForm({ nextUrl }: { nextUrl: string }) {
-  // False on the server; the real value is picked up right after hydration.
-  const sent = useSyncExternalStore(noSubscription, () => arrivedAfterSending, () => false);
+export function WorkWithUsForm() {
+  const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
-  useEffect(() => {
-    // Tidy the address bar so a refresh or shared link starts fresh.
-    const url = new URL(window.location.href);
-    if (url.searchParams.has(SENT_PARAM)) {
-      url.searchParams.delete(SENT_PARAM);
-      window.history.replaceState(window.history.state, "", url);
+  async function handleSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setStatus("sending");
+    try {
+      const response = await fetch(FORMSUBMIT_ENDPOINT, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify(Object.fromEntries(new FormData(event.currentTarget))),
+      });
+      const result = await response.json().catch(() => null);
+      setStatus(response.ok && String(result?.success) === "true" ? "sent" : "error");
+    } catch {
+      setStatus("error");
     }
-  }, []);
+  }
 
-  if (sent) {
+  if (status === "sent") {
     return (
       <div
         role="status"
@@ -82,10 +79,9 @@ export function WorkWithUsForm({ nextUrl }: { nextUrl: string }) {
   }
 
   return (
-    <form action={FORMSUBMIT_ACTION} method="POST" className="space-y-[1.15rem] lg:space-y-7">
+    <form onSubmit={handleSubmit} className="space-y-[1.15rem] lg:space-y-7">
       <input type="hidden" name="_subject" defaultValue="New Work With Us application" />
       <input type="hidden" name="_captcha" defaultValue="false" />
-      <input type="hidden" name="_next" defaultValue={nextUrl} />
       <div className="grid gap-[1.15rem] lg:grid-cols-2 lg:gap-7">
         <Field name="name" label="Name">
           {(props) => (
@@ -151,11 +147,18 @@ export function WorkWithUsForm({ nextUrl }: { nextUrl: string }) {
         )}
       </Field>
 
+      {status === "error" ? (
+        <p role="alert" className="text-[0.85rem] leading-[1.35] text-[#f28b82] lg:text-[0.95rem]">
+          Something went wrong sending your application. Please try again in a moment.
+        </p>
+      ) : null}
+
       <button
         type="submit"
-        className="btn-sweep btn-sweep--invert-primary group flex h-[2.6rem] w-full items-center justify-center gap-[1.15rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.72rem] font-medium uppercase tracking-[0.2em] text-white lg:h-14 lg:w-auto lg:gap-5 lg:px-12 lg:text-[0.85rem] lg:tracking-[0.24em]"
+        disabled={status === "sending"}
+        className="btn-sweep btn-sweep--invert-primary group flex h-[2.6rem] w-full items-center justify-center gap-[1.15rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.72rem] font-medium uppercase tracking-[0.2em] text-white disabled:cursor-progress disabled:opacity-70 lg:h-14 lg:w-auto lg:gap-5 lg:px-12 lg:text-[0.85rem] lg:tracking-[0.24em]"
       >
-        Send application
+        {status === "sending" ? "Sending…" : "Send application"}
         <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
       </button>
     </form>

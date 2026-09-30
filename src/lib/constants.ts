@@ -116,14 +116,14 @@ export const GOOGLE_PROFILE_URL =
   process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL?.trim() ||
   GOOGLE_MAPS_URL_SURFERS_PARADISE;
 
-// Work With Us applications are a plain HTML form posted by the browser straight
-// to FormSubmit (https://formsubmit.co). The target can be the inbox or, once
-// activated, FormSubmit's random alias (keeps the address out of the page
-// source). Inbox confirmed by the client.
+// Work With Us applications are sent from the browser to FormSubmit's AJAX
+// endpoint (https://formsubmit.co), so the visitor stays on the page.
+// Testing with Benja's inbox; switch to the client's (aitgv0@gmail.com) once
+// it works, or set NEXT_PUBLIC_FORMSUBMIT_TARGET.
 export const FORMSUBMIT_TARGET =
-  process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() || "aitgv0@gmail.com";
+  process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() || "benjacostm100@gmail.com";
 
-export const FORMSUBMIT_ACTION = `https://formsubmit.co/${FORMSUBMIT_TARGET}`;
+export const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORMSUBMIT_TARGET}`;
 
 // Handle taken from the downloaded clips in mr-moustache-material/.
 export const INSTAGRAM_URL =
