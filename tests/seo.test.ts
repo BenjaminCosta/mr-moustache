@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { describe, it } from "node:test";
 
 import robots from "../src/app/robots";
@@ -86,6 +87,14 @@ describe("page metadata", () => {
     assert.equal(metadata.alternates?.canonical, "/broadbeach");
     assert.equal(metadata.openGraph?.url, "/broadbeach");
     assert.deepEqual(metadata.title, { absolute: "T" });
+  });
+
+  it("gives each shop page its own share image and alt text", () => {
+    for (const location of locations) {
+      for (const file of ["opengraph-image.jpg", "opengraph-image.alt.txt", "twitter-image.jpg", "twitter-image.alt.txt"]) {
+        assert.ok(existsSync(`src/app/${location.id}/${file}`), `${location.id}/${file}`);
+      }
+    }
   });
 
   it("tags each Google Business Profile link with its shop", () => {

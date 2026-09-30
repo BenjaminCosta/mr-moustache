@@ -365,15 +365,35 @@ Idea para después: una versión en español (`/es/…`) para "barbero Gold
 Coast" / "barbería en Surfers Paradise", con `hreflang`. Hay mucha comunidad
 latina y española en la Gold Coast y casi no hay competencia en español.
 
-### Pendiente del cliente (bloquea parte del SEO local)
+### Open Graph / Twitter (previews al compartir)
+
+Cada página publica `og:title`, `og:description`, `og:url`, `og:type`,
+`og:site_name`, `og:locale`, `og:image` (1200×630, con ancho, alto, tipo y
+alt) y la tarjeta `twitter:card = summary_large_image` con su título,
+descripción e imagen. Es lo que usan WhatsApp, Facebook, LinkedIn, iMessage,
+Slack y X para armar la tarjeta.
+
+| Página | Imagen de preview |
+| --- | --- |
+| `/` | `src/app/opengraph-image.jpg` (logo en la remera, dentro del local) |
+| `/surfers-paradise` | `src/app/surfers-paradise/opengraph-image.jpg`: foto + "Barber in Surfers Paradise", dirección y "Book online · Hablamos español" |
+| `/broadbeach` | `src/app/broadbeach/opengraph-image.jpg`: lo mismo para Broadbeach |
+
+Cada imagen tiene su `twitter-image.jpg` y los `.alt.txt`; un test verifica
+que ninguna sede se quede sin ellos. Pesan ~85 KB (WhatsApp pide menos de
+300 KB). Para probar con el dominio publicado: Facebook Sharing Debugger
+(también refresca la caché de WhatsApp e Instagram) y LinkedIn Post
+Inspector.
+
+### Pendiente del cliente
+
+Teléfono (uno para las dos sedes) y horarios: **confirmados**. Coordenadas:
+no hacen falta (Google ubica cada sede por su dirección y su ficha).
 
 | Dato | Dónde va |
 | --- | --- |
-| Dominio definitivo | `NEXT_PUBLIC_SITE_URL` en Vercel (canonical, sitemap, schema) |
-| Horarios oficiales de cada sede (hoy salen de la disponibilidad de Square) | `openingHours` en `src/data/locations.ts` |
-| Teléfono propio de cada sede, si existe | `phone` en `src/data/locations.ts` |
-| Coordenadas del pin de cada ficha | `geo` en `src/data/locations.ts` |
-| Foto confirmada de cada local | `image` en `src/data/locations.ts` |
+| Dominio definitivo | En Vercel alcanza con asignarlo como dominio de producción: la web lo toma de `VERCEL_PROJECT_PRODUCTION_URL`. `NEXT_PUBLIC_SITE_URL` solo hace falta para forzar otro. |
+| Foto confirmada de cada local | `image` en `src/data/locations.ts` (y regenerar su imagen de preview) |
 | Keywords extra de Aitor | copy de las páginas |
 
 ---
@@ -390,9 +410,9 @@ latina y española en la Gold Coast y casi no hay competencia en español.
 - [x] Fuentes de abajo del pliegue diferidas; Lighthouse móvil 91–98, escritorio 100
 - [x] Links de reservas por sede (Square)
 - [x] Medición preparada (GA4 por variable de entorno + UTM por ficha)
-- [ ] Horarios y teléfono confirmados por el cliente
+- [x] Horarios y teléfono confirmados por el cliente
+- [x] Previews al compartir (Open Graph + Twitter) por página
 - [ ] Dominio + `NEXT_PUBLIC_SITE_URL`
-- [ ] Geo de cada ficha
 - [ ] Redirects de dominio
 - [ ] GBP enlazados a su página (ver `docs/GOOGLE_BUSINESS_PROFILE.md`)
 - [ ] GA4 (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) + evento clave `booking_click`

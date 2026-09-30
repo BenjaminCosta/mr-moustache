@@ -54,21 +54,18 @@ Yelp AU, True Local, Hotfrog).
 | --- | --- | --- |
 | Nombre | Mr Moustache Barbershop Surfers Paradise | Mr Moustache Barbershop Broadbeach |
 | Dirección | 3 Orchid Ave, Surfers Paradise QLD 4217 | Unit 5/2623 Gold Coast Hwy, Broadbeach QLD 4218 |
-| Teléfono | 0421 574 445 ⚠️ (hoy es el mismo en las dos) | 0421 574 445 |
+| Teléfono | 0421 574 445 (el mismo en las dos, confirmado) | 0421 574 445 |
 
 ⚠️ La ficha de Surfers Paradise figura como **"Mr. Moustache"** (con punto) y la
 web usa "Mr Moustache". Conviene unificar la marca en las dos fichas (el schema
 ya declara las dos formas como `alternateName`). No agregar keywords al nombre
 ("Mr Moustache Barber Fades…"): Google lo penaliza.
 
-⚠️ Si cada sede tiene su propio número, cargarlo en `src/data/locations.ts`: un
-teléfono por sede ayuda a que Google no las mezcle.
-
 ### Resto de la ficha (las dos)
 
 - [ ] Categoría principal: **Barber shop**.
-- [ ] Horarios iguales a la web (hoy salen de la disponibilidad de Square; el
-      cliente tiene que confirmarlos) y horarios especiales en feriados.
+- [ ] Horarios iguales a la web (confirmados por el cliente) y horarios
+      especiales en feriados.
 - [ ] Servicios con los mismos nombres y precios que la web y Square
       (Standard Haircut A$45, Zero Fade A$50, Skin Fade A$55, …).
 - [ ] Descripción en lenguaje natural que mencione la zona, los servicios

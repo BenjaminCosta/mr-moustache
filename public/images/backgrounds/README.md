@@ -21,3 +21,9 @@ H.264 export (CRF 27, AAC 96k, faststart) of the original 1080p file, about
 
 The share image (`src/app/opengraph-image.jpg` / `twitter-image.jpg`) is a
 1200×630 crop of `mr-moustache-barbershop-3.jpg`, centred on the logo tee.
+
+Each shop page has its own share image (`src/app/surfers-paradise/opengraph-image.jpg`,
+`src/app/broadbeach/opengraph-image.jpg`, plus identical `twitter-image.jpg`):
+1200×630, the shop photo from `public/images/locations` on the right, fading
+into black behind the logo, "Barber in …" in Cherry Swash Bold, the services,
+the address and "Book online · Hablamos español" in Instrument Sans.

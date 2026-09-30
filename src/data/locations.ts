@@ -23,11 +23,10 @@ export const locations = [
       country: "Australia",
       countryCode: "AU",
     },
-    // TODO: Confirm; this number is currently listed for both shops.
+    // Confirmed by the client: one number for both shops.
     phone: { display: "0421 574 445", href: "tel:+61421574445" },
     hours: null as ShopLocation["hours"],
-    // Read from Square Appointments availability (any staff), 28 Sep 2026.
-    // TODO: Confirm with the client they match the official shop hours.
+    // Official hours, confirmed by the client (September 2026).
     openingHours: [
       { day: "Monday", opens: null, closes: null, closed: true },
       { day: "Tuesday", opens: "09:00", closes: "18:00" },
@@ -74,8 +73,7 @@ export const locations = [
     },
     phone: { display: "0421 574 445", href: "tel:+61421574445" },
     hours: null as ShopLocation["hours"],
-    // Read from Square Appointments availability (any staff), 28 Sep 2026.
-    // TODO: Confirm with the client they match the official shop hours.
+    // Official hours, confirmed by the client (September 2026).
     openingHours: [
       { day: "Monday", opens: null, closes: null, closed: true },
       { day: "Tuesday", opens: "10:00", closes: "18:30" },
@@ -85,7 +83,7 @@ export const locations = [
       { day: "Saturday", opens: "09:00", closes: "16:00" },
       { day: "Sunday", opens: null, closes: null, closed: true },
     ],
-    // TODO: Add the exact pin from the Google Business Profile (5+ decimals).
+    // Not needed: Google places the shop from its address and Business Profile.
     geo: null,
     links: {
       booking: SQUARE_BOOKING_URL_BROADBEACH,
