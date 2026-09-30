@@ -1,7 +1,9 @@
 import Image from "next/image";
+import { SENT_PARAM } from "@/app/work-with-us/options";
 import { WorkWithUsForm } from "@/app/work-with-us/WorkWithUsForm";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { backgrounds } from "@/data/media";
+import { SITE_URL } from "@/lib/constants";
 
 /** Careers form, kept in the landing flow after the two shop locations. */
 export function WorkWithUs() {
@@ -68,7 +70,7 @@ export function WorkWithUs() {
         </div>
 
         <div className="mt-[1.9rem] lg:mt-0">
-          <WorkWithUsForm />
+          <WorkWithUsForm nextUrl={`${SITE_URL}/?${SENT_PARAM}=sent#work-with-us`} />
         </div>
       </div>
     </section>

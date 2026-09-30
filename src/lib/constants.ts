@@ -116,12 +116,10 @@ export const GOOGLE_PROFILE_URL =
   process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL?.trim() ||
   GOOGLE_MAPS_URL_SURFERS_PARADISE;
 
-// Work With Us applications are posted by the browser, as a regular HTML form,
-// straight to FormSubmit (https://formsubmit.co). FormSubmit sits behind
-// Cloudflare, which blocks requests from servers such as Vercel's, and its AJAX
-// endpoint fails with CORS errors, so a normal form post is the reliable path.
-// The target can be the inbox or, once activated, FormSubmit's random alias
-// (keeps the address out of the page source). Inbox confirmed by the client.
+// Work With Us applications are a plain HTML form posted by the browser straight
+// to FormSubmit (https://formsubmit.co). The target can be the inbox or, once
+// activated, FormSubmit's random alias (keeps the address out of the page
+// source). Inbox confirmed by the client.
 export const FORMSUBMIT_TARGET =
   process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() || "aitgv0@gmail.com";
 
