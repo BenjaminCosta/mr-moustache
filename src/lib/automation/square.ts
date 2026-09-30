@@ -119,9 +119,11 @@ export function squareAuthorizationUrl(state: string) {
 }
 
 export async function exchangeAuthorizationCode(code: string) {
+  // Square rejects the exchange unless redirect_uri matches the one sent to /authorize.
   return obtainToken(squareEnvironment(), {
     code,
     grant_type: "authorization_code",
+    redirect_uri: requiredEnv("SQUARE_OAUTH_REDIRECT_URL"),
   });
 }
 
@@ -135,7 +137,7 @@ export async function refreshAccessToken(environment: SquareEnvironment, refresh
 async function obtainToken(
   environment: SquareEnvironment,
   grant:
-    | { code: string; grant_type: "authorization_code" }
+    | { code: string; grant_type: "authorization_code"; redirect_uri: string }
     | { refresh_token: string; grant_type: "refresh_token" },
 ) {
   const response = await fetch(`${squareOAuthBase(environment)}/token`, {
