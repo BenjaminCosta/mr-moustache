@@ -228,7 +228,7 @@ Places, Yelp AU, True Local, Hotfrog).
 ## 7. Indexación (el día del lanzamiento)
 
 1. Search Console → verificar la propiedad de dominio (DNS).
-2. Enviar `https://<dominio>/sitemap.xml`.
+2. Enviar `https://moustachebarbersgc.com/sitemap.xml`.
 3. Inspeccionar URL → probar la URL publicada (render, canonical elegido por
    Google) → solicitar indexación.
 4. Revisar la cobertura y las mejoras (datos estructurados) a los pocos días.
@@ -392,7 +392,6 @@ no hacen falta (Google ubica cada sede por su dirección y su ficha).
 
 | Dato | Dónde va |
 | --- | --- |
-| Dominio definitivo | En Vercel alcanza con asignarlo como dominio de producción: la web lo toma de `VERCEL_PROJECT_PRODUCTION_URL`. `NEXT_PUBLIC_SITE_URL` solo hace falta para forzar otro. |
 | Foto confirmada de cada local | `image` en `src/data/locations.ts` (y regenerar su imagen de preview) |
 | Keywords extra de Aitor | copy de las páginas |
 
@@ -412,8 +411,8 @@ no hacen falta (Google ubica cada sede por su dirección y su ficha).
 - [x] Medición preparada (GA4 por variable de entorno + UTM por ficha)
 - [x] Horarios y teléfono confirmados por el cliente
 - [x] Previews al compartir (Open Graph + Twitter) por página
-- [ ] Dominio + `NEXT_PUBLIC_SITE_URL`
-- [ ] Redirects de dominio
+- [x] Dominio: https://moustachebarbersgc.com (por defecto en `SITE_URL`)
+- [ ] Dominio asignado en Vercel, con `www` → apex (308)
 - [ ] GBP enlazados a su página (ver `docs/GOOGLE_BUSINESS_PROFILE.md`)
 - [ ] GA4 (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) + evento clave `booking_click`
 - [ ] Search Console + sitemap + indexación de las tres URLs

@@ -1,8 +1,9 @@
 # Google Business Profile ↔ web
 
 Cómo conectar cada ficha de Google (GBP) con su página de la web y medir qué
-genera cada una. Se hace **una vez que el dominio definitivo esté publicado**
-(`NEXT_PUBLIC_SITE_URL` en Vercel). En los ejemplos, `<dominio>` es ese dominio.
+genera cada una. Dominio: **https://moustachebarbersgc.com** (es el valor por
+defecto de `SITE_URL` en `src/lib/constants.ts`). Se hace una vez que la web
+esté publicada en ese dominio.
 
 ## 1. Una página por sede
 
@@ -28,8 +29,8 @@ qué hacen después (reservar, llamar, pedir indicaciones). La página tiene
 
 | Ficha | Campo "Sitio web" |
 | --- | --- |
-| Surfers Paradise | `https://<dominio>/surfers-paradise?utm_source=google&utm_medium=organic&utm_campaign=gbp-surfers-paradise` |
-| Broadbeach | `https://<dominio>/broadbeach?utm_source=google&utm_medium=organic&utm_campaign=gbp-broadbeach` |
+| Surfers Paradise | `https://moustachebarbersgc.com/surfers-paradise?utm_source=google&utm_medium=organic&utm_campaign=gbp-surfers-paradise` |
+| Broadbeach | `https://moustachebarbersgc.com/broadbeach?utm_source=google&utm_medium=organic&utm_campaign=gbp-broadbeach` |
 
 Las genera `gbpWebsiteUrl()` en `src/lib/seo.ts` (con test en
 `tests/seo.test.ts`).
@@ -122,7 +123,7 @@ requieren el plan Pro.
 1. Verificar el dominio (registro DNS). Si no hay acceso al DNS, usar la
    verificación por etiqueta HTML: poner el código en
    `GOOGLE_SITE_VERIFICATION` (Vercel) y desplegar.
-2. Enviar `https://<dominio>/sitemap.xml` (incluye la home, las dos sedes y
+2. Enviar `https://moustachebarbersgc.com/sitemap.xml` (incluye la home, las dos sedes y
    sus fotos).
 3. Inspeccionar `/`, `/surfers-paradise` y `/broadbeach` → "Solicitar
    indexación".
