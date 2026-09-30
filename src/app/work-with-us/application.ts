@@ -1,7 +1,8 @@
 import {
   EXPERIENCE_OPTIONS,
   LOCATION_OPTIONS,
-  type ApplicationState,
+  type ApplicationErrors,
+  type ApplicationField,
   type ApplicationValues,
 } from "./options";
 
@@ -12,9 +13,8 @@ function text(value: unknown, max = 500) {
 }
 
 /**
- * Reads and validates a Work With Us application. Shared by the form (instant
- * errors) and the API route (the source of truth), so both apply the same rules.
- * `get` returns a raw field value, from FormData or a parsed JSON body.
+ * Reads and validates a Work With Us application before it is posted to
+ * FormSubmit. `get` returns a raw field value, e.g. from FormData.
  */
 export function readApplication(get: (name: string) => unknown) {
   const values: ApplicationValues = {
@@ -26,7 +26,7 @@ export function readApplication(get: (name: string) => unknown) {
     message: text(get("message"), MAX_LENGTH.message),
   };
 
-  const fieldErrors: ApplicationState["fieldErrors"] = {};
+  const fieldErrors: ApplicationErrors = {};
   if (!values.name) fieldErrors.name = "Please add your name.";
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(values.email)) {
     fieldErrors.email = "Please add a valid email address.";
@@ -39,10 +39,5 @@ export function readApplication(get: (name: string) => unknown) {
   }
   if (!values.message) fieldErrors.message = "Please tell us a little about yourself.";
 
-  return {
-    values,
-    fieldErrors,
-    // Honeypot: real visitors never see or fill this field.
-    isSpam: Boolean(text(get("company"))),
-  };
+  return { values, fieldErrors, firstError: Object.keys(fieldErrors)[0] as ApplicationField | undefined };
 }

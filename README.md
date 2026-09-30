@@ -35,22 +35,26 @@ Square Appointments page.
 
 ## Work With Us form
 
-The careers form validates in the browser and posts to `/api/work-with-us`
-(`src/app/api/work-with-us/route.ts`), which validates again and emails the
-application through [FormSubmit](https://formsubmit.co)'s AJAX endpoint from the
-server. Calling FormSubmit from the browser failed with CORS errors whenever it
-answered with anything but a plain success; server-side there is no CORS, and
-FormSubmit's real answer is logged (`[work-with-us]` in the Vercel logs). No
-account or API key is needed.
+The careers form validates in the browser and is then posted as a regular HTML
+form straight to [FormSubmit](https://formsubmit.co)
+(`src/app/work-with-us/WorkWithUsForm.tsx`). FormSubmit redirects back to
+`/?application=sent#work-with-us`, which shows the thank-you message. No account
+or API key is needed.
 
-- The inbox is `aitgv0@gmail.com` by default, overridable with the server-only
-  `FORMSUBMIT_TARGET` (the older `NEXT_PUBLIC_FORMSUBMIT_TARGET` still works;
-  remove it if it still holds an old address).
-- **Activation:** the first application sends FormSubmit's confirmation email
-  to that inbox. Applications are only delivered after the link in it is
-  clicked, so send one test application right after launch and activate it.
-- After activation FormSubmit shows a random alias for the inbox, which can be
-  used as `FORMSUBMIT_TARGET` instead of the address.
+Why a plain form post: FormSubmit sits behind Cloudflare, which answers requests
+from servers (e.g. a Vercel API route) with a "Just a moment..." bot challenge
+(HTTP 403), and its AJAX endpoint called from the browser fails with CORS errors.
+A normal form post from the visitor's browser passes both.
+
+- The inbox is `FORMSUBMIT_TARGET` in `src/lib/constants.ts`
+  (`aitgv0@gmail.com` by default, overridable with
+  `NEXT_PUBLIC_FORMSUBMIT_TARGET`).
+- **Activation:** the first application shows FormSubmit's "confirm your email"
+  page and sends the activation email to that inbox. Applications are only
+  delivered after its "Activate Form" link is clicked, so send the first test
+  application yourself right after launch and activate it.
+- After activation FormSubmit shows a random alias for the inbox; setting it as
+  `NEXT_PUBLIC_FORMSUBMIT_TARGET` keeps the address out of the page source.
 - Reply-to is set to the applicant's email, so replying answers them directly.
 
 ## Approved design foundation
