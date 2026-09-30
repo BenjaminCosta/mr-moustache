@@ -308,7 +308,7 @@ llevan a las páginas de sede. Los links viejos `/#surfers-paradise` y
   era 307 (temporal).
 - **Search Console por etiqueta HTML** opcional: `GOOGLE_SITE_VERIFICATION`.
 - **Alt texts:** fotos de cada sede con alt descriptivo y nombre de archivo
-  descriptivo (`mr-moustache-barber-clipper-cut.webp`,
+  descriptivo (`mr-moustache-barber-pole-surfers-paradise.webp`,
   `mr-moustache-barber-haircut-mirror.webp`); fondos decorativos con `alt=""`.
   ⚠️ Son fotos reales del equipo, pero no sabemos de qué sede es cada una:
   reemplazarlas por una foto confirmada de cada local cuando las haya

@@ -44,9 +44,9 @@ export const locations = [
     },
     // TODO: Swap for a photo the client confirms was taken in this shop.
     image: {
-      src: "/images/locations/mr-moustache-barber-clipper-cut.webp",
-      alt: "Mr Moustache barber cutting a client's hair with clippers",
-      position: "60% 30%",
+      src: "/images/locations/mr-moustache-barber-pole-surfers-paradise.webp",
+      alt: "Mr Moustache barber cutting a client's hair beside the barber pole",
+      position: "18% 40%",
     },
     page: {
       title: "Barber in Surfers Paradise – Fades & Beard Trims | Mr Moustache",
