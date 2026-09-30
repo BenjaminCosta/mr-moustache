@@ -35,6 +35,8 @@ export type ShopLocation = {
   id: LocationId;
   name: string;
   fullName: string;
+  /** Short label shown above the shop name, e.g. "The original". */
+  tag: string;
   address: Address;
   phone: { display: string; href: string };
   /**
@@ -51,6 +53,18 @@ export type ShopLocation = {
     directions: string;
   };
   image: { src: string; alt: string; position: string };
+  /** Copy for the shop's own landing page (`/surfers-paradise`, `/broadbeach`). */
+  page: {
+    /** Full <title>; keep it under ~60 characters. */
+    title: string;
+    /** Meta description; keep it under ~155 characters. */
+    description: string;
+    /** Visible H1, e.g. "Barber in Broadbeach". */
+    heading: string;
+    intro: string;
+    /** Neighbouring suburbs the shop serves (copy and JSON-LD `areaServed`). */
+    nearby: string[];
+  };
 };
 
 export type Service = {
@@ -63,7 +77,7 @@ export type Service = {
 };
 
 export type GoogleRating = {
-  id: string;
+  id: LocationId;
   location: string;
   rating: number;
   reviewCount: number;

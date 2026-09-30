@@ -2,7 +2,8 @@
 
 Brand landing for Mr Moustache Barbershop and its two Gold Coast shops,
 Surfers Paradise and Broadbeach, with a careers section at the end of the
-landing page.
+landing page, plus one page per shop (`/surfers-paradise`, `/broadbeach`) for
+local SEO and each shop's Google Business Profile.
 
 ## Local development
 
@@ -22,8 +23,10 @@ Open `http://localhost:3000`.
 3. Add the background photography and the "Our Work" clip: drop the files in
    `public/images/backgrounds` and set their paths in `src/data/media.ts`
    (every slot falls back to a dark gradient while it is `null`).
-4. Confirm the metadata in `src/app/layout.tsx` and the LocalBusiness JSON-LD in
-   `src/lib/structured-data.ts`. The full SEO plan lives in `docs/SEO_PLAN.md`.
+4. Confirm the metadata (`src/lib/seo.ts`, each shop's `page` copy in
+   `src/data/locations.ts`) and the JSON-LD in `src/lib/structured-data.ts`.
+   The full SEO plan lives in `docs/SEO_PLAN.md`; linking and measuring each
+   Google Business Profile is in `docs/GOOGLE_BUSINESS_PROFILE.md`.
 5. Square booking automation (review requests and rebooking reminders) is
    documented in `docs/AUTOMATION.md`.
 
@@ -60,6 +63,14 @@ browser checks the required fields.
 - Direction: classic barber with modern execution; dark, editorial and clean.
 - Small corner radius, thin lines, simple cards and large real photography.
 
+## Analytics
+
+Links that matter (booking, directions, phone, Google, Instagram) carry
+`data-analytics-event` (and `data-analytics-location` for a shop) from
+`src/lib/analytics.ts`. Set `NEXT_PUBLIC_GA_MEASUREMENT_ID` to load Google
+Analytics 4 in idle time and send those clicks as GA4 events
+(`src/components/Analytics.tsx`); without it nothing loads.
+
 ## Page structure
 
 Built mobile-first from the mockups in `mr-moustache-material/` (drawn at a
@@ -76,6 +87,12 @@ keeps its proportions).
    and `#broadbeach` (`src/components/sections/Location.tsx`)
 6. Work With Us (`src/components/sections/WorkWithUs.tsx`)
 7. Footer (`src/components/layout/Footer.tsx`)
+
+Each shop page (`src/components/pages/LocationPage.tsx`) has: hero with the
+"Barber in …" H1 (`LocationHero`), that shop's prices (`Services`), its Google
+reviews (`Reputation`), address and full hours (`LocationVisit`), an FAQ built
+from the shop data (`LocationFaq`) and a link to the other shop
+(`OtherLocation`).
 
 ### Google reviews
 

@@ -56,3 +56,41 @@ export function statusLine(hours: OpeningHours[], now: { day: string; time: stri
   if (now.time < today.closes) return `Open now · until ${formatTime(today.closes)}`;
   return "Closed now";
 }
+
+/** "a", "a and b", "a, b and c". */
+export function joinList(items: string[]) {
+  return items.length < 2
+    ? (items[0] ?? "")
+    : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+}
+
+/**
+ * The week in one sentence, grouping consecutive days with the same hours:
+ * "Tuesday–Wednesday 10:00 am – 6:30 pm and Saturday 9:00 am – 4:00 pm.
+ * Closed Monday and Sunday."
+ */
+export function hoursSentence(hours: OpeningHours[]) {
+  const groups: { days: string[]; range: string }[] = [];
+  for (const day of WEEK) {
+    const item = hours.find((entry) => entry.day === day);
+    const range = item ? formatRange(item) : "Closed";
+    const last = groups[groups.length - 1];
+    if (last && last.range === range) last.days.push(day);
+    else groups.push({ days: [day], range });
+  }
+
+  const open = groups
+    .filter((group) => group.range !== "Closed")
+    .map(({ days, range }) => {
+      const label = days.length > 1 ? `${days[0]}–${days[days.length - 1]}` : days[0];
+      return `${label} ${range}`;
+    });
+  const closed = groups.filter((group) => group.range === "Closed").flatMap((group) => group.days);
+
+  return [
+    open.length > 0 ? `${joinList(open)}.` : "",
+    closed.length > 0 ? `Closed ${joinList(closed)}.` : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+}

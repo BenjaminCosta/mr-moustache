@@ -1,4 +1,4 @@
-import type { ShopLocation } from "@/types";
+import type { LocationId, ShopLocation } from "@/types";
 import {
   DIRECTIONS_URL_BROADBEACH,
   DIRECTIONS_URL_SURFERS_PARADISE,
@@ -14,6 +14,7 @@ export const locations = [
     id: "surfers-paradise",
     name: "Surfers Paradise",
     fullName: "Mr Moustache Barbershop Surfers Paradise",
+    tag: "The original",
     address: {
       street: "3 Orchid Ave",
       suburb: "Surfers Paradise",
@@ -42,17 +43,27 @@ export const locations = [
       maps: GOOGLE_MAPS_URL_SURFERS_PARADISE,
       directions: DIRECTIONS_URL_SURFERS_PARADISE,
     },
-    // TODO: Replace with a photo taken inside the Surfers Paradise shop.
+    // TODO: Swap for a photo the client confirms was taken in this shop.
     image: {
-      src: "/images/locations/barber-clipper-fade.webp",
-      alt: "Barber finishing a skin fade with clippers at Mr Moustache",
-      position: "center 30%",
+      src: "/images/locations/mr-moustache-barber-clipper-cut.webp",
+      alt: "Mr Moustache barber cutting a client's hair with clippers",
+      position: "60% 30%",
+    },
+    page: {
+      title: "Barber in Surfers Paradise – Fades & Beard Trims | Mr Moustache",
+      description:
+        "Mr Moustache Barbershop, 3 Orchid Ave, Surfers Paradise. Skin fades, taper fades, classic cuts and beard trims by Spanish-speaking barbers. Book online.",
+      heading: "Barber in Surfers Paradise",
+      intro:
+        "The original Mr Moustache, on Orchid Ave in the heart of Surfers Paradise. Skin fades, taper fades, classic cuts and beard trims by Spanish-speaking barbers.",
+      nearby: ["Main Beach", "Bundall", "Chevron Island", "Broadbeach"],
     },
   },
   {
     id: "broadbeach",
     name: "Broadbeach",
     fullName: "Mr Moustache Barbershop Broadbeach",
+    tag: "Now open",
     address: {
       street: "Unit 5/2623 Gold Coast Hwy",
       suburb: "Broadbeach",
@@ -81,13 +92,44 @@ export const locations = [
       maps: GOOGLE_MAPS_URL_BROADBEACH,
       directions: DIRECTIONS_URL_BROADBEACH,
     },
+    // TODO: Swap for a photo the client confirms was taken in this shop.
     image: {
-      src: "/images/backgrounds/broadbeach-gold-coast-aerial.webp",
-      alt: "Aerial view of the Broadbeach coastline on the Gold Coast",
-      position: "center 45%",
+      src: "/images/locations/mr-moustache-barber-haircut-mirror.webp",
+      alt: "Mr Moustache barber lining up a client's beard, seen in the shop mirror",
+      position: "center 35%",
+    },
+    page: {
+      title: "Barber in Broadbeach – Fades & Beard Trims | Mr Moustache",
+      description:
+        "Mr Moustache Barbershop, Unit 5/2623 Gold Coast Hwy, Broadbeach. Skin fades, taper fades, haircuts and beard trims by Spanish-speaking barbers. Book online.",
+      heading: "Barber in Broadbeach",
+      intro:
+        "Our second Gold Coast shop, on the Gold Coast Hwy in Broadbeach. Skin fades, taper fades, classic cuts and beard trims by Spanish-speaking barbers, with the same standards as Surfers Paradise.",
+      nearby: ["Mermaid Beach", "Broadbeach Waters", "Mermaid Waters", "Surfers Paradise"],
     },
   },
 ] satisfies ShopLocation[];
+
+export function getLocation(id: LocationId) {
+  const location = locations.find((item) => item.id === id);
+  if (!location) throw new Error(`Unknown location: ${id}`);
+  return location as ShopLocation;
+}
+
+/** The shop that is not `id` (each page links to the other one). */
+export function otherLocation(id: LocationId) {
+  return locations.find((item) => item.id !== id) as ShopLocation;
+}
+
+/** Path of the shop's own landing page. */
+export function locationPath(id: LocationId) {
+  return `/${id}`;
+}
+
+/** One-line postal address, e.g. "3 Orchid Ave, Surfers Paradise QLD 4217". */
+export function addressLine(location: ShopLocation) {
+  return addressLines(location).join(", ");
+}
 
 export function addressLines(location: ShopLocation) {
   const { address } = location;

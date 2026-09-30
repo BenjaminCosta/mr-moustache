@@ -3,12 +3,25 @@ import { GoogleStars, GoogleWordmark } from "@/components/ui/Google";
 import { ChevronRightIcon } from "@/components/ui/Icons";
 import { Moustache } from "@/components/ui/Moustache";
 import { RuleLabel } from "@/components/ui/RuleLabel";
+import { getLocation } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import { displayedReviews, googleRatings } from "@/data/reviews";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import type { LocationId } from "@/types";
 import { ReviewsCarousel } from "./ReviewsCarousel";
 
-export function Reputation() {
+type ReputationProps = {
+  /** On a shop's page: only that shop's Google rating and reviews. */
+  location?: LocationId;
+};
+
+export function Reputation({ location }: ReputationProps) {
+  const shop = location ? getLocation(location) : undefined;
+  const ratings = shop ? googleRatings.filter((item) => item.id === shop.id) : googleRatings;
+  const reviews = shop
+    ? displayedReviews.filter((review) => review.location === shop.name)
+    : displayedReviews;
+
   return (
     <section
       id="reviews"
@@ -21,6 +34,7 @@ export function Reputation() {
           <div className="absolute inset-0 lg:left-auto lg:w-[55%]">
             <Image
               src={backgrounds.reputation}
+              quality={50}
               alt=""
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"
@@ -42,7 +56,7 @@ export function Reputation() {
             lineClassName="bg-foreground/85"
           >
             <h2 id="reviews-title" className="text-[0.5rem] font-sans font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              Google reviews
+              {shop ? `${shop.name} Google reviews` : "Google reviews"}
             </h2>
           </RuleLabel>
 
@@ -52,20 +66,21 @@ export function Reputation() {
             the Gold Coast.
           </p>
           <p className="mt-[0.6rem] max-w-[21.9rem] px-[1.9rem] text-[0.9rem] leading-[1.15] text-foreground/85 lg:mt-6 lg:max-w-[30rem] lg:px-0 lg:text-[1.15rem] lg:leading-[1.45]">
-            From Surfers Paradise to Broadbeach, both shops carry the
-            reputation Mr Moustache has built on the Gold Coast.
+            {shop
+              ? `What clients say about Mr Moustache ${shop.name}, straight from Google.`
+              : "From Surfers Paradise to Broadbeach, both shops carry the reputation Mr Moustache has built on the Gold Coast."}
           </p>
         </div>
 
         <ul className="mt-[0.8rem] space-y-[0.35rem] px-[1.1rem] lg:mt-0 lg:space-y-4 lg:px-0">
-          {googleRatings.map((item) => (
+          {ratings.map((item) => (
             <li key={item.id}>
               <a
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-sweep btn-sweep--row group grid h-[4.2rem] grid-cols-[7.25rem_1px_1fr_auto] items-center rounded-[0.4rem] border border-white/20 bg-[#0b0b0b]/80 pl-[0.95rem] pr-[0.75rem] lg:h-32 lg:grid-cols-[8.5rem_1px_1fr_auto] lg:rounded-[0.6rem] lg:gap-x-4 lg:pl-6 lg:pr-6 xl:grid-cols-[10.5rem_1px_1fr_auto] xl:pl-8 xl:pr-7"
-                {...analyticsAttributes(ANALYTICS_EVENTS.googleClick)}
+                {...analyticsAttributes(ANALYTICS_EVENTS.googleClick, item.id)}
               >
                 <span className="self-center">
                   <GoogleWordmark className="h-[1.78rem] w-auto lg:h-10 xl:h-11" />
@@ -103,7 +118,7 @@ export function Reputation() {
         </ul>
       </div>
 
-      {displayedReviews.length > 0 ? (
+      {reviews.length > 0 ? (
         <div className="shell mt-[1rem] lg:mt-24 lg:px-10">
           <RuleLabel className="gap-[0.55rem] px-[1.1rem] lg:gap-8 lg:px-0" lineClassName="bg-foreground/85">
             <p className="text-[0.46rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
@@ -111,7 +126,7 @@ export function Reputation() {
             </p>
           </RuleLabel>
           <div className="mt-[0.75rem] lg:mt-12">
-            <ReviewsCarousel reviews={displayedReviews} />
+            <ReviewsCarousel reviews={reviews} />
           </div>
         </div>
       ) : null}

@@ -7,7 +7,7 @@ type MoustacheProps = {
   className?: string;
 };
 
-const MASK = "url(/images/icons/moustache.png) center / contain no-repeat";
+const MASK = "url(/images/icons/moustache.webp) center / contain no-repeat";
 
 /** Brand moustache mark, tinted with the current text colour. */
 export function Moustache({ width, className = "" }: MoustacheProps) {

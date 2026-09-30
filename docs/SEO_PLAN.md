@@ -1,11 +1,12 @@
-# Plan SEO — Mr Moustache Barbershop Broadbeach
+# Plan SEO — Mr Moustache Barbershop
 
-> **Actualización (septiembre 2026):** el cliente pasó la web de landing solo
-> de Broadbeach a landing de la marca con sus dos barberías. Title, meta
-> description y JSON-LD ahora cubren Mr Moustache Barbershop, con un
-> `HairSalon` para Surfers Paradise y otro para Broadbeach
-> (`src/lib/structured-data.ts`). Las notas específicas de Broadbeach que
-> siguen quedan como historial.
+> **Estado actual (septiembre 2026):** la web es la landing de la marca (`/`)
+> más **una página por sede**: `/surfers-paradise` y `/broadbeach`, cada una
+> con su title, H1, NAP, horarios, precios, reviews, FAQ y `HairSalon` en
+> JSON-LD. Cada Google Business Profile enlaza a su página
+> (`docs/GOOGLE_BUSINESS_PROFILE.md`). Lo último está en la sección 9
+> ("Cuarta pasada"); las secciones 1–8 quedan como historial de cuando la
+> web era solo de Broadbeach.
 
 Objetivo: que Google entienda sin dudas que esta landing es **la web oficial de
 una barbería física en Broadbeach**, qué servicios ofrece y que es el mismo
@@ -247,20 +248,153 @@ Places, Yelp AU, True Local, Hotfrog).
 
 ---
 
+## 9. Cuarta pasada: páginas por sede, GBP y performance (septiembre 2026)
+
+### Estructura para posicionar las dos sedes
+
+Google posiciona fichas y páginas **por sede**. Una sola landing con las dos
+direcciones en pestañas (una de ellas oculta) no alcanza para competir por
+"barber broadbeach" y "barber surfers paradise" a la vez. Ahora:
+
+| URL | Para qué búsquedas | H1 | Title |
+| --- | --- | --- | --- |
+| `/` | barber / barbershop Gold Coast, Spanish-speaking barber Gold Coast, marca | Mr Moustache Barbershop · Gold Coast | Gold Coast Barbers in Surfers Paradise & Broadbeach \| Mr Moustache |
+| `/surfers-paradise` | barber / barbershop Surfers Paradise, fades / skin fade Surfers Paradise, Spanish-speaking barber Surfers Paradise | Barber in Surfers Paradise | Barber in Surfers Paradise – Fades & Beard Trims \| Mr Moustache |
+| `/broadbeach` | barber / barbershop Broadbeach, fades / skin fade Broadbeach, Spanish-speaking barber Broadbeach | Barber in Broadbeach | Barber in Broadbeach – Fades & Beard Trims \| Mr Moustache |
+
+Cada página de sede (`src/components/pages/LocationPage.tsx`, textos en
+`page` de `src/data/locations.ts`):
+
+- **Hero:** breadcrumb (Home / Broadbeach), H1, intro propia, "Book at
+  Broadbeach" (Square de esa sede), "Get Directions", rating de Google de esa
+  sede y "Spanish-speaking barbers · Hablamos español".
+- **Precios** (H2 "Broadbeach barber prices"): cada fila abre ese servicio en
+  el Square de esa sede. Sin JavaScript (se renderiza en el servidor).
+- **Reviews** (H2 "Broadbeach Google reviews"): solo las de esa sede.
+- **Find us in Broadbeach** (H2): dirección, horarios de toda la semana
+  abiertos por defecto, teléfono, botones y link a la ficha en Maps. Menciona
+  los barrios cercanos (Mermaid Beach, Broadbeach Waters…).
+- **FAQ** (H2 "Broadbeach barber FAQ", preguntas en H3): español, precios,
+  horarios, cómo reservar, dónde queda, cortes para chicos. Las respuestas se
+  arman con los datos (precios, horarios, dirección), así nunca quedan
+  desactualizadas respecto al resto de la página.
+- **Also on the Gold Coast:** link a la otra sede.
+
+Enlazado interno: el menú, la lista "Our locations" del hero, el footer y
+cada pestaña de "Find us" de la home ("More about Mr Moustache Broadbeach")
+llevan a las páginas de sede. Los links viejos `/#surfers-paradise` y
+`/#broadbeach` siguen abriendo la pestaña correcta.
+
+### Técnico
+
+- **Canonical y Open Graph por página** (`pageMetadata()` en
+  `src/lib/seo.ts`). Antes el `canonical: "/"` estaba en el layout y lo
+  heredaba cualquier página nueva (incluida la 404).
+- **JSON-LD** (`src/lib/structured-data.ts`):
+  - Home: `Organization` + `WebSite` (nombre del sitio en Google, con
+    `alternateName` "Mr Moustache" y "Mr. Moustache Barbershop") + `WebPage` +
+    los dos `HairSalon`.
+  - Cada sede: su `HairSalon` completo (`url` = su página, fotos, horarios,
+    `areaServed` con barrios cercanos, `knowsLanguage` en/es, `ReserveAction`
+    a su Square, catálogo de servicios con precio y link de reserva por
+    servicio) + `BreadcrumbList` + `FAQPage` + `WebPage`.
+  - Mismo `@id` por sede en todas las páginas (`/broadbeach#barbershop`).
+  - Sigue sin `aggregateRating`: Google no muestra estrellas de reviews
+    servidas por el propio negocio en `LocalBusiness`.
+- **Sitemap:** home + dos sedes, con sitemap de imágenes (fotos reales).
+- **robots.txt:** `Disallow: /api/` en producción; todo bloqueado en previews.
+- **`max-image-preview: large`** en robots meta (fotos grandes en resultados).
+- **`/work-with-us` redirige con 308** (permanente) a `/#work-with-us`; antes
+  era 307 (temporal).
+- **Search Console por etiqueta HTML** opcional: `GOOGLE_SITE_VERIFICATION`.
+- **Alt texts:** fotos de cada sede con alt descriptivo y nombre de archivo
+  descriptivo (`mr-moustache-barber-clipper-cut.webp`,
+  `mr-moustache-barber-haircut-mirror.webp`); fondos decorativos con `alt=""`.
+  ⚠️ Son fotos reales del equipo, pero no sabemos de qué sede es cada una:
+  reemplazarlas por una foto confirmada de cada local cuando las haya
+  (`image` en `src/data/locations.ts`).
+
+### Performance
+
+| Lighthouse móvil (simulado, 3–5 corridas, build local) | `main` antes | Ahora |
+| --- | --- | --- |
+| Home | 77–95 | **91–98** |
+| `/surfers-paradise` | — | **93–98** |
+| `/broadbeach` | — | **94–98** |
+| Escritorio (las tres) | 100 | **100** |
+| Buenas prácticas | 96 | **100** |
+| SEO / Accesibilidad | 100 / 100 | 100 / 100 |
+| Peso de la carga inicial (home) | 454 KB | **371 KB** |
+
+(El 77 de `main` fue la primera corrida con la caché de imágenes fría. En la
+home el LCP simulado sale 2,5 s o 3,1 s según si una tarea de JS de ~40 ms
+arranca antes o después del primer pintado; los requests son los mismos.
+Medido contra `next start` local, que sirve HTTP/1.1; Vercel sirve HTTP/2 y
+desde CDN, así que PageSpeed Insights en producción debería dar igual o mejor.)
+
+Qué cambió:
+
+- **Fuentes de abajo del pliegue, diferidas:** Roboto (tarjetas de reviews,
+  37 KB) y Comforter Brush (frases manuscritas, 45 KB) se descargaban en la
+  primera carga aunque estuvieran al final de la página. Ahora la clase de la
+  fuente se aplica cuando el texto se acerca a la pantalla
+  (`useNearViewport` + `ScriptText`). Se ven igual.
+- **Fondos oscurecidos a calidad 50** (servicios, reviews, Work With Us,
+  footer, palmeras): están bajo overlays negros de 50–95 %, no se nota.
+- **Íconos de máscara** (bigote, palmera) de PNG a WebP sin pérdida.
+- **favicon.ico** de 16 a 9 KB y **icon.png** de 93 a 19 KB (sin cambio visible).
+- **Texto legible en móvil:** las reviews (10 px → 13 px, tarjetas más anchas)
+  y las descripciones de servicios (10,7 px → 12 px). Lighthouse marcaba
+  "Document doesn't use legible font sizes" (46 % de texto legible).
+- **Probado y descartado:** `content-visibility: auto` en las secciones de
+  abajo. Mejoraba un poco, pero corría los anclajes (`/#work-with-us`
+  quedaba ~100 px desplazado).
+
+Lo que queda es el runtime de React/Next (~150 KB de JS) y el CSS (15 KB),
+comunes a cualquier sitio Next.
+
+### Keywords
+
+Las que pidió trabajar el cliente (barber, barbershop, fades, Spanish-speaking
+barber, Gold Coast, Broadbeach, Surfers Paradise) están repartidas por página
+según la tabla de arriba, en title, H1, H2, intro, FAQ y schema, sin repetir de
+más. **Pendiente de Aitor:** confirmar si hay otras que quiera priorizar
+(p. ej. "mullet", "burst fade", "kids haircut") para sumarlas al copy.
+
+Idea para después: una versión en español (`/es/…`) para "barbero Gold
+Coast" / "barbería en Surfers Paradise", con `hreflang`. Hay mucha comunidad
+latina y española en la Gold Coast y casi no hay competencia en español.
+
+### Pendiente del cliente (bloquea parte del SEO local)
+
+| Dato | Dónde va |
+| --- | --- |
+| Dominio definitivo | `NEXT_PUBLIC_SITE_URL` en Vercel (canonical, sitemap, schema) |
+| Horarios oficiales de cada sede (hoy salen de la disponibilidad de Square) | `openingHours` en `src/data/locations.ts` |
+| Teléfono propio de cada sede, si existe | `phone` en `src/data/locations.ts` |
+| Coordenadas del pin de cada ficha | `geo` en `src/data/locations.ts` |
+| Foto confirmada de cada local | `image` en `src/data/locations.ts` |
+| Keywords extra de Aitor | copy de las páginas |
+
+---
+
 ### Checklist rápido
 
-- [x] Title, meta description, OG
-- [x] H1/H2 con el tema real
-- [x] Copy local natural
-- [x] Schema `HairSalon` válido
-- [x] Sitemap / robots / canonical / noindex en previews
+- [x] Title, meta description, OG por página
+- [x] H1/H2 con el tema real (home y cada sede)
+- [x] Una página por sede, enlazada desde menú, hero, footer y "Find us"
+- [x] Schema `HairSalon` por sede + `Organization`, `WebSite`, `BreadcrumbList`, `FAQPage`
+- [x] Sitemap (con imágenes) / robots / canonical por página / noindex en previews
 - [x] Vídeo optimizado y con carga diferida
-- [x] Imágenes con nombres descriptivos + AVIF
-- [x] Links de reservas (Square) e Instagram
-- [ ] Horarios, servicios y teléfono confirmados desde Square
+- [x] Imágenes con nombres descriptivos + AVIF + alt
+- [x] Fuentes de abajo del pliegue diferidas; Lighthouse móvil 91–98, escritorio 100
+- [x] Links de reservas por sede (Square)
+- [x] Medición preparada (GA4 por variable de entorno + UTM por ficha)
+- [ ] Horarios y teléfono confirmados por el cliente
 - [ ] Dominio + `NEXT_PUBLIC_SITE_URL`
-- [ ] Geo + URL del GBP
+- [ ] Geo de cada ficha
 - [ ] Redirects de dominio
-- [ ] GBP enlazado y completo
-- [ ] Search Console + sitemap + indexación
+- [ ] GBP enlazados a su página (ver `docs/GOOGLE_BUSINESS_PROFILE.md`)
+- [ ] GA4 (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) + evento clave `booking_click`
+- [ ] Search Console + sitemap + indexación de las tres URLs
 - [ ] Rich Results Test en producción

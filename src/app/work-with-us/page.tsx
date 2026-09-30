@@ -1,6 +1,6 @@
-import { redirect } from "next/navigation";
+import { permanentRedirect } from "next/navigation";
 
-/** Keeps existing careers links working while the form now lives on Home. */
+/** Keeps existing careers links working (308) while the form now lives on Home. */
 export default function WorkWithUsPage() {
-  redirect("/#work-with-us");
+  permanentRedirect("/#work-with-us");
 }

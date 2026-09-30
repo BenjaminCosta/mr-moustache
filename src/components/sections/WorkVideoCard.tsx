@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { SpeakerSimpleHighIcon } from "@phosphor-icons/react/dist/csr/SpeakerSimpleHigh";
 import { SpeakerSimpleSlashIcon } from "@phosphor-icons/react/dist/csr/SpeakerSimpleSlash";
+import { useNearViewport } from "@/hooks/useNearViewport";
 import type { WorkVideo } from "@/types";
 
 type WorkVideoCardProps = {
@@ -13,24 +14,7 @@ export function WorkVideoCard({ video }: WorkVideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
   // The clip and its poster only download once the card nears the viewport.
-  const [shouldLoad, setShouldLoad] = useState(false);
-
-  useEffect(() => {
-    const element = videoRef.current;
-    if (!element) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting) return;
-        setShouldLoad(true);
-        observer.disconnect();
-      },
-      { rootMargin: "400px 0px" },
-    );
-
-    observer.observe(element);
-    return () => observer.disconnect();
-  }, []);
+  const shouldLoad = useNearViewport(videoRef, "400px");
 
   const toggleMuted = () => {
     const element = videoRef.current;

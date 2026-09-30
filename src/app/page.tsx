@@ -5,6 +5,15 @@ import { OurWork } from "@/components/sections/OurWork";
 import { Reputation } from "@/components/sections/Reputation";
 import { Services } from "@/components/sections/Services";
 import { WorkWithUs } from "@/components/sections/WorkWithUs";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
+import { homeJsonLd } from "@/lib/structured-data";
+
+export const metadata = pageMetadata({
+  title: HOME_TITLE,
+  description: HOME_DESCRIPTION,
+  path: "/",
+});
 
 export default function Home() {
   return (
@@ -18,6 +27,7 @@ export default function Home() {
         <WorkWithUs />
       </main>
       <Footer />
+      <JsonLd data={homeJsonLd()} />
     </div>
   );
 }

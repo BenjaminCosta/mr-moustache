@@ -2,11 +2,21 @@ import Link from "next/link";
 import { SiteMenu } from "@/components/layout/SiteMenu";
 import { Logo } from "@/components/ui/Logo";
 import { business } from "@/data/business";
-import { navigation } from "@/data/navigation";
+import { navigationFor } from "@/data/navigation";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import type { LocationId } from "@/types";
+
+type SiteHeaderProps = {
+  /** The shop whose page this is: marks its link and books at that shop. */
+  location?: LocationId;
+  /** Book Now target; defaults to the brand's booking site. */
+  bookingUrl?: string;
+};
 
 /** Logo, primary navigation and Book Now, shared by every page. */
-export function SiteHeader() {
+export function SiteHeader({ location, bookingUrl = business.links.booking }: SiteHeaderProps) {
+  const navigation = navigationFor(location);
+
   return (
     <header className="shell flex items-start justify-between pl-[1.625rem] pr-[1.25rem] pt-[1.4375rem] lg:items-center lg:px-10 lg:pt-8">
       <Link href="/" aria-label={`${business.name}, home`}>
@@ -19,6 +29,7 @@ export function SiteHeader() {
             <li key={item.href}>
               <Link
                 href={item.href}
+                aria-current={item.current ? "page" : undefined}
                 className="group relative whitespace-nowrap py-2 text-[0.75rem] font-medium uppercase tracking-[0.28em] text-foreground transition-colors duration-200 hover:text-primary focus-visible:text-primary"
               >
                 {item.label}
@@ -31,12 +42,12 @@ export function SiteHeader() {
           ))}
           <li>
             <a
-              href={business.links.booking}
+              href={bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Book now through Square (opens in a new tab)"
               className="btn-sweep btn-sweep--invert-primary inline-flex h-11 items-center whitespace-nowrap rounded-full border-[1.5px] border-primary bg-primary px-7 text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-white"
-              {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick)}
+              {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick, location)}
             >
               Book now
             </a>
@@ -45,7 +56,7 @@ export function SiteHeader() {
       </nav>
 
       <div className="pt-[0.6rem] lg:hidden">
-        <SiteMenu />
+        <SiteMenu location={location} bookingUrl={bookingUrl} />
       </div>
     </header>
   );

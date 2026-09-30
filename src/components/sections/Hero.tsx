@@ -1,19 +1,15 @@
 import Image from "next/image";
+import Link from "next/link";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ArrowRightIcon, StarIcon } from "@/components/ui/Icons";
 import { Moustache } from "@/components/ui/Moustache";
 import { Palm } from "@/components/ui/Palm";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { business } from "@/data/business";
-import { locations } from "@/data/locations";
+import { locationPath, locations } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import { googleRatings } from "@/data/reviews";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
-
-const locationTags: Record<(typeof locations)[number]["id"], string> = {
-  "surfers-paradise": "The original",
-  broadbeach: "Now open",
-};
 
 const ratingSummary = locations
   .map((location) => {
@@ -58,9 +54,9 @@ export function Hero() {
 
         <div className="shell mt-auto px-[1.625rem] pt-12 lg:px-10 lg:pb-14">
           <div className="lg:max-w-[52rem]">
-            {/* The business name is the page's H1; the headline below stays the visual lead. */}
+            {/* The business name and area are the page's H1; the headline below stays the visual lead. */}
             <h1 className="font-sans text-[0.6rem] font-medium uppercase leading-none tracking-[0.19em] text-foreground/90 lg:text-[0.8rem] lg:tracking-[0.3em]">
-              {business.name}
+              {business.name} · Gold Coast
             </h1>
             <p className="mt-[0.4rem] text-balance font-display text-[2.4rem] font-bold leading-[0.92] tracking-[-0.015em] text-white lg:mt-5 lg:whitespace-nowrap lg:text-[4.5rem] lg:leading-[0.95] xl:text-[5.25rem]">
               Good cuts.
@@ -148,21 +144,20 @@ export function Hero() {
               key={location.id}
               className="border-white/25 [&:not(:first-child)]:border-t"
             >
-              <a
-                href={`#${location.id}`}
-                aria-label={`View Mr Moustache ${location.name} hours and directions`}
+              <Link
+                href={locationPath(location.id)}
                 className="group flex items-center justify-between gap-5 py-[1.2rem] text-left text-foreground lg:py-9"
               >
                 <span>
                   <span className="block text-[0.47rem] font-medium uppercase leading-none tracking-[0.3em] text-primary lg:text-[0.74rem] lg:tracking-[0.4em]">
-                    {locationTags[location.id]}
+                    {location.tag}
                   </span>
                   <span className="mt-[0.58rem] block font-display text-[2rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-4 lg:text-[3.5rem] xl:text-[4rem]">
                     {location.name}
                   </span>
                 </span>
                 <ArrowRightIcon className="size-[1.7rem] shrink-0 text-foreground transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-10" />
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

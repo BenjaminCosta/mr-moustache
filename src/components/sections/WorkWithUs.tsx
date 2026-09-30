@@ -19,6 +19,7 @@ export function WorkWithUs() {
           <div className="absolute inset-x-0 top-0 h-[27rem] [mask-image:linear-gradient(to_bottom,black_45%,transparent)] lg:inset-y-0 lg:left-auto lg:h-auto lg:w-[55%] lg:[mask-image:none]">
             <Image
               src={backgrounds.workWithUs}
+              quality={50}
               alt=""
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"

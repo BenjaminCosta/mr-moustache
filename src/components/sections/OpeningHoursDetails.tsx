@@ -10,7 +10,13 @@ import type { OpeningHours } from "@/types";
  * lists every day, with today highlighted. "Today" is only known in the
  * browser, so the first render shows a neutral label.
  */
-export function OpeningHoursDetails({ hours }: { hours: OpeningHours[] }) {
+export function OpeningHoursDetails({
+  hours,
+  defaultOpen = false,
+}: {
+  hours: OpeningHours[];
+  defaultOpen?: boolean;
+}) {
   const [now, setNow] = useState<{ day: string; time: string } | null>(null);
 
   useEffect(() => {
@@ -21,7 +27,7 @@ export function OpeningHoursDetails({ hours }: { hours: OpeningHours[] }) {
   }, []);
 
   return (
-    <details className="group">
+    <details className="group" open={defaultOpen}>
       <summary className="flex w-fit cursor-pointer list-none items-center gap-[0.6rem] transition-colors duration-200 hover:text-teal-dark focus-visible:text-teal-dark lg:gap-3 [&::-webkit-details-marker]:hidden">
         <span>
           {now ? statusLine(hours, now) : "Opening hours"}

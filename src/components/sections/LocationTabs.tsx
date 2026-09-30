@@ -1,17 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import {
-  ArrowRightIcon,
-  ClockIcon,
-  PhoneIcon,
-  PinOutlineIcon,
-} from "@/components/ui/Icons";
-import { addressLines, locations } from "@/data/locations";
-import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
-import { hasFullWeek } from "@/lib/opening-hours";
+import { locations } from "@/data/locations";
 import type { LocationId } from "@/types";
-import { OpeningHoursDetails } from "./OpeningHoursDetails";
+import { ShopDetails } from "./ShopDetails";
 
 const ids = locations.map((location) => location.id) as LocationId[];
 
@@ -112,90 +104,18 @@ export function LocationTabs() {
         })}
       </div>
 
-      {locations.map((location) => {
-        const [street, suburb] = addressLines(location);
-        return (
-          <div
-            key={location.id}
-            id={`${location.id}-panel`}
-            role="tabpanel"
-            aria-labelledby={location.id}
-            hidden={location.id !== active}
-            className="pt-[1.25rem] lg:pt-10"
-          >
-            <h3 className="font-display text-[1.45rem] font-bold leading-none tracking-[-0.02em] text-ink lg:text-[2rem]">
-              {location.name}
-            </h3>
-
-            <ul className="mt-[0.95rem] space-y-[1.05rem] text-[0.91rem] leading-[1.15] lg:mt-8 lg:space-y-8 lg:text-[1.15rem] lg:leading-[1.3]">
-              <li className="grid grid-cols-[2.95rem_1fr] items-start lg:grid-cols-[3.75rem_1fr]">
-                <PinOutlineIcon className="ml-[0.2rem] mt-[0.05rem] h-[1.5rem] w-[1.15rem] lg:h-7 lg:w-[1.35rem]" />
-                <address className="not-italic">
-                  {street}
-                  <br />
-                  {suburb}
-                </address>
-              </li>
-              <li className="grid grid-cols-[2.95rem_1fr] items-start lg:grid-cols-[3.75rem_1fr]">
-                <ClockIcon className="-mt-[0.05rem] size-[1.55rem] lg:size-7" />
-                {hasFullWeek(location.openingHours) ? (
-                  <OpeningHoursDetails hours={location.openingHours} />
-                ) : location.hours ? (
-                  <p>
-                    {location.hours.summary}
-                    <span className="mt-[0.2rem] block text-ink-muted">
-                      {location.hours.detail}
-                    </span>
-                  </p>
-                ) : (
-                  // Placeholder until the shop's hours are confirmed.
-                  <p>
-                    Opening hours
-                    <span className="mt-[0.2rem] block text-ink-muted">
-                      To be confirmed
-                    </span>
-                  </p>
-                )}
-              </li>
-              <li className="grid grid-cols-[2.95rem_1fr] items-start lg:grid-cols-[3.75rem_1fr]">
-                <PhoneIcon className="ml-[0.1rem] size-[1.4rem] lg:size-[1.6rem]" />
-                <a
-                  href={location.phone.href}
-                  className="w-fit transition-colors duration-200 hover:text-teal-dark focus-visible:text-teal-dark"
-                  {...analyticsAttributes(ANALYTICS_EVENTS.phoneClick)}
-                >
-                  {location.phone.display}
-                </a>
-              </li>
-            </ul>
-
-            <div className="mt-[1.15rem] flex flex-col gap-[0.5rem] lg:mt-10 lg:flex-row lg:gap-4">
-              <a
-                href={location.links.booking}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Book now at ${location.name} through Square (opens in a new tab)`}
-                className="btn-sweep btn-sweep--invert-primary group flex h-[2.2rem] items-center justify-center gap-[0.9rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.8rem] font-medium text-white lg:h-14 lg:w-[15rem] lg:gap-[1.3rem] lg:text-[1rem]"
-                {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick)}
-              >
-                Book Now
-                <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
-              </a>
-              <a
-                href={location.links.directions}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={`Get directions to Mr Moustache ${location.name} in Google Maps (opens in a new tab)`}
-                className="btn-sweep btn-sweep--fill-ink group flex h-[2.2rem] items-center justify-center gap-[0.9rem] rounded-full border-[1.5px] border-ink text-[0.8rem] font-medium lg:h-14 lg:w-[15rem] lg:gap-[1.3rem] lg:text-[1rem]"
-                {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick)}
-              >
-                Get Directions
-                <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
-              </a>
-            </div>
-          </div>
-        );
-      })}
+      {locations.map((location) => (
+        <div
+          key={location.id}
+          id={`${location.id}-panel`}
+          role="tabpanel"
+          aria-labelledby={location.id}
+          hidden={location.id !== active}
+          className="pt-[1.25rem] lg:pt-10"
+        >
+          <ShopDetails location={location} showPageLink />
+        </div>
+      ))}
     </div>
   );
 }

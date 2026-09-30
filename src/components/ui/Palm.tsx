@@ -7,7 +7,7 @@ type PalmProps = {
   className?: string;
 };
 
-const MASK = "url(/images/icons/palm.png) center / contain no-repeat";
+const MASK = "url(/images/icons/palm.webp) center / contain no-repeat";
 
 /** Brand palm mark, tinted with the current text colour. */
 export function Palm({ width, className = "" }: PalmProps) {
