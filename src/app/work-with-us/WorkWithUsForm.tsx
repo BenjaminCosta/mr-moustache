@@ -48,16 +48,21 @@ export function WorkWithUsForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = Object.fromEntries(new FormData(event.currentTarget));
+    const fields = Object.fromEntries(new FormData(event.currentTarget));
     // Honeypot: bots tick it, people never see it.
-    if (data.botcheck) return;
+    if (fields.botcheck) return;
 
     setStatus("sending");
     try {
       const response = await fetch(WEB3FORMS_ENDPOINT, {
         method: "POST",
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: "New Work With Us application",
+          from_name: "Mr Moustache website",
+          ...fields,
+        }),
       });
       const result = await response.json().catch(() => null);
       if (!result?.success) console.warn("[work-with-us] Web3Forms:", result?.message ?? response.status);
@@ -86,9 +91,6 @@ export function WorkWithUsForm() {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-[1.15rem] lg:space-y-7">
-      <input type="hidden" name="access_key" defaultValue={WEB3FORMS_ACCESS_KEY} />
-      <input type="hidden" name="subject" defaultValue="New Work With Us application" />
-      <input type="hidden" name="from_name" defaultValue="Mr Moustache website" />
       <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <div className="grid gap-[1.15rem] lg:grid-cols-2 lg:gap-7">
         <Field name="name" label="Name">
