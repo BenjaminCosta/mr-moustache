@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 
-import { FORMSUBMIT_ACTION } from "../src/lib/constants";
+import { WEB3FORMS_ENDPOINT } from "../src/lib/constants";
 
 describe("work with us form", () => {
-  it("posts to the test inbox's FormSubmit form endpoint", () => {
-    assert.equal(FORMSUBMIT_ACTION, "https://formsubmit.co/benjacostm100@gmail.com");
+  it("sends applications to the Web3Forms submit API", () => {
+    assert.equal(WEB3FORMS_ENDPOINT, "https://api.web3forms.com/submit");
   });
 });

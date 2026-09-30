@@ -35,25 +35,19 @@ Square Appointments page.
 
 ## Work With Us form
 
-The careers form is a regular form posted to [FormSubmit](https://formsubmit.co)
-(`https://formsubmit.co/<inbox>`) into a hidden iframe
-(`src/app/work-with-us/WorkWithUsForm.tsx`), the same setup as
-santosbecker.com's contact form: no CORS, and the visitor stays on the page and
-sees "Application sent" once the iframe loads (or after 5 seconds). The browser
-checks the required fields. No account or API key is needed. (FormSubmit's
-AJAX endpoint failed here with CORS errors.)
+The careers form sends each application from the browser to
+[Web3Forms](https://web3forms.com) (`POST https://api.web3forms.com/submit`,
+`src/app/work-with-us/WorkWithUsForm.tsx`), which emails it to the inbox tied to
+the access key. The visitor stays on the page and sees "Application sent"; the
+browser checks the required fields.
 
-A server-side call (Vercel API route) is not an option: FormSubmit sits behind
-Cloudflare, which answers requests from servers with a "Just a moment..." bot
-challenge (HTTP 403).
-
-- The inbox is `FORMSUBMIT_TARGET` in `src/lib/constants.ts`
-  (`benjacostm100@gmail.com` while testing; the client's inbox is
-  `aitgv0@gmail.com`), overridable with `NEXT_PUBLIC_FORMSUBMIT_TARGET`.
-- **Activation:** the first application to a new inbox sends FormSubmit's
-  activation email; applications are only delivered after its "Activate Form"
-  link is clicked.
+- **Setup:** create an access key at web3forms.com with the inbox that should
+  receive applications (e.g. the client's `aitgv0@gmail.com`) and set it as
+  `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` in Vercel. The key is public by design;
+  Web3Forms' free plan only accepts submissions from browsers.
 - Reply-to is the applicant's email (the `email` field).
+- FormSubmit was dropped: it answered this site with HTTP 500 for every new form
+  (and Cloudflare blocks it from servers), including santosbecker.com's.
 
 ## Approved design foundation
 

@@ -116,14 +116,13 @@ export const GOOGLE_PROFILE_URL =
   process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL?.trim() ||
   GOOGLE_MAPS_URL_SURFERS_PARADISE;
 
-// Work With Us applications are a regular form posted to FormSubmit
-// (https://formsubmit.co) into a hidden iframe, as on santosbecker.com, so the
-// visitor stays on the page. Testing with Benja's inbox; switch to the
-// client's (aitgv0@gmail.com) once it works, or set NEXT_PUBLIC_FORMSUBMIT_TARGET.
-export const FORMSUBMIT_TARGET =
-  process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() || "benjacostm100@gmail.com";
+// Work With Us applications are sent from the browser to Web3Forms
+// (https://web3forms.com). The access key picks the inbox that receives them;
+// it is public by design (Web3Forms only accepts browser submissions on the
+// free plan). Create one at web3forms.com with the inbox's email address.
+export const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
-export const FORMSUBMIT_ACTION = `https://formsubmit.co/${FORMSUBMIT_TARGET}`;
+export const WEB3FORMS_ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() || "";
 
 // Handle taken from the downloaded clips in mr-moustache-material/.
 export const INSTAGRAM_URL =
