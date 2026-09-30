@@ -6,7 +6,7 @@ for image search); decorative backgrounds keep an empty `alt`.
 
 | File | Source | Used in |
 | --- | --- | --- |
-| `mr-moustache-barber-clipper-cut.webp` | `mr-moustache-barbershop.jpg` | Hero background (toned down 25%, top gradient behind the nav) |
+| `mr-moustache-barber-fade-barber-pole.webp` | `hero/hero-5.jpg` | Hero background (toned down, top gradient behind the nav) |
 | `barber-scissors-clippers-comb.webp` | `bg-services.png` | Services background (darkened in the middle) |
 | `mr-moustache-fade-haircut-poster.webp` | first frame of the clip | "Our Work" video poster (720px, 5 KB) |
 | `palm-tree-silhouettes.webp` | `bg-location-palms.png` | Find Us palms (grey silhouette with transparency) |
