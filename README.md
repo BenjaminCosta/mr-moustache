@@ -35,11 +35,13 @@ Square Appointments page.
 
 ## Work With Us form
 
-The careers form sends each application from the browser to
-[FormSubmit](https://formsubmit.co)'s AJAX endpoint
-(`src/app/work-with-us/WorkWithUsForm.tsx`), so the visitor stays on the page
-and sees "Application sent". The browser checks the required fields. No
-account or API key is needed.
+The careers form is a regular form posted to [FormSubmit](https://formsubmit.co)
+(`https://formsubmit.co/<inbox>`) into a hidden iframe
+(`src/app/work-with-us/WorkWithUsForm.tsx`), the same setup as
+santosbecker.com's contact form: no CORS, and the visitor stays on the page and
+sees "Application sent" once the iframe loads (or after 5 seconds). The browser
+checks the required fields. No account or API key is needed. (FormSubmit's
+AJAX endpoint failed here with CORS errors.)
 
 A server-side call (Vercel API route) is not an option: FormSubmit sits behind
 Cloudflare, which answers requests from servers with a "Just a moment..." bot

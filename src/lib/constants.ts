@@ -116,14 +116,14 @@ export const GOOGLE_PROFILE_URL =
   process.env.NEXT_PUBLIC_GOOGLE_PROFILE_URL?.trim() ||
   GOOGLE_MAPS_URL_SURFERS_PARADISE;
 
-// Work With Us applications are sent from the browser to FormSubmit's AJAX
-// endpoint (https://formsubmit.co), so the visitor stays on the page.
-// Testing with Benja's inbox; switch to the client's (aitgv0@gmail.com) once
-// it works, or set NEXT_PUBLIC_FORMSUBMIT_TARGET.
+// Work With Us applications are a regular form posted to FormSubmit
+// (https://formsubmit.co) into a hidden iframe, as on santosbecker.com, so the
+// visitor stays on the page. Testing with Benja's inbox; switch to the
+// client's (aitgv0@gmail.com) once it works, or set NEXT_PUBLIC_FORMSUBMIT_TARGET.
 export const FORMSUBMIT_TARGET =
   process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() || "benjacostm100@gmail.com";
 
-export const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORMSUBMIT_TARGET}`;
+export const FORMSUBMIT_ACTION = `https://formsubmit.co/${FORMSUBMIT_TARGET}`;
 
 // Handle taken from the downloaded clips in mr-moustache-material/.
 export const INSTAGRAM_URL =
