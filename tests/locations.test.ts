@@ -24,4 +24,19 @@ describe("automation locations", () => {
     assert.equal(locationForSquareId("LOC_OTHER"), undefined);
     assert.equal(locationForSquareId(undefined), undefined);
   });
+
+  it("falls back to each shop's Google write-review link", () => {
+    process.env.SQUARE_LOCATION_ID_SURFERS_PARADISE = "LOC_SP";
+    process.env.SQUARE_LOCATION_ID_BROADBEACH = "LOC_BB";
+    delete process.env.GOOGLE_REVIEW_URL_SURFERS_PARADISE;
+    delete process.env.GOOGLE_REVIEW_URL_BROADBEACH;
+
+    assert.deepEqual(
+      automationLocations().map((location) => location.reviewUrl),
+      [
+        "https://search.google.com/local/writereview?placeid=ChIJMUVO7fEFkWsRsYBHrfV0y7Y",
+        "https://search.google.com/local/writereview?placeid=ChIJ8Qbj5d4FkWsR53Iktyc_sEI",
+      ],
+    );
+  });
 });

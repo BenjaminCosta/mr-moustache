@@ -73,14 +73,34 @@ function mapsDirectionsUrl(destination: string) {
   return `https://www.google.com/maps/dir/?${params}`;
 }
 
-// Searching by name and address opens each shop's listing, not a bare pin.
+// Google Business Profile place IDs (from the review links the client sent).
+export const GOOGLE_PLACE_IDS = {
+  "surfers-paradise": "ChIJMUVO7fEFkWsRsYBHrfV0y7Y",
+  broadbeach: "ChIJ8Qbj5d4FkWsR53Iktyc_sEI",
+} as const;
+
+// Searching by name plus place ID opens each shop's listing, not a bare pin.
 export const GOOGLE_MAPS_URL_SURFERS_PARADISE = mapsSearchUrl(
   "Mr. Moustache Barbershop Surfers Paradise",
-  "ChIJMUVO7fEFkWsRsYBHrfV0y7Y",
+  GOOGLE_PLACE_IDS["surfers-paradise"],
 );
 
 export const GOOGLE_MAPS_URL_BROADBEACH = mapsSearchUrl(
   "Mr Moustache Barbershop Broadbeach, Unit 5/2623 Gold Coast Hwy, Broadbeach QLD 4218",
+  GOOGLE_PLACE_IDS.broadbeach,
+);
+
+/** Opens Google's "write a review" dialog for the shop. */
+function googleWriteReviewUrl(placeId: string) {
+  return `https://search.google.com/local/writereview?${new URLSearchParams({ placeid: placeId })}`;
+}
+
+export const GOOGLE_REVIEW_URL_SURFERS_PARADISE = googleWriteReviewUrl(
+  GOOGLE_PLACE_IDS["surfers-paradise"],
+);
+
+export const GOOGLE_REVIEW_URL_BROADBEACH = googleWriteReviewUrl(
+  GOOGLE_PLACE_IDS.broadbeach,
 );
 
 export const DIRECTIONS_URL_SURFERS_PARADISE = mapsDirectionsUrl(
@@ -103,11 +123,10 @@ export const INSTAGRAM_URL =
 
 // Work With Us applications are emailed through FormSubmit. The target can be
 // the inbox address or, once activated, the random alias FormSubmit provides
-// (keeps the address out of the page source).
-// TODO: Confirm the inbox with the client.
+// (keeps the address out of the page source). Inbox confirmed by the client.
 export const FORMSUBMIT_TARGET =
   process.env.NEXT_PUBLIC_FORMSUBMIT_TARGET?.trim() ||
-  "mr.moustache.barbers@gmail.com";
+  "aitgv0@gmail.com";
 
 export const FORMSUBMIT_ENDPOINT = `https://formsubmit.co/ajax/${FORMSUBMIT_TARGET}`;
 

@@ -1,3 +1,4 @@
+import { GOOGLE_MAPS_URL_BROADBEACH, GOOGLE_MAPS_URL_SURFERS_PARADISE } from "@/lib/constants";
 import type { GoogleRating, Review } from "@/types";
 
 export const googleRatings = [
@@ -6,14 +7,14 @@ export const googleRatings = [
     location: "Broadbeach",
     rating: 5.0,
     reviewCount: 33,
-    href: "https://www.google.com/maps/search/?api=1&query=Mr.+Moustache+Barbershop+Broadbeach+Unit+5%2F2623+Gold+Coast+Hwy",
+    href: GOOGLE_MAPS_URL_BROADBEACH,
   },
   {
     id: "surfers-paradise",
     location: "Surfers Paradise",
     rating: 4.9,
     reviewCount: 226,
-    href: "https://www.google.com/maps/search/?api=1&query=Mr.+Moustache+Barbershop+Surfers+Paradise&query_place_id=ChIJMUVO7fEFkWsRsYBHrfV0y7Y",
+    href: GOOGLE_MAPS_URL_SURFERS_PARADISE,
   },
 ] satisfies GoogleRating[];
 

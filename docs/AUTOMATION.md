@@ -90,7 +90,7 @@ del servidor lee y escribe. Los índices compuestos y la política TTL están en
 | `FIREBASE_CLIENT_EMAIL` | `mr-moustache-vercel@mr-moustache-automation.iam.gserviceaccount.com` |
 | `FIREBASE_PRIVATE_KEY` | campo `private_key` del JSON de la cuenta de servicio (con los `\n`) |
 | `SQUARE_LOCATION_ID_SURFERS_PARADISE` / `_BROADBEACH` | los muestra la página de callback |
-| `GOOGLE_REVIEW_URL_SURFERS_PARADISE` / `_BROADBEACH` | link "Pedir reseñas" de cada Google Business Profile |
+| `GOOGLE_REVIEW_URL_SURFERS_PARADISE` / `_BROADBEACH` | opcional: por defecto se usa el link "escribir reseña" de cada local (`GOOGLE_PLACE_IDS` en `src/lib/constants.ts`) |
 | `NEXT_PUBLIC_SITE_URL` | dominio real; se usa para armar los links de baja |
 | `RESEND_API_KEY` | key de envío limitada al dominio verificado |
 | `CUSTOMER_EMAIL_FROM` | p. ej. `Mr Moustache <hello@dominio>` (dominio verificado en Resend) |

@@ -40,7 +40,7 @@ The careers form validates in the browser and emails each application through
 No account, API key or server is needed.
 
 - The inbox is `FORMSUBMIT_TARGET` in `src/lib/constants.ts`
-  (`mr.moustache.barbers@gmail.com` by default, overridable with
+  (`aitgv0@gmail.com` by default, overridable with
   `NEXT_PUBLIC_FORMSUBMIT_TARGET`).
 - **Activation:** the first application sends FormSubmit's confirmation email
   to that inbox. Applications are only delivered after the link in it is
