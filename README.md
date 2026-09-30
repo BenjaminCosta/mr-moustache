@@ -41,10 +41,10 @@ The careers form sends each application from the browser to
 the access key. The visitor stays on the page and sees "Application sent"; the
 browser checks the required fields.
 
-- **Setup:** create an access key at web3forms.com with the inbox that should
-  receive applications (e.g. the client's `aitgv0@gmail.com`) and set it as
-  `NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY` in Vercel. The key is public by design;
-  Web3Forms' free plan only accepts submissions from browsers.
+- **Access key:** `WEB3FORMS_ACCESS_KEY` in `src/lib/constants.ts`; it decides
+  which inbox receives applications. To change the inbox, create a new key at
+  web3forms.com and replace it there. The key is public by design; Web3Forms'
+  free plan only accepts submissions from browsers.
 - Reply-to is the applicant's email (the `email` field).
 - FormSubmit was dropped: it answered this site with HTTP 500 for every new form
   (and Cloudflare blocks it from servers), including santosbecker.com's.

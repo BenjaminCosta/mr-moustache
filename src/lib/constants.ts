@@ -119,10 +119,10 @@ export const GOOGLE_PROFILE_URL =
 // Work With Us applications are sent from the browser to Web3Forms
 // (https://web3forms.com). The access key picks the inbox that receives them;
 // it is public by design (Web3Forms only accepts browser submissions on the
-// free plan). Create one at web3forms.com with the inbox's email address.
+// free plan). To change the inbox, create a new key at web3forms.com.
 export const WEB3FORMS_ENDPOINT = "https://api.web3forms.com/submit";
 
-export const WEB3FORMS_ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY?.trim() || "";
+export const WEB3FORMS_ACCESS_KEY = "c807d5e9-940f-45e4-81a9-cb02027edf9a";
 
 // Handle taken from the downloaded clips in mr-moustache-material/.
 export const INSTAGRAM_URL =
