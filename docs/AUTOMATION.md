@@ -66,6 +66,7 @@ Las visitas procesadas con los flags apagados quedan marcadas como `skipped`
 | `squareEvents/{eventId}` | marca de dedupe del webhook, se borra por TTL (`expireAt`, 30 días) |
 | `bookings/{bookingId}` | última versión de la reserva + estado de `review` y `rebooking` |
 | `customers/{merchantId}_{customerId}` | baja, última reseña pedida, recordatorio pendiente |
+| `automationRuns/{startedAt}` | resumen de cada corrida del cron (`ok`, `visitsProcessed`, `errors`…). Sirve para auditarlo, porque Vercel Hobby guarda los logs solo 1 hora |
 
 Las reglas (`firestore.rules`) niegan todo acceso de cliente; solo el Admin SDK
 del servidor lee y escribe. Los índices compuestos y la política TTL están en

@@ -1,7 +1,7 @@
 import { runDailyAutomation } from "@/lib/automation/automation";
 import { safeEqualStrings } from "@/lib/automation/crypto";
 import { optionalEnv } from "@/lib/automation/env";
-import { errorMessage } from "@/lib/automation/store";
+import { errorMessage, recordAutomationRun } from "@/lib/automation/store";
 
 export const maxDuration = 300;
 
@@ -17,15 +17,20 @@ export async function GET(request: Request) {
     return Response.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  const startedAt = new Date();
   try {
-    const summary = await runDailyAutomation();
+    const summary = await runDailyAutomation(startedAt);
     if (summary.errors.length) console.error("Booking automation finished with errors", summary.errors);
+    await recordAutomationRun(startedAt, { summary: { ...summary } }).catch((error) =>
+      console.error("Could not record automation run", errorMessage(error)),
+    );
     return Response.json(summary, {
       status: summary.errors.length ? 500 : 200,
       headers: { "Cache-Control": "no-store" },
     });
   } catch (error) {
     console.error("Booking automation failed", errorMessage(error));
+    await recordAutomationRun(startedAt, { error: errorMessage(error) }).catch(() => undefined);
     return Response.json({ error: "failed" }, { status: 500 });
   }
 }
