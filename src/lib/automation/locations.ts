@@ -51,6 +51,20 @@ export function automationLocations(): AutomationLocation[] {
   });
 }
 
+/**
+ * Where /review/{shop} and /book/{shop} on our own domain send people. Emails
+ * use those short links: a link on the sender's own domain looks personal and
+ * trustworthy, while long third-party URLs look like marketing mail.
+ */
+export function shopLinks(key: string) {
+  const shop = LOCATIONS.find((location) => location.key === key);
+  if (!shop) return undefined;
+  return {
+    reviewUrl: optionalEnv(`GOOGLE_REVIEW_URL_${shop.envSuffix}`) || shop.defaultReviewUrl,
+    bookingUrl: shop.bookingUrl,
+  };
+}
+
 export function locationForSquareId(locationId: string | undefined) {
   if (!locationId) return undefined;
   return automationLocations().find((location) => location.squareLocationId === locationId);

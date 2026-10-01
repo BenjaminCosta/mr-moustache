@@ -44,6 +44,7 @@ import {
   type SquareConnection,
   type StoredBooking,
 } from "./store";
+import { shortLink } from "./short-links";
 import { unsubscribeUrl } from "./unsubscribe";
 
 const DAY = 86_400_000;
@@ -131,8 +132,8 @@ export function followUpEmail(
     signature: emailSignature(),
   };
   return kind === "review"
-    ? reviewEmailContent({ ...input, url: location.reviewUrl! })
-    : rebookingEmailContent({ ...input, url: location.bookingUrl! });
+    ? reviewEmailContent({ ...input, url: shortLink("review", location.key) })
+    : rebookingEmailContent({ ...input, url: shortLink("book", location.key) });
 }
 
 // ---------- 1. Finished visits: decide and queue ----------

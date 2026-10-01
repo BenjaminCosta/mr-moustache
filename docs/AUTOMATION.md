@@ -43,9 +43,24 @@ nunca hay que cancelar nada:
 - **Si se apaga un flag**, los emails de ese tipo que estaban en cola se
   descartan.
 
-Los emails están escritos como una nota personal (fondo blanco, link en lugar
-de botón, firmados con `CUSTOMER_EMAIL_SIGNATURE`) y sin header
-`List-Unsubscribe`, para que Gmail los deje en Principal y no en Promociones.
+Para que Gmail los deje en **Principal** y no en Promociones, los emails
+imitan un mensaje escrito a mano (`src/lib/automation/email-content.ts`):
+
+- HTML mínimo, igual al que genera Gmail al escribir: sin diseño, colores,
+  imágenes, botones ni preheader oculto.
+- Links cortos en el propio dominio y visibles
+  (`moustachebarbersgc.com/review/broadbeach`, `/book/surfers-paradise`), que
+  redirigen a Google o a Square.
+- Copy sin palabras de marketing, que invita a responder al email (las
+  respuestas van a `CUSTOMER_EMAIL_REPLY_TO`).
+- Firmados por una persona (`CUSTOMER_EMAIL_SIGNATURE`) y sin header
+  `List-Unsubscribe`; el link de baja queda como una línea al final.
+
+Además conviene: remitente con nombre de persona en `CUSTOMER_EMAIL_FROM`
+(p. ej. `Aitor from Mr Moustache <hola@moustachebarbersgc.com>`) y el
+**tracking de aperturas y clicks apagado** en Resend → Domains → el dominio,
+porque reescribe los links y agrega un píxel, dos señales fuertes de
+marketing.
 
 ### Reglas de envío (`src/lib/automation/schedule.ts`)
 
@@ -71,6 +86,7 @@ Las visitas procesadas con los flags apagados quedan marcadas como `skipped`
 | `GET /api/square/webhook` | pública | health-check (`{ ok: true }`) |
 | `GET /api/cron/booking-automation` | `Authorization: Bearer $CRON_SECRET` | job diario |
 | `GET /api/automation/test?key=…` | `AUTOMATION_ADMIN_KEY` (404 si no coincide) | autoprueba: simulación sobre visitas reales de la última semana (no envía ni guarda nada), o `&mode=email&to=<email>` para recibir las 2 plantillas reales |
+| `GET /review/{shop}` y `GET /book/{shop}` | pública (noindex) | links cortos de los emails: redirigen a Google "escribir reseña" y a la página de reservas de Square del local |
 | `GET/POST /api/automation/unsubscribe` | firma HMAC | baja (GET muestra botón, POST ejecuta) |
 
 ## Firestore
