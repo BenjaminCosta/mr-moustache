@@ -1,14 +1,15 @@
-import { booleanEnv, emailListEnv, positiveIntegerEnv } from "./env";
+import { booleanEnv, emailListEnv, emailSignature, positiveIntegerEnv } from "./env";
 import { rebookingEmailContent, reviewEmailContent } from "./email-content";
-import { automationLocations, locationForSquareId } from "./locations";
-import { cancelScheduledEmail, sendCustomerEmail } from "./resend";
+import { automationLocations, locationForSquareId, type AutomationLocation } from "./locations";
+import { sendCustomerEmail } from "./resend";
 import {
-  bookingIsCancelled,
   decideRebooking,
   decideReview,
+  decideSend,
   tokenNeedsRefresh,
   type FollowUpDecision,
   type FollowUpInput,
+  type FollowUpKind,
 } from "./schedule";
 import {
   bookingEndAt,
@@ -17,23 +18,29 @@ import {
   retrieveCustomer,
   SquareRequestError,
   type SquareBooking,
-  type SquareCustomer,
 } from "./square";
 import {
   accessTokenFor,
-  customerHasUpcomingBooking,
+  customerHasBookingAfter,
+  deleteOutbox,
+  enqueueEmail,
   errorMessage,
+  getBooking,
   getConnection,
   getCustomer,
   listConnections,
+  listDueOutbox,
   listDueVisits,
+  markOutboxAttempt,
   markVisitFailed,
   markVisitProcessed,
   recordBooking,
   refreshConnection,
+  releaseOutboxAttempt,
   updateCustomer,
   updateFollowUp,
   type FollowUpRecord,
+  type OutboxItem,
   type SquareConnection,
   type StoredBooking,
 } from "./store";
@@ -43,8 +50,9 @@ const DAY = 86_400_000;
 const SYNC_PAST_DAYS = 2;
 const SYNC_FUTURE_DAYS = 28;
 const MAX_VISITS_PER_RUN = 150;
+const MAX_EMAILS_PER_RUN = 150;
 const MAX_ATTEMPTS = 3;
-/** Stop picking up new visits after this long so the run ends inside maxDuration. */
+/** Stop picking up new work after this long so the run ends inside maxDuration. */
 const RUN_TIME_BUDGET_MS = 240_000;
 /** Resend's default rate limit is a few requests per second. */
 const RESEND_SPACING_MS = 600;
@@ -54,87 +62,15 @@ const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 // ---------- Booking changes (webhook + daily sync) ----------
 
 /**
- * Stores the latest version of a booking and reacts to it: a cancelled visit
- * loses its scheduled emails, and a new upcoming booking cancels the
- * customer's pending "time to rebook" reminder.
+ * Stores the latest version of a booking. Cancellations, no-shows and new
+ * bookings need no extra work here: queued emails are re-checked against the
+ * stored bookings right before they are sent.
  */
-export async function handleBookingChange(merchantId: string, booking: SquareBooking, now = new Date()) {
-  const { changed, current } = await recordBooking(merchantId, booking);
-  if (!changed || !current) return;
-
-  if (bookingIsCancelled(current.status)) {
-    await cancelBookingFollowUps(current, `booking_${current.status?.toLowerCase()}`, now);
-  }
-
-  if (current.status === "ACCEPTED" && current.customerId && current.startAt > now) {
-    await cancelPendingRebooking(merchantId, current.customerId, "rebooked", now);
-  }
+export async function handleBookingChange(merchantId: string, booking: SquareBooking) {
+  await recordBooking(merchantId, booking);
 }
 
-async function cancelFollowUp(
-  bookingId: string,
-  kind: "review" | "rebooking",
-  record: FollowUpRecord | undefined,
-  reason: string,
-  now: Date,
-) {
-  if (record?.state !== "scheduled" || !record.emailId || !record.sendAt || record.sendAt <= now) {
-    return false;
-  }
-
-  try {
-    await cancelScheduledEmail(record.emailId);
-    await updateFollowUp(bookingId, kind, { ...record, state: "cancelled", reason, updatedAt: now });
-  } catch (error) {
-    await updateFollowUp(bookingId, kind, {
-      ...record,
-      state: "cancel_failed",
-      reason: `${reason}: ${errorMessage(error)}`,
-      updatedAt: now,
-    });
-  }
-  return true;
-}
-
-async function cancelBookingFollowUps(booking: StoredBooking, reason: string, now: Date) {
-  await cancelFollowUp(booking.id, "review", booking.review, reason, now);
-  const cancelled = await cancelFollowUp(booking.id, "rebooking", booking.rebooking, reason, now);
-
-  if (cancelled && booking.customerId) {
-    const customer = await getCustomer(booking.merchantId, booking.customerId);
-    if (customer.pendingRebooking?.bookingId === booking.id) {
-      await updateCustomer(booking.merchantId, booking.customerId, { pendingRebooking: null });
-    }
-  }
-}
-
-export async function cancelPendingRebooking(
-  merchantId: string,
-  customerId: string,
-  reason: string,
-  now = new Date(),
-) {
-  const { pendingRebooking } = await getCustomer(merchantId, customerId);
-  if (!pendingRebooking) return;
-
-  if (pendingRebooking.sendAt > now) {
-    await cancelFollowUp(
-      pendingRebooking.bookingId,
-      "rebooking",
-      {
-        state: "scheduled",
-        emailId: pendingRebooking.emailId,
-        sendAt: pendingRebooking.sendAt,
-        updatedAt: now,
-      },
-      reason,
-      now,
-    );
-  }
-  await updateCustomer(merchantId, customerId, { pendingRebooking: null });
-}
-
-// ---------- Finished visits ----------
+// ---------- Shared helpers ----------
 
 interface RunContext {
   now: Date;
@@ -144,6 +80,18 @@ interface RunContext {
   reviewDelayHours: number;
   rebookingDelayDays: number;
   testEmails?: string[];
+}
+
+function contextFromEnv(now: Date, connections = new Map<string, SquareConnection | undefined>()): RunContext {
+  return {
+    now,
+    connections,
+    reviewEnabled: booleanEnv("REVIEW_AUTOMATION_ENABLED"),
+    rebookingEnabled: booleanEnv("REBOOKING_AUTOMATION_ENABLED"),
+    reviewDelayHours: positiveIntegerEnv("REVIEW_DELAY_HOURS", 24),
+    rebookingDelayDays: positiveIntegerEnv("REBOOKING_DELAY_DAYS", 28),
+    testEmails: emailListEnv("AUTOMATION_TEST_EMAILS"),
+  };
 }
 
 async function connectionFor(context: RunContext, merchantId: string) {
@@ -168,6 +116,27 @@ function skipped(reason: string, now: Date): FollowUpRecord {
   return { state: "skipped", reason, updatedAt: now };
 }
 
+/** The real email for a follow-up, as customers receive it. */
+export function followUpEmail(
+  kind: FollowUpKind,
+  location: AutomationLocation,
+  merchantId: string,
+  customerId: string,
+  name: string | undefined,
+) {
+  const input = {
+    name,
+    locationName: location.name,
+    unsubscribeUrl: unsubscribeUrl(merchantId, customerId),
+    signature: emailSignature(),
+  };
+  return kind === "review"
+    ? reviewEmailContent({ ...input, url: location.reviewUrl! })
+    : rebookingEmailContent({ ...input, url: location.bookingUrl! });
+}
+
+// ---------- 1. Finished visits: decide and queue ----------
+
 async function processVisit(visit: StoredBooking, context: RunContext) {
   const { now } = context;
   const connection = await connectionFor(context, visit.merchantId);
@@ -187,12 +156,11 @@ async function processVisit(visit: StoredBooking, context: RunContext) {
   if (endAt > now) return;
 
   const customerId = latest.customer_id;
-  let squareCustomer: SquareCustomer | undefined;
-  if (customerId) {
-    squareCustomer = await fetchOrUndefined(retrieveCustomer(connection.environment, accessToken, customerId));
-  }
-
+  const squareCustomer = customerId
+    ? await fetchOrUndefined(retrieveCustomer(connection.environment, accessToken, customerId))
+    : undefined;
   const stored = customerId ? await getCustomer(visit.merchantId, customerId) : {};
+
   const input: FollowUpInput = {
     now,
     endAt,
@@ -204,9 +172,7 @@ async function processVisit(visit: StoredBooking, context: RunContext) {
       unsubscribed: !!stored.unsubscribedAt,
       lastReviewRequestAt: stored.lastReviewRequestAt,
     },
-    hasUpcomingBooking: customerId
-      ? await customerHasUpcomingBooking(visit.merchantId, customerId, now)
-      : false,
+    hasLaterBooking: customerId ? await customerHasBookingAfter(visit.merchantId, customerId, endAt) : false,
     reviewEnabled: context.reviewEnabled,
     rebookingEnabled: context.rebookingEnabled,
     reviewDelayHours: context.reviewDelayHours,
@@ -214,80 +180,100 @@ async function processVisit(visit: StoredBooking, context: RunContext) {
     testEmails: context.testEmails,
   };
 
-  // Each email records its own outcome right away, so a retry after a
-  // partial failure never sends the same email twice.
-  if (!visit.review) {
-    const decision = decideReview(input);
-    if (decision.action === "skip" || !customerId || !squareCustomer) {
-      await updateFollowUp(visit.id, "review", skipped(decisionReason(decision), now));
-    } else {
-      const unsubscribe = unsubscribeUrl(visit.merchantId, customerId);
-      const location = input.location!;
-      const content = reviewEmailContent(squareCustomer.given_name, location.name, location.reviewUrl!, unsubscribe);
-      const emailId = await sendCustomerEmail({
-        to: input.customer.email!,
-        ...content,
-        scheduledAt: decision.scheduled ? decision.sendAt.toISOString() : undefined,
-        idempotencyKey: `review/${visit.id}`,
-        unsubscribeUrl: unsubscribe,
-        tags: [
-          { name: "type", value: "review" },
-          { name: "location", value: location.key },
-        ],
-      });
-      await updateFollowUp(visit.id, "review", {
-        state: decision.scheduled ? "scheduled" : "sent",
-        emailId,
-        sendAt: decision.sendAt,
-        updatedAt: now,
-      });
-      await updateCustomer(visit.merchantId, customerId, { lastReviewRequestAt: now });
-      await sleep(RESEND_SPACING_MS);
+  const queue = async (kind: FollowUpKind, decision: FollowUpDecision) => {
+    if (decision.action === "skip" || !customerId) {
+      await updateFollowUp(visit.id, kind, skipped(decision.action === "skip" ? decision.reason : "no_customer", now));
+      return false;
     }
-  }
+    await enqueueEmail({ bookingId: visit.id, merchantId: visit.merchantId, customerId, kind, sendAt: decision.sendAt });
+    await updateFollowUp(visit.id, kind, { state: "scheduled", sendAt: decision.sendAt, updatedAt: now });
+    return true;
+  };
 
-  if (!visit.rebooking) {
-    const decision = decideRebooking(input);
-    if (decision.action === "skip" || !customerId || !squareCustomer) {
-      await updateFollowUp(visit.id, "rebooking", skipped(decisionReason(decision), now));
-    } else {
-      // Only the most recent visit keeps a reminder.
-      await cancelPendingRebooking(visit.merchantId, customerId, "superseded", now);
-
-      const unsubscribe = unsubscribeUrl(visit.merchantId, customerId);
-      const location = input.location!;
-      const content = rebookingEmailContent(squareCustomer.given_name, location.name, location.bookingUrl!, unsubscribe);
-      const emailId = await sendCustomerEmail({
-        to: input.customer.email!,
-        ...content,
-        scheduledAt: decision.scheduled ? decision.sendAt.toISOString() : undefined,
-        idempotencyKey: `rebooking/${visit.id}`,
-        unsubscribeUrl: unsubscribe,
-        tags: [
-          { name: "type", value: "rebooking" },
-          { name: "location", value: location.key },
-        ],
-      });
-      await updateFollowUp(visit.id, "rebooking", {
-        state: decision.scheduled ? "scheduled" : "sent",
-        emailId,
-        sendAt: decision.sendAt,
-        updatedAt: now,
-      });
-      if (decision.scheduled) {
-        await updateCustomer(visit.merchantId, customerId, {
-          pendingRebooking: { bookingId: visit.id, emailId, sendAt: decision.sendAt },
-        });
-      }
-      await sleep(RESEND_SPACING_MS);
-    }
+  if (!visit.review && (await queue("review", decideReview(input)))) {
+    // Counts from queueing, so two visits close together never both ask.
+    await updateCustomer(visit.merchantId, customerId!, { lastReviewRequestAt: now });
   }
+  if (!visit.rebooking) await queue("rebooking", decideRebooking(input));
 
   await markVisitProcessed(visit.id);
 }
 
-function decisionReason(decision: FollowUpDecision) {
-  return decision.action === "skip" ? decision.reason : "no_customer";
+// ---------- 2. Queued emails: re-check and send ----------
+
+type SendOutcome = "sent" | "skipped" | "failed" | "retry";
+
+async function sendQueuedEmail(item: OutboxItem, context: RunContext): Promise<SendOutcome> {
+  const { now } = context;
+  const finish = async (record: FollowUpRecord) => {
+    await updateFollowUp(item.bookingId, item.kind, record);
+    await deleteOutbox(item.id);
+  };
+
+  // A previous run died between claiming and confirming this send. It may
+  // already have gone out, and a duplicate is worse than a missed email.
+  if (item.attemptAt) {
+    await finish({ state: "failed", reason: "interrupted", sendAt: item.sendAt, updatedAt: now });
+    return "failed";
+  }
+
+  const booking = await getBooking(item.bookingId);
+  if (!booking) {
+    await deleteOutbox(item.id);
+    return "skipped";
+  }
+
+  const connection = await connectionFor(context, item.merchantId);
+  const accessToken = await accessTokenFor(connection);
+  const customer = await fetchOrUndefined(retrieveCustomer(connection.environment, accessToken, item.customerId));
+  const stored = await getCustomer(item.merchantId, item.customerId);
+  const location = locationForSquareId(booking.locationId);
+
+  const decision = decideSend({
+    kind: item.kind,
+    enabled: item.kind === "review" ? context.reviewEnabled : context.rebookingEnabled,
+    status: booking.status,
+    location,
+    customer: {
+      email: customer?.email_address?.trim() || undefined,
+      squareUnsubscribed: customer?.preferences?.email_unsubscribed,
+      unsubscribed: !!stored.unsubscribedAt,
+    },
+    testEmails: context.testEmails,
+    hasLaterBooking:
+      item.kind === "rebooking"
+        ? await customerHasBookingAfter(item.merchantId, item.customerId, booking.endAt)
+        : false,
+  });
+
+  if (decision.action === "skip") {
+    await finish({ ...skipped(decision.reason, now), sendAt: item.sendAt });
+    return "skipped";
+  }
+
+  const content = followUpEmail(item.kind, location!, item.merchantId, item.customerId, customer?.given_name);
+  await markOutboxAttempt(item.id, now);
+  try {
+    const emailId = await sendCustomerEmail({
+      to: customer!.email_address!.trim(),
+      ...content,
+      idempotencyKey: `${item.kind}/${item.bookingId}`,
+      tags: [
+        { name: "type", value: item.kind },
+        { name: "location", value: location!.key },
+      ],
+    });
+    await finish({ state: "sent", emailId, sendAt: item.sendAt, updatedAt: now });
+    return "sent";
+  } catch (error) {
+    const attempts = item.attempts + 1;
+    if (attempts >= MAX_ATTEMPTS) {
+      await finish({ state: "failed", reason: errorMessage(error), sendAt: item.sendAt, updatedAt: now });
+      return "failed";
+    }
+    await releaseOutboxAttempt(item.id, attempts, error);
+    return "retry";
+  }
 }
 
 // ---------- Daily run ----------
@@ -297,16 +283,23 @@ export interface DailyRunSummary {
   bookingsSynced: number;
   visitsProcessed: number;
   visitsFailed: number;
+  emailsSent: number;
+  emailsSkipped: number;
+  emailsFailed: number;
   errors: string[];
 }
 
 export async function runDailyAutomation(now = new Date()): Promise<DailyRunSummary> {
   const startedAt = Date.now();
+  const outOfTime = () => Date.now() - startedAt > RUN_TIME_BUDGET_MS;
   const summary: DailyRunSummary = {
     tokensRefreshed: 0,
     bookingsSynced: 0,
     visitsProcessed: 0,
     visitsFailed: 0,
+    emailsSent: 0,
+    emailsSkipped: 0,
+    emailsFailed: 0,
     errors: [],
   };
 
@@ -344,7 +337,7 @@ export async function runDailyAutomation(now = new Date()): Promise<DailyRunSumm
           new Date(now.getTime() + SYNC_FUTURE_DAYS * DAY),
         );
         for (const booking of bookings) {
-          await handleBookingChange(connection.merchantId, booking, now);
+          await handleBookingChange(connection.merchantId, booking);
           summary.bookingsSynced += 1;
         }
       }
@@ -353,19 +346,11 @@ export async function runDailyAutomation(now = new Date()): Promise<DailyRunSumm
     }
   }
 
-  // 3. Decide and send follow-ups for visits that have finished.
-  const context: RunContext = {
-    now,
-    connections,
-    reviewEnabled: booleanEnv("REVIEW_AUTOMATION_ENABLED"),
-    rebookingEnabled: booleanEnv("REBOOKING_AUTOMATION_ENABLED"),
-    reviewDelayHours: positiveIntegerEnv("REVIEW_DELAY_HOURS", 24),
-    rebookingDelayDays: positiveIntegerEnv("REBOOKING_DELAY_DAYS", 28),
-    testEmails: emailListEnv("AUTOMATION_TEST_EMAILS"),
-  };
+  const context = contextFromEnv(now, connections);
 
+  // 3. Decide follow-ups for visits that have finished and queue them.
   for (const visit of await listDueVisits(now, MAX_VISITS_PER_RUN)) {
-    if (Date.now() - startedAt > RUN_TIME_BUDGET_MS) break;
+    if (outOfTime()) break;
     try {
       await processVisit(visit, context);
       summary.visitsProcessed += 1;
@@ -377,13 +362,40 @@ export async function runDailyAutomation(now = new Date()): Promise<DailyRunSumm
     }
   }
 
+  // 4. Send what is due, re-checking each email first.
+  for (const item of await listDueOutbox(now, MAX_EMAILS_PER_RUN)) {
+    if (outOfTime()) break;
+    try {
+      const outcome = await sendQueuedEmail(item, context);
+      if (outcome === "sent") summary.emailsSent += 1;
+      if (outcome === "skipped") summary.emailsSkipped += 1;
+      if (outcome === "failed") summary.emailsFailed += 1;
+      if (outcome === "retry") summary.errors.push(`email ${item.id}: send failed, will retry`);
+      if (outcome === "sent" || outcome === "retry") await sleep(RESEND_SPACING_MS);
+    } catch (error) {
+      // Failed before reaching Resend (e.g. Square unavailable): safe to retry.
+      summary.errors.push(`email ${item.id}: ${errorMessage(error)}`);
+      const attempts = item.attempts + 1;
+      await (attempts >= MAX_ATTEMPTS
+        ? updateFollowUp(item.bookingId, item.kind, {
+            state: "failed",
+            reason: errorMessage(error),
+            sendAt: item.sendAt,
+            updatedAt: now,
+          }).then(() => deleteOutbox(item.id))
+        : releaseOutboxAttempt(item.id, attempts, error)
+      ).catch(() => undefined);
+      if (attempts >= MAX_ATTEMPTS) summary.emailsFailed += 1;
+    }
+  }
+
   return summary;
 }
 
 // ---------- Opt-out ----------
 
+/** Queued emails for this customer are dropped when the cron re-checks them. */
 export async function unsubscribeCustomer(merchantId: string, customerId: string) {
-  const now = new Date();
-  await cancelPendingRebooking(merchantId, customerId, "unsubscribed", now);
-  await updateCustomer(merchantId, customerId, { unsubscribedAt: now });
+  await updateCustomer(merchantId, customerId, { unsubscribedAt: new Date() });
 }
+

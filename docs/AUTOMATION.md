@@ -4,9 +4,13 @@ Después de cada visita pagada por Square Appointments, la web:
 
 1. **Pide una reseña de Google**: `REVIEW_DELAY_HOURS` después de que termina
    el turno (24 h por defecto).
-2. **Programa un recordatorio para volver a reservar**: `REBOOKING_DELAY_DAYS`
-   después de la visita (28 días por defecto). Se cancela solo si el cliente
-   reserva antes.
+2. **Manda un recordatorio para volver a reservar**: `REBOOKING_DELAY_DAYS`
+   después de la visita (28 días por defecto), salvo que el cliente ya haya
+   vuelto a reservar.
+
+Los emails salen con el cron diario (alrededor de las 20:00 hora de Gold
+Coast), en la primera corrida después de su hora: la reseña llega la noche
+siguiente a la visita.
 
 Todo corre en Vercel (`syd1`), guarda estado en Firestore (`australia-southeast1`)
 y envía con Resend. Ningún envío sale mientras los flags
@@ -21,16 +25,27 @@ Vercel Cron (20:00 AEST) ─▶ /api/cron/booking-automation ─────┤
    1. refresca tokens de Square (duran 30 días; se renuevan cada ~7)
    2. re-sincroniza reservas de -2 a +28 días (por si se perdió un webhook)
    3. procesa visitas terminadas: vuelve a leer la reserva y el cliente en
-      Square, decide y programa los emails en Resend (scheduledAt)
+      Square, decide y deja cada email en la cola outbox/ con su hora
+   4. envía los emails de outbox/ que ya vencieron, re-chequeando cada uno
 ```
 
-- **Cancelación o no-show** (`booking.updated`): se cancelan en Resend los
-  emails todavía programados de esa reserva.
-- **Nueva reserva futura** del mismo cliente: se cancela su recordatorio de
-  rebooking pendiente.
-- **Baja**: cada email lleva un link firmado y el header `List-Unsubscribe`
-  (one-click). La baja cancela el recordatorio pendiente y bloquea futuros
-  envíos. También se respeta la preferencia `email_unsubscribed` de Square.
+Los emails **no se programan en Resend**: esperan en `outbox/` y justo antes de
+enviarlos se vuelve a chequear todo. Por eso alcanza una API key de solo envío y
+nunca hay que cancelar nada:
+
+- **Cancelación o no-show** (`booking.updated` o el sync diario actualiza la
+  reserva): el email se descarta al re-chequear.
+- **El cliente volvió a reservar** (cualquier reserva aceptada que empieza
+  después de esa visita): el recordatorio se descarta.
+- **Baja**: cada email lleva un link firmado al pie. La baja bloquea los
+  emails en cola y los futuros. También se respeta la preferencia
+  `email_unsubscribed` de Square.
+- **Si se apaga un flag**, los emails de ese tipo que estaban en cola se
+  descartan.
+
+Los emails están escritos como una nota personal (fondo blanco, link en lugar
+de botón, firmados con `CUSTOMER_EMAIL_SIGNATURE`) y sin header
+`List-Unsubscribe`, para que Gmail los deje en Principal y no en Promociones.
 
 ### Reglas de envío (`src/lib/automation/schedule.ts`)
 
@@ -41,8 +56,7 @@ Vercel Cron (20:00 AEST) ─▶ /api/cron/booking-automation ─────┤
 | Local sin `SQUARE_LOCATION_ID_*` configurado | se saltea |
 | Cliente sin email o dado de baja | se saltea |
 | Reseña pedida en los últimos 180 días | no se vuelve a pedir |
-| El cliente ya tiene otra reserva futura | no hay recordatorio de rebooking |
-| Rebooking a más de 29 días | se saltea (Resend programa hasta 30 días) |
+| El cliente tiene otra reserva después de esa visita | no hay recordatorio de rebooking |
 
 Las visitas procesadas con los flags apagados quedan marcadas como `skipped`
 (`disabled`). Encender los flags después **no** manda emails retroactivos.
@@ -66,7 +80,8 @@ Las visitas procesadas con los flags apagados quedan marcadas como `skipped`
 | `squareConnections/{merchantId}` | tokens OAuth cifrados con AES-256-GCM, vencimiento, locales |
 | `squareEvents/{eventId}` | marca de dedupe del webhook, se borra por TTL (`expireAt`, 30 días) |
 | `bookings/{bookingId}` | última versión de la reserva + estado de `review` y `rebooking` |
-| `customers/{merchantId}_{customerId}` | baja, última reseña pedida, recordatorio pendiente |
+| `customers/{merchantId}_{customerId}` | baja y última reseña pedida |
+| `outbox/{bookingId}_{review\|rebooking}` | emails en cola con su `sendAt`; se borran al enviarse o descartarse |
 | `automationRuns/{startedAt}` | resumen de cada corrida del cron (`ok`, `visitsProcessed`, `errors`…). Sirve para auditarlo, porque Vercel Hobby guarda los logs solo 1 hora |
 
 Las reglas (`firestore.rules`) niegan todo acceso de cliente; solo el Admin SDK
@@ -97,6 +112,7 @@ del servidor lee y escribe. Los índices compuestos y la política TTL están en
 | `RESEND_API_KEY` | key de envío limitada al dominio verificado |
 | `CUSTOMER_EMAIL_FROM` | p. ej. `Mr Moustache <hello@dominio>` (dominio verificado en Resend) |
 | `CUSTOMER_EMAIL_REPLY_TO` | email real del negocio |
+| `CUSTOMER_EMAIL_SIGNATURE` | opcional: firma de los emails; `\n` es salto de línea. P. ej. `Aitor\nMr Moustache Barbershop` (por defecto `Mr Moustache Barbershop`) |
 | `REVIEW_AUTOMATION_ENABLED` / `REBOOKING_AUTOMATION_ENABLED` | `false` hasta la prueba final |
 | `AUTOMATION_ADMIN_KEY` | opcional: clave para `/api/automation/test` (`openssl rand -hex 24`). Sin ella la ruta da 404 |
 | `AUTOMATION_TEST_EMAILS` | opcional: emails separados por coma. Si tiene valor, **solo** esos reciben emails y el resto queda `skipped: not_test_recipient`. Vaciarla para el lanzamiento |
@@ -125,8 +141,9 @@ caso hay que volver a conectar Square con `/api/square/oauth/start`. Rotar
 7. Prueba real (con Resend ya configurado): `AUTOMATION_TEST_EMAILS=<tu email>` y los dos flags en
    `true`, crear en Square una reserva corta para un cliente con ese email.
    Cuando termine, correr el cron desde Vercel → Settings → Cron Jobs → Run y
-   revisar en `bookings/` que `review` y `rebooking` queden `scheduled`, y en
-   Resend que haya 2 emails programados. Correrlo otra vez no debe crear más.
+   revisar en `bookings/` que `review` y `rebooking` queden `scheduled` y que
+   estén en `outbox/`. Correrlo otra vez no debe crear más. Para ver las
+   plantillas sin reserva: `/api/automation/test?key=…&mode=email&to=<email>`.
 8. Con el dominio verificado en Resend: cargar la key y el `from`, y activar
    primero `REVIEW_AUTOMATION_ENABLED` y después `REBOOKING_AUTOMATION_ENABLED`.
 

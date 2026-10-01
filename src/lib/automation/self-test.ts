@@ -1,18 +1,17 @@
-import { rebookingEmailContent, reviewEmailContent } from "./email-content";
+import { followUpEmail } from "./automation";
 import { automationLocations, locationForSquareId } from "./locations";
-import { cancelScheduledEmail, sendCustomerEmail } from "./resend";
+import { sendCustomerEmail } from "./resend";
 import { decideRebooking, decideReview, STALE_VISIT_DAYS, type FollowUpInput } from "./schedule";
 import { retrieveCustomer, SquareRequestError, type SquareCustomer } from "./square";
 import {
   accessTokenFor,
-  customerHasUpcomingBooking,
+  customerHasBookingAfter,
   getConnection,
   getCustomer,
   listConnections,
   listVisitsEndedBetween,
   type SquareConnection,
 } from "./store";
-import { unsubscribeUrl } from "./unsubscribe";
 
 const DAY = 86_400_000;
 const PREVIEW_LIMIT = 200;
@@ -70,8 +69,8 @@ export async function previewFollowUps(now = new Date()) {
           unsubscribed: !!stored.unsubscribedAt,
           lastReviewRequestAt: stored.lastReviewRequestAt,
         },
-        hasUpcomingBooking: visit.customerId
-          ? await customerHasUpcomingBooking(visit.merchantId, visit.customerId, now)
+        hasLaterBooking: visit.customerId
+          ? await customerHasBookingAfter(visit.merchantId, visit.customerId, visit.endAt)
           : false,
         reviewEnabled: true,
         rebookingEnabled: true,
@@ -81,8 +80,8 @@ export async function previewFollowUps(now = new Date()) {
 
       const reviewDecision = decideReview(input);
       const rebookingDecision = decideRebooking(input);
-      tally(review, reviewDecision.action === "send" ? "would_send" : reviewDecision.reason);
-      tally(rebooking, rebookingDecision.action === "send" ? "would_send" : rebookingDecision.reason);
+      tally(review, reviewDecision.action === "queue" ? "would_send" : reviewDecision.reason);
+      tally(rebooking, rebookingDecision.action === "queue" ? "would_send" : rebookingDecision.reason);
     } catch (error) {
       errors.push(`${visit.id}: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -99,59 +98,36 @@ export async function previewFollowUps(now = new Date()) {
   };
 }
 
-/**
- * Sends the real review and rebooking templates to `to` right away, then
- * schedules and cancels a third email to prove Resend scheduling works.
- */
+/** Sends the real review and rebooking emails, exactly as customers get them, to `to`. */
 export async function sendTestEmails(to: string, locationKey?: string) {
   const locations = automationLocations();
   const location = locations.find((item) => item.key === locationKey) || locations[0];
   if (!location) throw new Error("No SQUARE_LOCATION_ID_* configured");
 
   const merchantId = (await listConnections())[0]?.merchantId || "test-merchant";
-  const unsubscribe = unsubscribeUrl(merchantId, "self-test");
   const stamp = Date.now();
-  const tags = [
-    { name: "type", value: "self_test" },
-    { name: "location", value: location.key },
-  ];
+  const sent: Record<string, string> = {};
 
-  const review = reviewEmailContent("Benja", location.name, location.reviewUrl || "https://google.com", unsubscribe);
-  const reviewId = await sendCustomerEmail({
-    to,
-    ...review,
-    subject: `[TEST] ${review.subject}`,
-    idempotencyKey: `self-test/review/${stamp}`,
-    unsubscribeUrl: unsubscribe,
-    tags,
-  });
-
-  const rebooking = rebookingEmailContent("Benja", location.name, location.bookingUrl || "https://squareup.com", unsubscribe);
-  const rebookingId = await sendCustomerEmail({
-    to,
-    ...rebooking,
-    subject: `[TEST] ${rebooking.subject}`,
-    idempotencyKey: `self-test/rebooking/${stamp}`,
-    unsubscribeUrl: unsubscribe,
-    tags,
-  });
-
-  const scheduledId = await sendCustomerEmail({
-    to,
-    ...rebooking,
-    subject: "[TEST] scheduled then cancelled (you should NOT receive this)",
-    scheduledAt: new Date(stamp + 60 * 60_000).toISOString(),
-    idempotencyKey: `self-test/scheduled/${stamp}`,
-    tags,
-  });
-  await cancelScheduledEmail(scheduledId);
+  for (const kind of ["review", "rebooking"] as const) {
+    // The unsubscribe link points to a fake customer, so clicking it is harmless.
+    const content = followUpEmail(kind, location, merchantId, "self-test", "Benja");
+    sent[kind] = await sendCustomerEmail({
+      to,
+      ...content,
+      subject: `[TEST] ${content.subject}`,
+      idempotencyKey: `self-test/${kind}/${stamp}`,
+      tags: [
+        { name: "type", value: "self_test" },
+        { name: "location", value: location.key },
+      ],
+    });
+  }
 
   return {
     mode: "email",
     to,
     location: location.name,
-    sent: { review: reviewId, rebooking: rebookingId },
-    scheduledAndCancelled: scheduledId,
-    note: "Check your inbox for 2 [TEST] emails. The unsubscribe link in them points to a fake customer.",
+    sent,
+    note: "Check your inbox for 2 [TEST] emails, identical to what customers get.",
   };
 }

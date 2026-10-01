@@ -7,22 +7,12 @@ const DAY = 24 * HOUR;
 export const STALE_VISIT_DAYS = 7;
 /** A regular only gets asked for a Google review once in this many days. */
 export const REVIEW_COOLDOWN_DAYS = 180;
-/** Resend can hold a scheduled email for up to 30 days; keep a margin. */
-export const MAX_SCHEDULE_AHEAD_DAYS = 29;
 /** Tokens are refreshed once fewer than this many days remain (they last 30). */
 export const TOKEN_REFRESH_REMAINING_DAYS = 23;
 
 export const ATTENDED_STATUS = "ACCEPTED";
-const CANCELLED_STATUSES = new Set([
-  "CANCELLED_BY_CUSTOMER",
-  "CANCELLED_BY_SELLER",
-  "DECLINED",
-  "NO_SHOW",
-]);
 
-export function bookingIsCancelled(status: string | undefined) {
-  return !!status && CANCELLED_STATUSES.has(status);
-}
+export type FollowUpKind = "review" | "rebooking";
 
 export interface FollowUpInput {
   now: Date;
@@ -35,7 +25,8 @@ export interface FollowUpInput {
     unsubscribed?: boolean;
     lastReviewRequestAt?: Date;
   };
-  hasUpcomingBooking: boolean;
+  /** The customer has another accepted booking starting after this visit ended. */
+  hasLaterBooking: boolean;
   /** When set (AUTOMATION_TEST_EMAILS), only these lowercase addresses get emails. */
   testEmails?: string[];
   reviewEnabled: boolean;
@@ -44,26 +35,22 @@ export interface FollowUpInput {
   rebookingDelayDays: number;
 }
 
-export type FollowUpDecision =
-  | { action: "send"; sendAt: Date; scheduled: boolean }
-  | { action: "skip"; reason: string };
+export type FollowUpDecision = { action: "queue"; sendAt: Date } | { action: "skip"; reason: string };
 
 function skip(reason: string): FollowUpDecision {
   return { action: "skip", reason };
 }
 
-function sendAtOrNow(now: Date, target: Date): FollowUpDecision {
-  // Anything due within a minute is sent straight away rather than scheduled.
-  if (target.getTime() - now.getTime() <= 60_000) {
-    return { action: "send", sendAt: now, scheduled: false };
-  }
-  return { action: "send", sendAt: target, scheduled: true };
+interface Recipient {
+  status: string | undefined;
+  location: AutomationLocation | undefined;
+  customer: { email?: string; squareUnsubscribed?: boolean; unsubscribed?: boolean };
+  testEmails?: string[];
 }
 
-/** Checks shared by both emails: did the visit happen and may we email this person? */
-function commonSkipReason(input: FollowUpInput) {
+/** Did the visit happen, and may we email this person? Checked when queuing and again when sending. */
+function recipientSkipReason(input: Recipient) {
   if (input.status !== ATTENDED_STATUS) return `status_${(input.status || "unknown").toLowerCase()}`;
-  if (input.now.getTime() - input.endAt.getTime() > STALE_VISIT_DAYS * DAY) return "stale";
   if (!input.location) return "unknown_location";
   if (!input.customer.email) return "no_email";
   if (input.testEmails && !input.testEmails.includes(input.customer.email.toLowerCase())) {
@@ -71,6 +58,13 @@ function commonSkipReason(input: FollowUpInput) {
   }
   if (input.customer.squareUnsubscribed || input.customer.unsubscribed) return "unsubscribed";
   return undefined;
+}
+
+function commonSkipReason(input: FollowUpInput) {
+  if (input.status === ATTENDED_STATUS && input.now.getTime() - input.endAt.getTime() > STALE_VISIT_DAYS * DAY) {
+    return "stale";
+  }
+  return recipientSkipReason(input);
 }
 
 export function decideReview(input: FollowUpInput): FollowUpDecision {
@@ -85,7 +79,7 @@ export function decideReview(input: FollowUpInput): FollowUpDecision {
     return skip("cooldown");
   }
 
-  return sendAtOrNow(input.now, new Date(input.endAt.getTime() + input.reviewDelayHours * HOUR));
+  return { action: "queue", sendAt: new Date(input.endAt.getTime() + input.reviewDelayHours * HOUR) };
 }
 
 export function decideRebooking(input: FollowUpInput): FollowUpDecision {
@@ -94,13 +88,38 @@ export function decideRebooking(input: FollowUpInput): FollowUpDecision {
   const common = commonSkipReason(input);
   if (common) return skip(common);
   if (!input.location?.bookingUrl) return skip("no_booking_url");
-  if (input.hasUpcomingBooking) return skip("rebooked");
+  if (input.hasLaterBooking) return skip("rebooked");
 
-  const target = new Date(input.endAt.getTime() + input.rebookingDelayDays * DAY);
-  if (target.getTime() <= input.now.getTime()) return skip("stale");
-  if (target.getTime() - input.now.getTime() > MAX_SCHEDULE_AHEAD_DAYS * DAY) return skip("too_far");
+  const sendAt = new Date(input.endAt.getTime() + input.rebookingDelayDays * DAY);
+  if (sendAt.getTime() <= input.now.getTime()) return skip("stale");
 
-  return sendAtOrNow(input.now, target);
+  return { action: "queue", sendAt };
+}
+
+export interface SendCheckInput extends Recipient {
+  kind: FollowUpKind;
+  enabled: boolean;
+  hasLaterBooking: boolean;
+}
+
+/**
+ * Last check right before a queued email goes out: the visit may have been
+ * marked as a no-show, the customer may have booked again or unsubscribed,
+ * or the email type may have been switched off since it was queued.
+ */
+export function decideSend(input: SendCheckInput): { action: "send" } | { action: "skip"; reason: string } {
+  if (!input.enabled) return { action: "skip", reason: "disabled" };
+
+  const reason = recipientSkipReason(input);
+  if (reason) return { action: "skip", reason };
+
+  if (input.kind === "review" && !input.location?.reviewUrl) return { action: "skip", reason: "no_review_url" };
+  if (input.kind === "rebooking") {
+    if (!input.location?.bookingUrl) return { action: "skip", reason: "no_booking_url" };
+    if (input.hasLaterBooking) return { action: "skip", reason: "rebooked" };
+  }
+
+  return { action: "send" };
 }
 
 export function tokenNeedsRefresh(expiresAt: Date, now: Date) {
