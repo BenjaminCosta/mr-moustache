@@ -14,13 +14,16 @@ export interface CustomerEmail {
   subject: string;
   html: string;
   text: string;
-  scheduledAt?: string;
   idempotencyKey: string;
-  /** Adds RFC 8058 one-click unsubscribe headers when set. */
-  unsubscribeUrl?: string;
   tags: Array<{ name: string; value: string }>;
 }
 
+/**
+ * Sends right away. Emails are queued in Firestore instead of Resend's
+ * scheduler, so a send-only API key is enough and nothing needs cancelling.
+ * No List-Unsubscribe header: it marks mail as bulk and pushes it towards
+ * Gmail's Promotions tab; every email carries an unsubscribe link instead.
+ */
 export async function sendCustomerEmail(email: CustomerEmail) {
   const { data, error } = await client().emails.send(
     {
@@ -30,14 +33,7 @@ export async function sendCustomerEmail(email: CustomerEmail) {
       html: email.html,
       text: email.text,
       replyTo: optionalEnv("CUSTOMER_EMAIL_REPLY_TO"),
-      scheduledAt: email.scheduledAt,
       tags: email.tags,
-      headers: email.unsubscribeUrl
-        ? {
-            "List-Unsubscribe": `<${email.unsubscribeUrl}>`,
-            "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
-          }
-        : undefined,
     },
     { idempotencyKey: email.idempotencyKey },
   );
@@ -47,9 +43,4 @@ export async function sendCustomerEmail(email: CustomerEmail) {
   }
 
   return data.id;
-}
-
-export async function cancelScheduledEmail(emailId: string) {
-  const { error } = await client().emails.cancel(emailId);
-  if (error) throw new Error(error.message);
 }

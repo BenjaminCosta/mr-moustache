@@ -42,6 +42,11 @@ export function emailListEnv(name: string) {
   return values.length ? values : undefined;
 }
 
+/** Sign-off for customer emails; "\\n" in the variable becomes a line break. */
+export function emailSignature() {
+  return (optionalEnv("CUSTOMER_EMAIL_SIGNATURE") || "Mr Moustache Barbershop").replace(/\\n/g, "\n");
+}
+
 export function squareEnvironment(): SquareEnvironment {
   const value = optionalEnv("SQUARE_ENVIRONMENT") || "sandbox";
 

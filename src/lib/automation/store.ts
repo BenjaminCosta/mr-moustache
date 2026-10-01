@@ -2,6 +2,7 @@ import type { DocumentData, DocumentSnapshot } from "firebase-admin/firestore";
 
 import { decryptSecret, encryptSecret, type EncryptedSecret } from "./crypto";
 import type { SquareEnvironment } from "./env";
+import type { FollowUpKind } from "./schedule";
 import { firestore, isAlreadyExistsError, toDate } from "./firebase";
 import {
   bookingEndAt,
@@ -17,12 +18,14 @@ import {
  *   squareEvents/{eventId}          webhook dedup markers (TTL on expireAt)
  *   bookings/{bookingId}            latest known booking + follow-up state
  *   customers/{merchantId}_{id}     opt-out and email history per customer
+ *   outbox/{bookingId}_{kind}       queued emails, deleted once sent or dropped
  *   automationRuns/{startedAt}      summary of each daily cron run (TTL on expireAt)
  */
 const CONNECTIONS = "squareConnections";
 const EVENTS = "squareEvents";
 const BOOKINGS = "bookings";
 const CUSTOMERS = "customers";
+const OUTBOX = "outbox";
 
 const RUNS = "automationRuns";
 const EVENT_RETENTION_DAYS = 30;
@@ -159,7 +162,8 @@ export async function releaseEvent(eventId: string) {
 
 // ---------- Bookings ----------
 
-export type FollowUpState = "scheduled" | "sent" | "skipped" | "cancelled" | "cancel_failed" | "failed";
+/** scheduled = waiting in the outbox; sent/skipped/failed are final. */
+export type FollowUpState = "scheduled" | "sent" | "skipped" | "failed";
 
 export interface FollowUpRecord {
   state: FollowUpState;
@@ -297,17 +301,23 @@ export async function listVisitsEndedBetween(from: Date, to: Date, limit: number
   return snapshot.docs.map(bookingFromDoc);
 }
 
-export async function customerHasUpcomingBooking(merchantId: string, customerId: string, now: Date) {
+export async function getBooking(bookingId: string) {
+  const snapshot = await firestore().collection(BOOKINGS).doc(bookingId).get();
+  return snapshot.exists ? bookingFromDoc(snapshot) : undefined;
+}
+
+/** Whether the customer has an accepted booking (past or future) starting after `after`. */
+export async function customerHasBookingAfter(merchantId: string, customerId: string, after: Date) {
   const snapshot = await firestore()
     .collection(BOOKINGS)
     .where("merchantId", "==", merchantId)
     .where("customerId", "==", customerId)
-    .where("startAt", ">", now)
+    .where("startAt", ">", after)
     .get();
   return snapshot.docs.some((doc) => doc.data().status === "ACCEPTED");
 }
 
-export async function updateFollowUp(bookingId: string, kind: "review" | "rebooking", record: FollowUpRecord) {
+export async function updateFollowUp(bookingId: string, kind: FollowUpKind, record: FollowUpRecord) {
   await firestore().collection(BOOKINGS).doc(bookingId).update({ [kind]: record });
 }
 
@@ -328,16 +338,9 @@ export async function markVisitFailed(bookingId: string, attempts: number, error
 
 // ---------- Customers ----------
 
-export interface PendingRebooking {
-  bookingId: string;
-  emailId: string;
-  sendAt: Date;
-}
-
 export interface StoredCustomer {
   unsubscribedAt?: Date;
   lastReviewRequestAt?: Date;
-  pendingRebooking?: PendingRebooking;
 }
 
 function customerRef(merchantId: string, customerId: string) {
@@ -349,27 +352,87 @@ export async function getCustomer(merchantId: string, customerId: string): Promi
   const data = snapshot.data();
   if (!data) return {};
 
-  const pending = data.pendingRebooking;
   return {
     unsubscribedAt: toDate(data.unsubscribedAt),
     lastReviewRequestAt: toDate(data.lastReviewRequestAt),
-    pendingRebooking: pending
-      ? { bookingId: pending.bookingId, emailId: pending.emailId, sendAt: toDate(pending.sendAt)! }
-      : undefined,
   };
 }
 
 export async function updateCustomer(
   merchantId: string,
   customerId: string,
-  fields: Partial<Record<"unsubscribedAt" | "lastReviewRequestAt", Date>> & {
-    pendingRebooking?: PendingRebooking | null;
-  },
+  fields: Partial<Record<"unsubscribedAt" | "lastReviewRequestAt", Date>>,
 ) {
   await customerRef(merchantId, customerId).set(
     { merchantId, customerId, ...fields, updatedAt: new Date() },
     { merge: true },
   );
+}
+
+// ---------- Outbox ----------
+
+/**
+ * Emails waiting for their send time. The daily cron sends what is due and
+ * re-checks each one first, so nothing has to be cancelled at the provider.
+ */
+export interface OutboxItem {
+  id: string;
+  bookingId: string;
+  merchantId: string;
+  customerId: string;
+  kind: FollowUpKind;
+  sendAt: Date;
+  attempts: number;
+  /** Set right before sending; still set on a later run means that run died mid-send. */
+  attemptAt?: Date;
+}
+
+const outboxId = (bookingId: string, kind: FollowUpKind) => `${bookingId}_${kind}`;
+
+export async function enqueueEmail(item: Omit<OutboxItem, "id" | "attempts" | "attemptAt">) {
+  await firestore()
+    .collection(OUTBOX)
+    .doc(outboxId(item.bookingId, item.kind))
+    .set({ ...item, attempts: 0, attemptAt: null, createdAt: new Date() });
+}
+
+export async function listDueOutbox(now: Date, limit: number): Promise<OutboxItem[]> {
+  const snapshot = await firestore()
+    .collection(OUTBOX)
+    .where("sendAt", "<=", now)
+    .orderBy("sendAt", "asc")
+    .limit(limit)
+    .get();
+
+  return snapshot.docs.map((doc) => {
+    const data = doc.data();
+    return {
+      id: doc.id,
+      bookingId: data.bookingId,
+      merchantId: data.merchantId,
+      customerId: data.customerId,
+      kind: data.kind,
+      sendAt: toDate(data.sendAt)!,
+      attempts: data.attempts || 0,
+      attemptAt: toDate(data.attemptAt),
+    };
+  });
+}
+
+export async function markOutboxAttempt(id: string, attemptAt: Date) {
+  await firestore().collection(OUTBOX).doc(id).update({ attemptAt });
+}
+
+/** A send failed before reaching Resend's success response: retry on the next run. */
+export async function releaseOutboxAttempt(id: string, attempts: number, error: unknown) {
+  await firestore()
+    .collection(OUTBOX)
+    .doc(id)
+    .update({ attemptAt: null, attempts, lastError: errorMessage(error) });
+}
+
+export async function deleteOutbox(id: string) {
+  await firestore().collection(OUTBOX).doc(id).delete();
 }
 
 // ---------- Cron run history ----------
