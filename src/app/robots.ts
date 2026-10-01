@@ -4,7 +4,7 @@ import { IS_INDEXABLE, SITE_URL } from "@/lib/constants";
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: IS_INDEXABLE
-      ? { userAgent: "*", allow: "/", disallow: "/api/" }
+      ? { userAgent: "*", allow: "/", disallow: ["/api/", "/review/", "/book/"] }
       : { userAgent: "*", disallow: "/" },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };

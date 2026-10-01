@@ -74,10 +74,10 @@ describe("sitemap and robots", () => {
     );
   });
 
-  it("points to the sitemap and keeps the API out of the index", () => {
+  it("points to the sitemap and keeps the API and email short links out of the index", () => {
     const result = robots();
     assert.equal(result.sitemap, `${SITE_URL}/sitemap.xml`);
-    assert.equal((result.rules as { disallow?: string }).disallow, "/api/");
+    assert.deepEqual((result.rules as { disallow?: string[] }).disallow, ["/api/", "/review/", "/book/"]);
   });
 });
 

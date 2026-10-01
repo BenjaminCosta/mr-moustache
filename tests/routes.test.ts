@@ -149,3 +149,27 @@ describe("automation self-test route", () => {
     assert.equal(response.status, 400);
   });
 });
+
+describe("short links in emails", () => {
+  it("redirects /review/{shop} to Google and /book/{shop} to Square", async () => {
+    const { GET: review } = await import("../src/app/review/[shop]/route");
+    const { GET: book } = await import("../src/app/book/[shop]/route");
+    delete process.env.GOOGLE_REVIEW_URL_BROADBEACH;
+    process.env.NEXT_PUBLIC_SITE_URL = SITE;
+
+    const toReview = await review(new Request(`${SITE}/review/broadbeach`), {
+      params: Promise.resolve({ shop: "broadbeach" }),
+    });
+    assert.equal(toReview.status, 302);
+    assert.match(toReview.headers.get("location")!, /^https:\/\/search\.google\.com\/local\/writereview\?placeid=/);
+    assert.equal(toReview.headers.get("x-robots-tag"), "noindex");
+
+    const toBook = await book(new Request(`${SITE}/book/surfers-paradise`), {
+      params: Promise.resolve({ shop: "surfers-paradise" }),
+    });
+    assert.equal(toBook.headers.get("location"), "https://book.squareup.com/appointments/o0xkg1fz5zxow7/location/LA3KEKYDA4KV3");
+
+    const unknown = await book(new Request(`${SITE}/book/nope`), { params: Promise.resolve({ shop: "nope" }) });
+    assert.equal(unknown.headers.get("location"), `${SITE}/`);
+  });
+});
