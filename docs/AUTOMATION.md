@@ -56,6 +56,7 @@ Las visitas procesadas con los flags apagados quedan marcadas como `skipped`
 | `POST /api/square/webhook` | HMAC-SHA256 de Square + dedupe por `event_id` | reservas en tiempo real |
 | `GET /api/square/webhook` | pública | health-check (`{ ok: true }`) |
 | `GET /api/cron/booking-automation` | `Authorization: Bearer $CRON_SECRET` | job diario |
+| `GET /api/automation/test?key=…` | `AUTOMATION_ADMIN_KEY` (404 si no coincide) | autoprueba: simulación sobre visitas reales de la última semana (no envía ni guarda nada), o `&mode=email&to=<email>` para recibir las 2 plantillas reales |
 | `GET/POST /api/automation/unsubscribe` | firma HMAC | baja (GET muestra botón, POST ejecuta) |
 
 ## Firestore
@@ -97,6 +98,7 @@ del servidor lee y escribe. Los índices compuestos y la política TTL están en
 | `CUSTOMER_EMAIL_FROM` | p. ej. `Mr Moustache <hello@dominio>` (dominio verificado en Resend) |
 | `CUSTOMER_EMAIL_REPLY_TO` | email real del negocio |
 | `REVIEW_AUTOMATION_ENABLED` / `REBOOKING_AUTOMATION_ENABLED` | `false` hasta la prueba final |
+| `AUTOMATION_ADMIN_KEY` | opcional: clave para `/api/automation/test` (`openssl rand -hex 24`). Sin ella la ruta da 404 |
 | `AUTOMATION_TEST_EMAILS` | opcional: emails separados por coma. Si tiene valor, **solo** esos reciben emails y el resto queda `skipped: not_test_recipient`. Vaciarla para el lanzamiento |
 
 Rotar `SQUARE_TOKEN_ENCRYPTION_KEY` deja ilegibles los tokens guardados. En ese

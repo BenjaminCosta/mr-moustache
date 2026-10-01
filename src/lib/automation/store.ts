@@ -285,6 +285,18 @@ export async function listDueVisits(now: Date, limit: number) {
   return snapshot.docs.map(bookingFromDoc);
 }
 
+/** Bookings that ended inside [from, to], any processing state. */
+export async function listVisitsEndedBetween(from: Date, to: Date, limit: number) {
+  const snapshot = await firestore()
+    .collection(BOOKINGS)
+    .where("endAt", ">=", from)
+    .where("endAt", "<=", to)
+    .orderBy("endAt", "asc")
+    .limit(limit)
+    .get();
+  return snapshot.docs.map(bookingFromDoc);
+}
+
 export async function customerHasUpcomingBooking(merchantId: string, customerId: string, now: Date) {
   const snapshot = await firestore()
     .collection(BOOKINGS)

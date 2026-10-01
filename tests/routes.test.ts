@@ -130,3 +130,22 @@ describe("unsubscribe route", () => {
     assert.equal(invalid.status, 400);
   });
 });
+
+describe("automation self-test route", () => {
+  it("is hidden without the admin key", async () => {
+    const { GET } = await import("../src/app/api/automation/test/route");
+    delete process.env.AUTOMATION_ADMIN_KEY;
+    assert.equal((await GET(new NextRequest(`${SITE}/api/automation/test?key=`))).status, 404);
+
+    process.env.AUTOMATION_ADMIN_KEY = "admin-key";
+    assert.equal((await GET(new NextRequest(`${SITE}/api/automation/test`))).status, 404);
+    assert.equal((await GET(new NextRequest(`${SITE}/api/automation/test?key=wrong`))).status, 404);
+  });
+
+  it("asks for a recipient before sending test emails", async () => {
+    const { GET } = await import("../src/app/api/automation/test/route");
+    process.env.AUTOMATION_ADMIN_KEY = "admin-key";
+    const response = await GET(new NextRequest(`${SITE}/api/automation/test?key=admin-key&mode=email`));
+    assert.equal(response.status, 400);
+  });
+});
