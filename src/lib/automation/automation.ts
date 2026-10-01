@@ -1,4 +1,4 @@
-import { booleanEnv, positiveIntegerEnv } from "./env";
+import { booleanEnv, emailListEnv, positiveIntegerEnv } from "./env";
 import { rebookingEmailContent, reviewEmailContent } from "./email-content";
 import { automationLocations, locationForSquareId } from "./locations";
 import { cancelScheduledEmail, sendCustomerEmail } from "./resend";
@@ -143,6 +143,7 @@ interface RunContext {
   rebookingEnabled: boolean;
   reviewDelayHours: number;
   rebookingDelayDays: number;
+  testEmails?: string[];
 }
 
 async function connectionFor(context: RunContext, merchantId: string) {
@@ -210,6 +211,7 @@ async function processVisit(visit: StoredBooking, context: RunContext) {
     rebookingEnabled: context.rebookingEnabled,
     reviewDelayHours: context.reviewDelayHours,
     rebookingDelayDays: context.rebookingDelayDays,
+    testEmails: context.testEmails,
   };
 
   // Each email records its own outcome right away, so a retry after a
@@ -359,6 +361,7 @@ export async function runDailyAutomation(now = new Date()): Promise<DailyRunSumm
     rebookingEnabled: booleanEnv("REBOOKING_AUTOMATION_ENABLED"),
     reviewDelayHours: positiveIntegerEnv("REVIEW_DELAY_HOURS", 24),
     rebookingDelayDays: positiveIntegerEnv("REBOOKING_DELAY_DAYS", 28),
+    testEmails: emailListEnv("AUTOMATION_TEST_EMAILS"),
   };
 
   for (const visit of await listDueVisits(now, MAX_VISITS_PER_RUN)) {

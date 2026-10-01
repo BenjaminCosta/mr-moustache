@@ -17,13 +17,16 @@ import {
  *   squareEvents/{eventId}          webhook dedup markers (TTL on expireAt)
  *   bookings/{bookingId}            latest known booking + follow-up state
  *   customers/{merchantId}_{id}     opt-out and email history per customer
+ *   automationRuns/{startedAt}      summary of each daily cron run (TTL on expireAt)
  */
 const CONNECTIONS = "squareConnections";
 const EVENTS = "squareEvents";
 const BOOKINGS = "bookings";
 const CUSTOMERS = "customers";
 
+const RUNS = "automationRuns";
 const EVENT_RETENTION_DAYS = 30;
+const RUN_RETENTION_DAYS = 90;
 const ACCESS_TOKEN_MIN_REMAINING_MS = 60 * 60_000;
 
 // ---------- Square connections ----------
@@ -355,6 +358,33 @@ export async function updateCustomer(
     { merchantId, customerId, ...fields, updatedAt: new Date() },
     { merge: true },
   );
+}
+
+// ---------- Cron run history ----------
+
+/**
+ * Keeps each daily run's outcome in Firestore: Vercel Hobby only retains
+ * function logs for an hour, which is too short to audit a nightly job.
+ */
+export async function recordAutomationRun(
+  startedAt: Date,
+  result: { summary?: Record<string, unknown>; error?: string },
+) {
+  const finishedAt = new Date();
+  const errors = Array.isArray(result.summary?.errors) ? result.summary.errors : [];
+
+  await firestore()
+    .collection(RUNS)
+    .doc(startedAt.toISOString())
+    .set({
+      startedAt,
+      finishedAt,
+      durationMs: finishedAt.getTime() - startedAt.getTime(),
+      ok: !result.error && errors.length === 0,
+      ...(result.summary || {}),
+      error: result.error || null,
+      expireAt: new Date(finishedAt.getTime() + RUN_RETENTION_DAYS * 86_400_000),
+    });
 }
 
 export function errorMessage(error: unknown) {

@@ -66,6 +66,7 @@ Las visitas procesadas con los flags apagados quedan marcadas como `skipped`
 | `squareEvents/{eventId}` | marca de dedupe del webhook, se borra por TTL (`expireAt`, 30 días) |
 | `bookings/{bookingId}` | última versión de la reserva + estado de `review` y `rebooking` |
 | `customers/{merchantId}_{customerId}` | baja, última reseña pedida, recordatorio pendiente |
+| `automationRuns/{startedAt}` | resumen de cada corrida del cron (`ok`, `visitsProcessed`, `errors`…). Sirve para auditarlo, porque Vercel Hobby guarda los logs solo 1 hora |
 
 Las reglas (`firestore.rules`) niegan todo acceso de cliente; solo el Admin SDK
 del servidor lee y escribe. Los índices compuestos y la política TTL están en
@@ -96,6 +97,7 @@ del servidor lee y escribe. Los índices compuestos y la política TTL están en
 | `CUSTOMER_EMAIL_FROM` | p. ej. `Mr Moustache <hello@dominio>` (dominio verificado en Resend) |
 | `CUSTOMER_EMAIL_REPLY_TO` | email real del negocio |
 | `REVIEW_AUTOMATION_ENABLED` / `REBOOKING_AUTOMATION_ENABLED` | `false` hasta la prueba final |
+| `AUTOMATION_TEST_EMAILS` | opcional: emails separados por coma. Si tiene valor, **solo** esos reciben emails y el resto queda `skipped: not_test_recipient`. Vaciarla para el lanzamiento |
 
 Rotar `SQUARE_TOKEN_ENCRYPTION_KEY` deja ilegibles los tokens guardados. En ese
 caso hay que volver a conectar Square con `/api/square/oauth/start`. Rotar
@@ -118,7 +120,12 @@ caso hay que volver a conectar Square con `/api/square/oauth/start`. Rotar
    simplemente se acumulan.
 6. Dejar correr el cron unos días con los flags apagados y revisar que
    `bookings/` se llene y que las visitas queden `skipped: disabled`.
-7. Con el dominio verificado en Resend: cargar la key y el `from`, y activar
+7. Prueba real (con Resend ya configurado): `AUTOMATION_TEST_EMAILS=<tu email>` y los dos flags en
+   `true`, crear en Square una reserva corta para un cliente con ese email.
+   Cuando termine, correr el cron desde Vercel → Settings → Cron Jobs → Run y
+   revisar en `bookings/` que `review` y `rebooking` queden `scheduled`, y en
+   Resend que haya 2 emails programados. Correrlo otra vez no debe crear más.
+8. Con el dominio verificado en Resend: cargar la key y el `from`, y activar
    primero `REVIEW_AUTOMATION_ENABLED` y después `REBOOKING_AUTOMATION_ENABLED`.
 
 Para correr el cron a mano:

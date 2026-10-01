@@ -36,6 +36,8 @@ export interface FollowUpInput {
     lastReviewRequestAt?: Date;
   };
   hasUpcomingBooking: boolean;
+  /** When set (AUTOMATION_TEST_EMAILS), only these lowercase addresses get emails. */
+  testEmails?: string[];
   reviewEnabled: boolean;
   rebookingEnabled: boolean;
   reviewDelayHours: number;
@@ -64,6 +66,9 @@ function commonSkipReason(input: FollowUpInput) {
   if (input.now.getTime() - input.endAt.getTime() > STALE_VISIT_DAYS * DAY) return "stale";
   if (!input.location) return "unknown_location";
   if (!input.customer.email) return "no_email";
+  if (input.testEmails && !input.testEmails.includes(input.customer.email.toLowerCase())) {
+    return "not_test_recipient";
+  }
   if (input.customer.squareUnsubscribed || input.customer.unsubscribed) return "unsubscribed";
   return undefined;
 }

@@ -33,6 +33,15 @@ export function positiveIntegerEnv(name: string, fallback: number) {
   return parsed;
 }
 
+/** Comma-separated list, lowercased; undefined when the variable is empty. */
+export function emailListEnv(name: string) {
+  const values = (optionalEnv(name) || "")
+    .split(",")
+    .map((value) => value.trim().toLowerCase())
+    .filter(Boolean);
+  return values.length ? values : undefined;
+}
+
 export function squareEnvironment(): SquareEnvironment {
   const value = optionalEnv("SQUARE_ENVIRONMENT") || "sandbox";
 

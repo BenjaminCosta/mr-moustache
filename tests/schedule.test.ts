@@ -107,6 +107,23 @@ describe("decideRebooking", () => {
   });
 });
 
+describe("AUTOMATION_TEST_EMAILS", () => {
+  it("only emails listed addresses while testing", () => {
+    const testEmails = ["benja@example.com"];
+    const listed = input({ testEmails, customer: { email: "Benja@Example.com" } });
+    const other = input({ testEmails, customer: { email: "client@example.com" } });
+
+    assert.equal(decideReview(listed).action, "send");
+    assert.equal(decideRebooking(listed).action, "send");
+    assert.deepEqual(decideReview(other), { action: "skip", reason: "not_test_recipient" });
+    assert.deepEqual(decideRebooking(other), { action: "skip", reason: "not_test_recipient" });
+  });
+
+  it("emails everyone when the list is not set", () => {
+    assert.equal(decideReview(input({ testEmails: undefined })).action, "send");
+  });
+});
+
 describe("helpers", () => {
   it("recognises cancelled bookings", () => {
     assert.equal(bookingIsCancelled("NO_SHOW"), true);
@@ -118,5 +135,16 @@ describe("helpers", () => {
   it("refreshes tokens about once a week", () => {
     assert.equal(tokenNeedsRefresh(new Date(now.getTime() + 29 * DAY), now), false);
     assert.equal(tokenNeedsRefresh(new Date(now.getTime() + 22 * DAY), now), true);
+  });
+});
+
+describe("emailListEnv", () => {
+  it("parses a comma-separated, case-insensitive list", async () => {
+    const { emailListEnv } = await import("../src/lib/automation/env");
+    process.env.TEST_LIST = " A@b.co, ,c@D.co ";
+    assert.deepEqual(emailListEnv("TEST_LIST"), ["a@b.co", "c@d.co"]);
+    process.env.TEST_LIST = " ";
+    assert.equal(emailListEnv("TEST_LIST"), undefined);
+    delete process.env.TEST_LIST;
   });
 });
