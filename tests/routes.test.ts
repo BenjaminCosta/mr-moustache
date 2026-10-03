@@ -99,6 +99,30 @@ describe("Square OAuth routes", () => {
     assert.match(cookie, /Secure/i);
   });
 
+  it("moves to the callback's domain first, so the state cookie reaches it", () => {
+    process.env.SQUARE_CONNECT_SECRET = "connect-secret";
+    process.env.SQUARE_ENVIRONMENT = "production";
+    process.env.SQUARE_APPLICATION_ID = "sq0idp-test";
+    process.env.SQUARE_OAUTH_REDIRECT_URL = `${SITE}/api/square/oauth/callback`;
+
+    const response = oauthStart(
+      new NextRequest("https://moustachebarbersgc.com/api/square/oauth/start?key=connect-secret"),
+    );
+    const location = new URL(response.headers.get("location")!);
+
+    assert.equal(response.status, 307);
+    assert.equal(location.origin, SITE);
+    assert.equal(location.pathname, "/api/square/oauth/start");
+    assert.equal(location.searchParams.get("key"), "connect-secret");
+    assert.equal(response.headers.get("set-cookie"), null);
+
+    // If that domain sends the visitor straight back, explain instead of looping.
+    const looped = oauthStart(
+      new NextRequest("https://moustachebarbersgc.com/api/square/oauth/start?key=connect-secret&moved=1"),
+    );
+    assert.equal(looped.status, 409);
+  });
+
   it("rejects a callback whose state does not match the cookie", async () => {
     const request = new NextRequest(`${SITE}/api/square/oauth/callback?code=abc&state=attacker`, {
       headers: { cookie: "square_oauth_state=expected" },
