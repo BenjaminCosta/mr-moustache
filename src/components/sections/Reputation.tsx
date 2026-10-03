@@ -5,9 +5,9 @@ import { Moustache } from "@/components/ui/Moustache";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { getLocation } from "@/data/locations";
 import { backgrounds } from "@/data/media";
-import { displayedReviews, googleRatings } from "@/data/reviews";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { reviewCountLabel } from "@/lib/relative-time";
+import { getSiteData } from "@/lib/site-data";
 import type { LocationId } from "@/types";
 import { ReviewsCarousel } from "./ReviewsCarousel";
 
@@ -19,12 +19,11 @@ type ReputationProps = {
   location?: LocationId;
 };
 
-export function Reputation({ location }: ReputationProps) {
+export async function Reputation({ location }: ReputationProps) {
+  const site = await getSiteData();
   const shop = location ? getLocation(location) : undefined;
-  const ratings = shop ? googleRatings.filter((item) => item.id === shop.id) : googleRatings;
-  const reviews = shop
-    ? displayedReviews.filter((review) => review.location === shop.name)
-    : displayedReviews;
+  const ratings = shop ? site.ratings.filter((item) => item.id === shop.id) : site.ratings;
+  const reviews = shop ? site.reviews.filter((review) => review.location === shop.name) : site.reviews;
 
   return (
     <section
@@ -110,7 +109,7 @@ export function Reputation({ location }: ReputationProps) {
                     />
                   </span>
                   <span className="mt-[0.35rem] block text-[0.52rem] uppercase leading-none tracking-[0.3em] text-foreground lg:mt-3 lg:text-[0.72rem]">
-                    {reviewCountLabel(item.reviewCount)} reviews
+                    {reviewCountLabel(item.reviewCount, item.exact)} reviews
                   </span>
                 </span>
 

@@ -7,6 +7,15 @@ export type OpeningHours = {
   closed?: boolean;
 };
 
+/** Hours for one specific date (a public holiday, a special event), from Google. */
+export type SpecialHours = {
+  /** "YYYY-MM-DD" in the shop's time zone. */
+  date: string;
+  opens: string | null;
+  closes: string | null;
+  closed?: boolean;
+};
+
 export type Address = {
   street: string;
   suburb: string;
@@ -46,6 +55,8 @@ export type ShopLocation = {
   hours: { summary: string; detail: string } | null;
   /** Structured hours; only published in JSON-LD once every day has a close. */
   openingHours: OpeningHours[];
+  /** Date-specific hours that override the weekly ones (holidays), when known. */
+  specialHours?: SpecialHours[];
   geo: { latitude: number; longitude: number } | null;
   links: {
     booking: string;
@@ -80,8 +91,9 @@ export type GoogleRating = {
   id: LocationId;
   location: string;
   rating: number;
-  /** Lower bound of the Google review total, shown as "60+". */
+  /** Google review total: a lower bound ("60+") unless `exact` (live from Google). */
   reviewCount: number;
+  exact?: boolean;
   href: string;
 };
 
@@ -94,6 +106,8 @@ export type Review = {
   text: string;
   /** Day the review was posted (ISO "YYYY-MM-DD"); shown as "2 weeks ago". */
   publishedAt: string;
+  /** The reviewer's Google profile, linked from their name (Google's attribution rules). */
+  authorUrl?: string;
   location: string;
 };
 

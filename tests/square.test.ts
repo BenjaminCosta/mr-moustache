@@ -59,7 +59,7 @@ describe("bookingEndAt", () => {
 });
 
 describe("squareAuthorizationUrl", () => {
-  it("asks only for the MVP scopes", () => {
+  it("asks only for read scopes (bookings, customers, locations, services)", () => {
     process.env.SQUARE_ENVIRONMENT = "production";
     process.env.SQUARE_APPLICATION_ID = "sq0idp-test";
     process.env.SQUARE_OAUTH_REDIRECT_URL = "https://mr-moustache.vercel.app/api/square/oauth/callback";
@@ -69,7 +69,7 @@ describe("squareAuthorizationUrl", () => {
     assert.equal(url.pathname, "/oauth2/authorize");
     assert.equal(
       url.searchParams.get("scope"),
-      "APPOINTMENTS_READ APPOINTMENTS_ALL_READ CUSTOMERS_READ MERCHANT_PROFILE_READ",
+      "APPOINTMENTS_READ APPOINTMENTS_ALL_READ CUSTOMERS_READ MERCHANT_PROFILE_READ ITEMS_READ",
     );
     assert.equal(url.searchParams.get("state"), "state123");
     assert.equal(url.searchParams.get("session"), "false");

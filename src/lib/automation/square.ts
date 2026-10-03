@@ -12,6 +12,8 @@ const OAUTH_SCOPES = [
   "APPOINTMENTS_ALL_READ",
   "CUSTOMERS_READ",
   "MERCHANT_PROFILE_READ",
+  // Read-only access to the service list, so the website shows Square's prices.
+  "ITEMS_READ",
 ] as const;
 
 export interface SquareAppointmentSegment {
@@ -80,7 +82,7 @@ export class SquareRequestError extends Error {
   }
 }
 
-function squareApiBase(environment: SquareEnvironment) {
+export function squareApiBase(environment: SquareEnvironment) {
   return environment === "sandbox" ? "https://connect.squareupsandbox.com" : "https://connect.squareup.com";
 }
 
@@ -88,7 +90,7 @@ function squareOAuthBase(environment: SquareEnvironment) {
   return `${squareApiBase(environment)}/oauth2`;
 }
 
-function apiVersion() {
+export function apiVersion() {
   return optionalEnv("SQUARE_API_VERSION") || "2026-09-16";
 }
 

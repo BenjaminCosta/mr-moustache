@@ -2,14 +2,14 @@
 
 import { useState } from "react";
 import { locations } from "@/data/locations";
-import type { LocationId } from "@/types";
+import type { LocationId, Service } from "@/types";
 import { ServiceRows } from "./ServiceRows";
 
 /**
  * Service list with a Surfers Paradise / Broadbeach switch: every row opens
  * that service at the chosen shop in Square, so nobody picks it twice.
  */
-export function ServiceList() {
+export function ServiceList({ services }: { services: Service[] }) {
   const [location, setLocation] = useState<LocationId>(locations[0].id);
 
   return (
@@ -38,7 +38,7 @@ export function ServiceList() {
         })}
       </div>
 
-      <ServiceRows location={location} />
+      <ServiceRows location={location} services={services} />
     </div>
   );
 }

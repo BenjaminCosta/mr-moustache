@@ -1,12 +1,11 @@
 import { ChevronRightIcon } from "@/components/ui/Icons";
 import { getLocation } from "@/data/locations";
-import { services } from "@/data/services";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { squareServiceUrl } from "@/lib/constants";
-import type { LocationId } from "@/types";
+import type { LocationId, Service } from "@/types";
 
 /** Every service with its price; each row opens it in Square at `location`. */
-export function ServiceRows({ location }: { location: LocationId }) {
+export function ServiceRows({ location, services }: { location: LocationId; services: Service[] }) {
   const locationName = getLocation(location).name;
 
   return (

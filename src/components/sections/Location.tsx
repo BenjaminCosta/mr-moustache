@@ -2,9 +2,12 @@ import Image from "next/image";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { ScriptText } from "@/components/ui/ScriptText";
 import { backgrounds } from "@/data/media";
+import { getSiteData } from "@/lib/site-data";
 import { LocationTabs } from "./LocationTabs";
 
-export function Location() {
+export async function Location() {
+  const { locations } = await getSiteData();
+
   return (
     <section
       id="location"
@@ -43,7 +46,7 @@ export function Location() {
             Find your nearest Mr&nbsp;Moustache and book your appointment.
           </p>
 
-          <LocationTabs />
+          <LocationTabs locations={locations} />
         </div>
 
         <figure className="relative isolate mx-[0.85rem] mt-[1.25rem] h-[18rem] overflow-hidden rounded-[0.8rem] bg-[linear-gradient(180deg,#9fc3d6_0%,#d9e6ea_34%,#2e8a98_58%,#136d7c_100%)] lg:mx-0 lg:mt-[3.25rem] lg:h-[36rem] lg:rounded-[1rem]">

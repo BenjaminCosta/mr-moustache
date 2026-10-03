@@ -1,7 +1,7 @@
 import { addressLine, otherLocation } from "@/data/locations";
-import { services } from "@/data/services";
+import { services as siteServices } from "@/data/services";
 import { hoursSentence, joinList } from "@/lib/opening-hours";
-import type { ShopLocation } from "@/types";
+import type { Service, ShopLocation } from "@/types";
 
 export type Faq = { question: string; answer: string };
 
@@ -9,7 +9,7 @@ export type Faq = { question: string; answer: string };
  * Questions people ask before booking a barber, answered from the shop data
  * (prices, hours, address), so the answers never drift from the rest of the page.
  */
-export function locationFaqs(location: ShopLocation): Faq[] {
+export function locationFaqs(location: ShopLocation, services: Service[] = siteServices): Faq[] {
   const other = otherLocation(location.id);
   const priced = services
     .filter((service) => service.price)

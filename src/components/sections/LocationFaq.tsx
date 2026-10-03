@@ -1,11 +1,11 @@
 import { ChevronRightIcon } from "@/components/ui/Icons";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { locationFaqs } from "@/lib/faq";
-import type { ShopLocation } from "@/types";
+import type { Service, ShopLocation } from "@/types";
 
 /** Short answers to what people ask before booking; the same data feeds the FAQ JSON-LD. */
-export function LocationFaq({ location }: { location: ShopLocation }) {
-  const faqs = locationFaqs(location);
+export function LocationFaq({ location, services }: { location: ShopLocation; services: Service[] }) {
+  const faqs = locationFaqs(location, services);
 
   return (
     <section

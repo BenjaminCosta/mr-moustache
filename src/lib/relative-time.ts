@@ -17,7 +17,10 @@ export function googleRelativeTime(publishedAt: string, now: number) {
   return ago(Math.floor(days / 365.25), "year");
 }
 
-/** Review totals are a lower bound ("60+"), so they stay true as reviews come in. */
-export function reviewCountLabel(count: number) {
-  return `${count}+`;
+/**
+ * Review total: exact when it comes live from Google, otherwise a lower bound
+ * ("60+") so the saved number stays true as reviews come in.
+ */
+export function reviewCountLabel(count: number, exact = false) {
+  return exact ? String(count) : `${count}+`;
 }

@@ -30,6 +30,32 @@ Open `http://localhost:3000`.
 5. Square booking automation (review requests and rebooking reminders) is
    documented in `docs/AUTOMATION.md`.
 
+## Data that updates itself
+
+`src/lib/site-data.ts` gathers everything that changes on its own, and every
+page reads it from there. The pages stay static: Next.js regenerates them in
+the background, so visitors never wait on Google or Square. When a source is
+not set up or fails, the saved data in `src/data/` is used, so nothing breaks.
+
+| What | Source | How often | Needs |
+| --- | --- | --- | --- |
+| Rating, review total, reviews, opening and holiday hours | Google Places API (New), per shop's place ID (`GOOGLE_PLACE_IDS`) | every 6 h | `GOOGLE_PLACES_API_KEY` |
+| Services, prices, descriptions | Square Catalog, with the booking automation's OAuth token | daily | Square connected with `ITEMS_READ` |
+| "2 weeks ago" on reviews, "Open now", footer year | the visitor's clock | on every visit | nothing |
+
+- **Google:** in Google Cloud, enable *Places API (New)*, create an API key
+  restricted to that API and set it as `GOOGLE_PLACES_API_KEY` in Vercel. About
+  250 calls a month for both shops, inside Google's free monthly allowance.
+  Only 4–5 star reviews with text are shown (Google returns up to five per
+  shop); saved reviews fill the carousel up to three per shop.
+- **Square:** the OAuth scopes include `ITEMS_READ`; a connection made before it
+  was added must be renewed once at `/api/square/oauth/start?key=…`. Services
+  removed in Square disappear from the site and new bookable ones are added at
+  the end. If the Square IDs barely match the site's, the saved list is kept.
+- Saved fallbacks: ratings and reviews in `src/data/reviews.ts` (totals shown
+  as a floor, "60+"), hours in `src/data/locations.ts`, services in
+  `src/data/services.ts`.
+
 Booking calls to action read from `src/lib/constants.ts`:
 `SQUARE_BOOKING_URL` for the general "Book Now" buttons and
 `SQUARE_BOOKING_URL_SURFERS_PARADISE` / `SQUARE_BOOKING_URL_BROADBEACH` for each

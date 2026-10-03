@@ -7,6 +7,7 @@ import { Services } from "@/components/sections/Services";
 import { WorkWithUs } from "@/components/sections/WorkWithUs";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { HOME_DESCRIPTION, HOME_TITLE, pageMetadata } from "@/lib/seo";
+import { getSiteData } from "@/lib/site-data";
 import { homeJsonLd } from "@/lib/structured-data";
 
 export const metadata = pageMetadata({
@@ -15,7 +16,9 @@ export const metadata = pageMetadata({
   path: "/",
 });
 
-export default function Home() {
+export default async function Home() {
+  const site = await getSiteData();
+
   return (
     <div className="flex min-h-screen flex-col">
       <main className="flex-1">
@@ -27,7 +30,7 @@ export default function Home() {
         <WorkWithUs />
       </main>
       <Footer />
-      <JsonLd data={homeJsonLd()} />
+      <JsonLd data={homeJsonLd(site)} />
     </div>
   );
 }

@@ -2,14 +2,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ArrowRightIcon, StarIcon } from "@/components/ui/Icons";
-import { googleRatings } from "@/data/reviews";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { reviewCountLabel } from "@/lib/relative-time";
+import { getSiteData } from "@/lib/site-data";
 import type { ShopLocation } from "@/types";
 
 /** Top of a shop's page: breadcrumb, the "Barber in …" H1, booking and directions. */
-export function LocationHero({ location }: { location: ShopLocation }) {
-  const rating = googleRatings.find((item) => item.id === location.id);
+export async function LocationHero({ location }: { location: ShopLocation }) {
+  const { ratings } = await getSiteData();
+  const rating = ratings.find((item) => item.id === location.id);
 
   return (
     <section id="top" className="relative isolate overflow-hidden bg-background">
@@ -109,7 +110,7 @@ export function LocationHero({ location }: { location: ShopLocation }) {
                   ))}
                 </span>
                 <span>
-                  {rating.rating.toFixed(1)} from {reviewCountLabel(rating.reviewCount)} Google reviews
+                  {rating.rating.toFixed(1)} from {reviewCountLabel(rating.reviewCount, rating.exact)} Google reviews
                 </span>
               </p>
             ) : null}

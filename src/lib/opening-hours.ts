@@ -1,4 +1,4 @@
-import type { OpeningHours } from "@/types";
+import type { OpeningHours, SpecialHours } from "@/types";
 
 export const WEEK = [
   "Monday",
@@ -35,22 +35,46 @@ export function formatRange(item: OpeningHours) {
     : `${formatTime(item.opens)} – ${formatTime(item.closes)}`;
 }
 
-/** Current weekday and "HH:MM" at the shops, whatever the visitor's time zone. */
-export function shopNow(date = new Date()) {
+export type ShopNow = { day: string; time: string; /** "YYYY-MM-DD" at the shops. */ date: string };
+
+/** Current weekday, "HH:MM" and date at the shops, whatever the visitor's time zone. */
+export function shopNow(date = new Date()): ShopNow {
   const parts = new Intl.DateTimeFormat("en-AU", {
     timeZone: SHOP_TIME_ZONE,
     weekday: "long",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
     hour: "2-digit",
     minute: "2-digit",
     hourCycle: "h23",
   }).formatToParts(date);
   const get = (type: string) => parts.find((part) => part.type === type)?.value ?? "";
-  return { day: get("weekday"), time: `${get("hour")}:${get("minute")}` };
+  return {
+    day: get("weekday"),
+    time: `${get("hour")}:${get("minute")}`,
+    date: `${get("year")}-${get("month")}-${get("day")}`,
+  };
+}
+
+/** Today's hours: a holiday or special date from Google wins over the weekly hours. */
+export function hoursFor(
+  hours: OpeningHours[],
+  now: { day: string; date?: string },
+  special: SpecialHours[] = [],
+): (OpeningHours & { special?: boolean }) | undefined {
+  const override = now.date ? special.find((item) => item.date === now.date) : undefined;
+  if (override) return { ...override, day: now.day, special: true };
+  return hours.find((item) => item.day === now.day);
 }
 
 /** One-line status such as "Open now · until 7:00 pm". */
-export function statusLine(hours: OpeningHours[], now: { day: string; time: string }) {
-  const today = hours.find((item) => item.day === now.day);
+export function statusLine(
+  hours: OpeningHours[],
+  now: { day: string; time: string; date?: string },
+  special: SpecialHours[] = [],
+) {
+  const today = hoursFor(hours, now, special);
   if (!today || today.closed || !today.opens || !today.closes) return "Closed today";
   if (now.time < today.opens) return `Opens today at ${formatTime(today.opens)}`;
   if (now.time < today.closes) return `Open now · until ${formatTime(today.closes)}`;

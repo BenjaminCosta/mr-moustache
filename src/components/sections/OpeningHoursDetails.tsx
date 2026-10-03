@@ -2,22 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { ChevronRightIcon } from "@/components/ui/Icons";
-import { WEEK, formatRange, shopNow, statusLine } from "@/lib/opening-hours";
-import type { OpeningHours } from "@/types";
+import { WEEK, formatRange, hoursFor, shopNow, statusLine, type ShopNow } from "@/lib/opening-hours";
+import type { OpeningHours, SpecialHours } from "@/types";
 
 /**
  * Collapsible weekly hours: the summary shows today's status and the panel
  * lists every day, with today highlighted. "Today" is only known in the
- * browser, so the first render shows a neutral label.
+ * browser, so the first render shows a neutral label. Holiday hours from
+ * Google (`special`) replace today's usual hours.
  */
 export function OpeningHoursDetails({
   hours,
+  special = [],
   defaultOpen = false,
 }: {
   hours: OpeningHours[];
+  special?: SpecialHours[];
   defaultOpen?: boolean;
 }) {
-  const [now, setNow] = useState<{ day: string; time: string } | null>(null);
+  const [now, setNow] = useState<ShopNow | null>(null);
 
   useEffect(() => {
     const update = () => setNow(shopNow());
@@ -30,7 +33,7 @@ export function OpeningHoursDetails({
     <details className="group" open={defaultOpen}>
       <summary className="flex w-fit cursor-pointer list-none items-center gap-[0.6rem] transition-colors duration-200 hover:text-teal-dark focus-visible:text-teal-dark lg:gap-3 [&::-webkit-details-marker]:hidden">
         <span>
-          {now ? statusLine(hours, now) : "Opening hours"}
+          {now ? statusLine(hours, now, special) : "Opening hours"}
           <span className="mt-[0.2rem] block text-ink-muted">
             <span className="group-open:hidden">See all hours</span>
             <span className="hidden group-open:inline">Hide hours</span>
@@ -45,8 +48,8 @@ export function OpeningHoursDetails({
       {/* Solid panel so the hours stay readable over the palm backdrop. */}
       <dl className="mt-[0.8rem] divide-y divide-ink/10 rounded-[0.5rem] border border-ink/10 bg-white px-[0.9rem] py-[0.2rem] text-[0.88rem] leading-[1.2] shadow-[0_1px_2px_rgba(17,19,20,0.06)] lg:mt-5 lg:max-w-[23rem] lg:px-5 lg:py-1 lg:text-[1.05rem]">
         {WEEK.map((day) => {
-          const item = hours.find((entry) => entry.day === day);
           const isToday = now?.day === day;
+          const item = isToday && now ? hoursFor(hours, now, special) : hours.find((entry) => entry.day === day);
           const closed = !item || item.closed;
           return (
             <div
@@ -70,6 +73,11 @@ export function OpeningHoursDetails({
           );
         })}
       </dl>
+      {now && hoursFor(hours, now, special)?.special ? (
+        <p className="mt-[0.5rem] text-[0.78rem] text-ink-muted lg:text-[0.9rem]">
+          Special hours today (public holiday or event).
+        </p>
+      ) : null}
     </details>
   );
 }

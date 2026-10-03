@@ -1,11 +1,11 @@
 import { business } from "@/data/business";
 import { locationPath, locations } from "@/data/locations";
-import { services } from "@/data/services";
+import { services as siteServices } from "@/data/services";
 import { locationFaqs } from "@/lib/faq";
 import { SITE_URL, isConfiguredUrl, squareServiceUrl } from "@/lib/constants";
 import { hasFullWeek } from "@/lib/opening-hours";
 import { HOME_DESCRIPTION, HOME_TITLE } from "@/lib/seo";
-import type { ShopLocation } from "@/types";
+import type { Service, ShopLocation } from "@/types";
 
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
@@ -47,7 +47,7 @@ function openingHoursSpecification(location: ShopLocation) {
 }
 
 /** The shop's services, each linking straight to its Square booking page. */
-function offerCatalog(location: ShopLocation) {
+function offerCatalog(location: ShopLocation, services: Service[]) {
   return {
     "@type": "OfferCatalog",
     name: `Barber services at ${location.fullName}`,
@@ -105,7 +105,7 @@ function websiteNode() {
  * most specific one that applies. Ratings are left out on purpose: Google
  * ignores self-served LocalBusiness reviews.
  */
-function shopNode(location: ShopLocation) {
+function shopNode(location: ShopLocation, services: Service[] = siteServices) {
   const { address, geo, links } = location;
   const bookingUrl = isConfiguredUrl(links.booking) ? links.booking : undefined;
 
@@ -158,7 +158,7 @@ function shopNode(location: ShopLocation) {
         result: { "@type": "Reservation", name: "Barber appointment" },
       },
     }),
-    hasOfferCatalog: offerCatalog(location),
+    hasOfferCatalog: offerCatalog(location, services),
   };
 }
 
@@ -173,12 +173,12 @@ function breadcrumbNode(location: ShopLocation) {
   };
 }
 
-function faqNode(location: ShopLocation) {
+function faqNode(location: ShopLocation, services: Service[]) {
   return {
     "@type": "FAQPage",
     "@id": `${shopUrl(location)}#faq`,
     url: shopUrl(location),
-    mainEntity: locationFaqs(location).map((faq) => ({
+    mainEntity: locationFaqs(location, services).map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: { "@type": "Answer", text: faq.answer },
@@ -186,8 +186,10 @@ function faqNode(location: ShopLocation) {
   };
 }
 
-/** Home: the brand, the website and both shops. */
-export function homeJsonLd() {
+/** Home: the brand, the website and both shops (with live hours and prices when given). */
+export function homeJsonLd(
+  site: { locations: ShopLocation[]; services: Service[] } = { locations, services: siteServices },
+) {
   return {
     "@context": "https://schema.org",
     "@graph": [
@@ -204,13 +206,13 @@ export function homeJsonLd() {
         about: { "@id": ORGANIZATION_ID },
         primaryImageOfPage: SHARE_IMAGE_URL,
       },
-      ...locations.map(shopNode),
+      ...site.locations.map((location) => shopNode(location, site.services)),
     ],
   };
 }
 
 /** A shop's landing page: that shop in full, its breadcrumb and its FAQ. */
-export function locationJsonLd(location: ShopLocation) {
+export function locationJsonLd(location: ShopLocation, services: Service[] = siteServices) {
   const url = shopUrl(location);
 
   return {
@@ -230,9 +232,9 @@ export function locationJsonLd(location: ShopLocation) {
         breadcrumb: { "@id": `${url}#breadcrumb` },
         primaryImageOfPage: absolute(location.image.src),
       },
-      shopNode(location),
+      shopNode(location, services),
       breadcrumbNode(location),
-      faqNode(location),
+      faqNode(location, services),
     ],
   };
 }

@@ -52,7 +52,11 @@ export function ShopDetails({
         <li className="grid grid-cols-[2.95rem_1fr] items-start lg:grid-cols-[3.75rem_1fr]">
           <ClockIcon className="-mt-[0.05rem] size-[1.55rem] lg:size-7" />
           {hasFullWeek(location.openingHours) ? (
-            <OpeningHoursDetails hours={location.openingHours} defaultOpen={hoursOpen} />
+            <OpeningHoursDetails
+              hours={location.openingHours}
+              special={location.specialHours}
+              defaultOpen={hoursOpen}
+            />
           ) : location.hours ? (
             <p>
               {location.hours.summary}

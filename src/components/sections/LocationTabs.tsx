@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { locations } from "@/data/locations";
-import type { LocationId } from "@/types";
+import { locations as siteLocations } from "@/data/locations";
+import type { LocationId, ShopLocation } from "@/types";
 import { ShopDetails } from "./ShopDetails";
 
-const ids = locations.map((location) => location.id) as LocationId[];
+const ids = siteLocations.map((location) => location.id) as LocationId[];
 
 function idFromHref(href: string | null | undefined): LocationId | null {
   const hash = href?.split("#")[1];
@@ -15,9 +15,9 @@ function idFromHref(href: string | null | undefined): LocationId | null {
 /**
  * Surfers Paradise / Broadbeach tabs. Each tab carries the shop's id, so the
  * navbar and hero links (`/#surfers-paradise`, `/#broadbeach`) scroll here and
- * open the matching tab.
+ * open the matching tab. `locations` carries the live hours from Google.
  */
-export function LocationTabs() {
+export function LocationTabs({ locations }: { locations: ShopLocation[] }) {
   const [active, setActive] = useState<LocationId>(ids[0]);
   const tabRefs = useRef<Partial<Record<LocationId, HTMLButtonElement | null>>>({});
 

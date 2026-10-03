@@ -8,18 +8,19 @@ import { RuleLabel } from "@/components/ui/RuleLabel";
 import { business } from "@/data/business";
 import { locationPath, locations } from "@/data/locations";
 import { backgrounds } from "@/data/media";
-import { googleRatings } from "@/data/reviews";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import { getSiteData } from "@/lib/site-data";
 
-const ratingSummary = locations
-  .map((location) => {
-    const rating = googleRatings.find((item) => item.id === location.id);
-    return rating ? `${rating.rating.toFixed(1)} ${location.name}` : null;
-  })
-  .filter(Boolean)
-  .join(" · ");
+export async function Hero() {
+  const { ratings } = await getSiteData();
+  const ratingSummary = locations
+    .map((location) => {
+      const rating = ratings.find((item) => item.id === location.id);
+      return rating ? `${rating.rating.toFixed(1)} ${location.name}` : null;
+    })
+    .filter(Boolean)
+    .join(" · ");
 
-export function Hero() {
   return (
     <section id="top" className="relative isolate overflow-hidden bg-background">
       <div className="relative isolate flex min-h-[38rem] flex-col lg:min-h-[max(40rem,calc(100svh-12rem))]">

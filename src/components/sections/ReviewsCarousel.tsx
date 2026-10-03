@@ -87,9 +87,20 @@ export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
                   {review.author.charAt(0)}
                 </span>
                 <span className="min-w-0">
-                  <span className="block truncate text-[0.75rem] leading-tight text-white lg:text-[1.05rem]">
-                    {review.author}
-                  </span>
+                  {review.authorUrl ? (
+                    <a
+                      href={review.authorUrl}
+                      target="_blank"
+                      rel="noopener noreferrer nofollow"
+                      className="block truncate text-[0.75rem] leading-tight text-white underline-offset-2 hover:underline focus-visible:underline lg:text-[1.05rem]"
+                    >
+                      {review.author}
+                    </a>
+                  ) : (
+                    <span className="block truncate text-[0.75rem] leading-tight text-white lg:text-[1.05rem]">
+                      {review.author}
+                    </span>
+                  )}
                   <GoogleStars
                     rating={review.rating}
                     className="mt-[0.2rem] gap-[0.08rem] lg:mt-1.5 lg:gap-0.5"
@@ -97,7 +108,7 @@ export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
                   />
                 </span>
               </figcaption>
-              <blockquote className="mt-[0.6rem] text-[0.8125rem] leading-[1.3] text-[#e8eaed] lg:mt-5 lg:text-[1rem] lg:leading-[1.45]">
+              <blockquote className="mt-[0.6rem] line-clamp-6 text-[0.8125rem] leading-[1.3] text-[#e8eaed] lg:mt-5 lg:line-clamp-5 lg:text-[1rem] lg:leading-[1.45]">
                 {review.text}
               </blockquote>
               <p className="mt-auto flex items-center gap-[0.5rem] pt-[0.55rem] lg:gap-3 lg:pt-6">

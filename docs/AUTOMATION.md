@@ -133,6 +133,12 @@ del servidor lee y escribe. Los índices compuestos y la política TTL están en
 | `AUTOMATION_ADMIN_KEY` | opcional: clave para `/api/automation/test` (`openssl rand -hex 24`). Sin ella la ruta da 404 |
 | `AUTOMATION_TEST_EMAILS` | opcional: emails separados por coma. Si tiene valor, **solo** esos reciben emails y el resto queda `skipped: not_test_recipient`. Vaciarla para el lanzamiento |
 
+**Servicios y precios en la web:** la conexión también pide `ITEMS_READ`
+(solo lectura del catálogo), para que la lista de servicios de la web tome los
+precios de Square (ver "Data that updates itself" en el README). Una conexión
+hecha antes de agregar ese permiso hay que renovarla una vez con
+`/api/square/oauth/start?key=…`; hasta entonces la web usa los precios guardados.
+
 Rotar `SQUARE_TOKEN_ENCRYPTION_KEY` deja ilegibles los tokens guardados. En ese
 caso hay que volver a conectar Square con `/api/square/oauth/start`. Rotar
 `MARKETING_UNSUBSCRIBE_SECRET` invalida los links de baja de emails ya enviados.

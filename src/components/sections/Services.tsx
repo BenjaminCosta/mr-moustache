@@ -6,6 +6,7 @@ import { business } from "@/data/business";
 import { getLocation } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import { getSiteData } from "@/lib/site-data";
 import type { LocationId } from "@/types";
 import { ServiceList } from "./ServiceList";
 import { ServiceRows } from "./ServiceRows";
@@ -15,7 +16,8 @@ type ServicesProps = {
   location?: LocationId;
 };
 
-export function Services({ location }: ServicesProps) {
+export async function Services({ location }: ServicesProps) {
+  const { services } = await getSiteData();
   const shop = location ? getLocation(location) : undefined;
   const bookingLinkProps = {
     href: shop ? shop.links.booking : business.links.booking,
@@ -100,10 +102,10 @@ export function Services({ location }: ServicesProps) {
 
         {location ? (
           <div className="mt-[1.3rem] lg:mt-0">
-            <ServiceRows location={location} />
+            <ServiceRows location={location} services={services} />
           </div>
         ) : (
-          <ServiceList />
+          <ServiceList services={services} />
         )}
       </div>
     </section>
