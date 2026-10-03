@@ -10,20 +10,18 @@ const brandImages = [
   backgrounds.workWithUs,
 ].filter((path): path is string => Boolean(path));
 
+// No lastModified: stamping every page with the build time on each deploy tells
+// search engines everything changed when it did not.
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
-
   return [
     {
       url: `${SITE_URL}/`,
-      lastModified,
       changeFrequency: "monthly",
       priority: 1,
       images: brandImages.map((path) => `${SITE_URL}${path}`),
     },
     ...locations.map((location) => ({
       url: `${SITE_URL}${locationPath(location.id)}`,
-      lastModified,
       changeFrequency: "monthly" as const,
       priority: 0.9,
       images: [`${SITE_URL}${location.image.src}`],

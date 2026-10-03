@@ -80,6 +80,7 @@ export type GoogleRating = {
   id: LocationId;
   location: string;
   rating: number;
+  /** Lower bound of the Google review total, shown as "60+". */
   reviewCount: number;
   href: string;
 };
@@ -91,8 +92,8 @@ export type Review = {
   avatarColor: string;
   rating: number;
   text: string;
-  /** Relative date as shown on Google, e.g. "2 weeks ago". */
-  when: string;
+  /** Day the review was posted (ISO "YYYY-MM-DD"); shown as "2 weeks ago". */
+  publishedAt: string;
   location: string;
 };
 

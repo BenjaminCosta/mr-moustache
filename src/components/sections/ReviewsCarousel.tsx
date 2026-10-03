@@ -1,19 +1,28 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { GoogleG, GoogleStars } from "@/components/ui/Google";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/Icons";
 import { useNearViewport } from "@/hooks/useNearViewport";
+import { googleRelativeTime } from "@/lib/relative-time";
 import type { Review } from "@/types";
 
 type ReviewsCarouselProps = {
   reviews: Review[];
+  /** When the page was rendered; dates read from it until the browser takes over. */
+  renderedAt: number;
 };
+
+// The visitor's clock, read once in the browser, so "2 weeks ago" is right on
+// the day they visit even though the page itself was built earlier.
+const browserNow = typeof window === "undefined" ? null : Date.now();
+const noSubscription = () => () => {};
 
 const controlClasses =
   "btn-sweep btn-sweep--fill-light grid size-[1.45rem] place-items-center rounded-full border-[1.5px] border-foreground/85 text-foreground lg:size-12";
 
-export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
+export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
+  const now = useSyncExternalStore(noSubscription, () => browserNow ?? renderedAt, () => renderedAt);
   const trackRef = useRef<HTMLUListElement>(null);
   const [page, setPage] = useState(0);
   const [pageCount, setPageCount] = useState(1);
@@ -96,7 +105,7 @@ export function ReviewsCarousel({ reviews }: ReviewsCarouselProps) {
                 <span className="text-[0.6875rem] leading-[1.3] text-[#bdc1c6] lg:text-[0.8rem]">
                   Google review
                   <span className="block text-[#9aa0a6]">
-                    {review.location} · {review.when}
+                    {review.location} · {googleRelativeTime(review.publishedAt, now)}
                   </span>
                 </span>
               </p>

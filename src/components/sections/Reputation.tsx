@@ -7,8 +7,12 @@ import { getLocation } from "@/data/locations";
 import { backgrounds } from "@/data/media";
 import { displayedReviews, googleRatings } from "@/data/reviews";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
+import { reviewCountLabel } from "@/lib/relative-time";
 import type { LocationId } from "@/types";
 import { ReviewsCarousel } from "./ReviewsCarousel";
+
+// When the page was built; review dates read from it until the browser takes over.
+const BUILT_AT = Date.now();
 
 type ReputationProps = {
   /** On a shop's page: only that shop's Google rating and reviews. */
@@ -106,7 +110,7 @@ export function Reputation({ location }: ReputationProps) {
                     />
                   </span>
                   <span className="mt-[0.35rem] block text-[0.52rem] uppercase leading-none tracking-[0.3em] text-foreground lg:mt-3 lg:text-[0.72rem]">
-                    {item.reviewCount} reviews
+                    {reviewCountLabel(item.reviewCount)} reviews
                   </span>
                 </span>
 
@@ -126,7 +130,7 @@ export function Reputation({ location }: ReputationProps) {
             </p>
           </RuleLabel>
           <div className="mt-[0.75rem] lg:mt-12">
-            <ReviewsCarousel reviews={reviews} />
+            <ReviewsCarousel reviews={reviews} renderedAt={BUILT_AT} />
           </div>
         </div>
       ) : null}

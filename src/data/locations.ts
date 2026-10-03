@@ -62,7 +62,7 @@ export const locations = [
     id: "broadbeach",
     name: "Broadbeach",
     fullName: "Mr Moustache Barbershop Broadbeach",
-    tag: "Now open",
+    tag: "Our second shop",
     address: {
       street: "Unit 5/2623 Gold Coast Hwy",
       suburb: "Broadbeach",
