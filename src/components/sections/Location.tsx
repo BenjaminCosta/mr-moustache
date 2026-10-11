@@ -2,10 +2,13 @@ import Image from "next/image";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { ScriptText } from "@/components/ui/ScriptText";
 import { backgrounds } from "@/data/media";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { getSiteData } from "@/lib/site-data";
 import { LocationTabs } from "./LocationTabs";
 
-export async function Location() {
+export async function Location({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).findUs;
   const { locations } = await getSiteData();
 
   return (
@@ -35,25 +38,25 @@ export async function Location() {
       <div className="shell lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-16 lg:px-10">
         <div className="px-[1.8rem] lg:px-0">
           <h2 id="location-title" className="text-[0.66rem] font-sans font-semibold uppercase leading-none tracking-[0.5em] text-teal-dark lg:text-[0.78rem]">
-            Find us
+            {t.title}
           </h2>
           <p className="text-balance font-display font-bold mt-[0.75rem] whitespace-nowrap text-[2.02rem] leading-[1.05] tracking-[-0.03em] text-ink lg:mt-6 lg:text-[2.75rem] lg:leading-[1.15] xl:text-[3.2rem]">
-            Two spots.
+            {t.headline[0]}
             <br />
-            Same standards.
+            {t.headline[1]}
           </p>
           <p className="mt-[0.6rem] max-w-[18.5rem] text-[0.86rem] leading-[1.2] text-ink-muted lg:mt-5 lg:max-w-none lg:text-[1.15rem] lg:leading-[1.4]">
-            Find your nearest Mr&nbsp;Moustache and book your appointment.
+            {t.intro}
           </p>
 
-          <LocationTabs locations={locations} />
+          <LocationTabs locations={locations} locale={locale} />
         </div>
 
         <figure className="relative isolate mx-[0.85rem] mt-[1.25rem] h-[18rem] overflow-hidden rounded-[0.8rem] bg-[linear-gradient(180deg,#9fc3d6_0%,#d9e6ea_34%,#2e8a98_58%,#136d7c_100%)] lg:mx-0 lg:mt-[3.25rem] lg:h-[36rem] lg:rounded-[1rem]">
           {backgrounds.locationFeature ? (
             <Image
               src={backgrounds.locationFeature}
-              alt="Aerial view of the Gold Coast coastline from Broadbeach to Surfers Paradise"
+              alt={t.aerialAlt}
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"
               className="-z-10 object-cover"
@@ -68,9 +71,9 @@ export async function Location() {
               Gold Coast
             </ScriptText>
             <span className="mt-[0.4rem] block pl-[1rem] font-display text-[0.79rem] uppercase leading-[1.25] tracking-[0.42em] lg:mt-4 lg:pl-8 lg:text-[1.2rem]">
-              Good looks
+              {t.tagline[0]}
               <br />
-              live here
+              {t.tagline[1]}
             </span>
           </figcaption>
         </figure>
@@ -81,8 +84,8 @@ export async function Location() {
         lineClassName="bg-ink/30"
       >
         <p className="text-[0.48rem] font-medium uppercase leading-none tracking-[0.32em] text-ink/70 lg:text-[0.72rem] lg:tracking-[0.4em]">
-          Cuts <span className="px-[0.4em]">•</span> Community{" "}
-          <span className="px-[0.4em]">•</span> Coastline
+          {t.values[0]} <span className="px-[0.4em]">•</span> {t.values[1]}{" "}
+          <span className="px-[0.4em]">•</span> {t.values[2]}
         </p>
       </RuleLabel>
     </section>

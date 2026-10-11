@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 import { locations } from "@/data/locations";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import type { LocationId, Service } from "@/types";
 import { ServiceRows } from "./ServiceRows";
 
@@ -9,14 +11,15 @@ import { ServiceRows } from "./ServiceRows";
  * Service list with a Surfers Paradise / Broadbeach switch: every row opens
  * that service at the chosen shop in Square, so nobody picks it twice.
  */
-export function ServiceList({ services }: { services: Service[] }) {
+export function ServiceList({ services, locale = "en" }: { services: Service[]; locale?: Locale }) {
+  const t = getDictionary(locale).services;
   const [location, setLocation] = useState<LocationId>(locations[0].id);
 
   return (
     <div className="mt-[1.3rem] lg:mt-0">
-      <div role="group" aria-label="Book at" className="flex items-end gap-[1.5rem] lg:gap-10">
+      <div role="group" aria-label={t.bookAt} className="flex items-end gap-[1.5rem] lg:gap-10">
         <span className="pb-[0.7rem] text-[0.5rem] font-medium uppercase leading-none tracking-[0.3em] text-foreground/60 lg:pb-5 lg:text-[0.68rem]">
-          Book at
+          {t.bookAt}
         </span>
         {locations.map((item) => {
           const selected = item.id === location;
@@ -38,7 +41,7 @@ export function ServiceList({ services }: { services: Service[] }) {
         })}
       </div>
 
-      <ServiceRows location={location} services={services} />
+      <ServiceRows location={location} services={services} locale={locale} />
     </div>
   );
 }

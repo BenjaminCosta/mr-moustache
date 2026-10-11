@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import { locations as siteLocations } from "@/data/locations";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import type { LocationId, ShopLocation } from "@/types";
 import { ShopDetails } from "./ShopDetails";
 
@@ -17,7 +19,8 @@ function idFromHref(href: string | null | undefined): LocationId | null {
  * navbar and hero links (`/#surfers-paradise`, `/#broadbeach`) scroll here and
  * open the matching tab. `locations` carries the live hours from Google.
  */
-export function LocationTabs({ locations }: { locations: ShopLocation[] }) {
+export function LocationTabs({ locations, locale = "en" }: { locations: ShopLocation[]; locale?: Locale }) {
+  const t = getDictionary(locale).findUs;
   const [active, setActive] = useState<LocationId>(ids[0]);
   const tabRefs = useRef<Partial<Record<LocationId, HTMLButtonElement | null>>>({});
 
@@ -73,7 +76,7 @@ export function LocationTabs({ locations }: { locations: ShopLocation[] }) {
     <div className="mt-[1.55rem] lg:mt-12">
       <div
         role="tablist"
-        aria-label="Choose a barbershop"
+        aria-label={t.tabs}
         className="flex gap-[1.8rem] lg:gap-12"
       >
         {locations.map((location) => {
@@ -113,7 +116,7 @@ export function LocationTabs({ locations }: { locations: ShopLocation[] }) {
           hidden={location.id !== active}
           className="pt-[1.25rem] lg:pt-10"
         >
-          <ShopDetails location={location} showPageLink />
+          <ShopDetails location={location} showPageLink locale={locale} />
         </div>
       ))}
     </div>

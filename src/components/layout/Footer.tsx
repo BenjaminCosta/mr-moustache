@@ -16,6 +16,8 @@ import { ScriptText } from "@/components/ui/ScriptText";
 import { business } from "@/data/business";
 import { addressLines, locationPath, locations } from "@/data/locations";
 import { backgrounds } from "@/data/media";
+import { getDictionary } from "@/i18n/dictionary";
+import { LANGUAGE_TAGS, localePath, type Locale } from "@/i18n/locales";
 import {
   ANALYTICS_EVENTS,
   analyticsAttributes,
@@ -30,31 +32,41 @@ type SocialLink = {
   Icon: ComponentType<SVGProps<SVGSVGElement>>;
 };
 
-const socialLinks: SocialLink[] = [
-  {
-    label: "Instagram",
-    href: business.links.instagram,
-    ariaLabel: "Instagram (opens in a new tab)",
-    event: ANALYTICS_EVENTS.instagramClick,
-    Icon: InstagramIcon,
-  },
-  {
-    label: "Google",
-    href: business.links.google,
-    ariaLabel: "Google reviews (opens in a new tab)",
-    event: ANALYTICS_EVENTS.googleClick,
-    Icon: GoogleIcon,
-  },
-  {
-    label: "Book online",
-    href: business.links.booking,
-    ariaLabel: "Book online through Square (opens in a new tab)",
-    event: ANALYTICS_EVENTS.bookingClick,
-    Icon: CalendarIcon,
-  },
-];
+function socialLinks(locale: Locale): SocialLink[] {
+  const t = getDictionary(locale).footer;
+  return [
+    {
+      label: "Instagram",
+      href: business.links.instagram,
+      ariaLabel: t.instagramLabel,
+      event: ANALYTICS_EVENTS.instagramClick,
+      Icon: InstagramIcon,
+    },
+    {
+      label: "Google",
+      href: business.links.google,
+      ariaLabel: t.googleLabel,
+      event: ANALYTICS_EVENTS.googleClick,
+      Icon: GoogleIcon,
+    },
+    {
+      label: t.bookOnline,
+      href: business.links.booking,
+      ariaLabel: t.bookOnlineLabel,
+      event: ANALYTICS_EVENTS.bookingClick,
+      Icon: CalendarIcon,
+    },
+  ];
+}
 
-export function Footer() {
+type FooterProps = {
+  locale?: Locale;
+  /** The same page in each language, for the language links. */
+  languagePaths?: Record<Locale, string>;
+};
+
+export function Footer({ locale = "en", languagePaths = { en: "/", es: localePath("es", "/") } }: FooterProps) {
+  const t = getDictionary(locale).footer;
   return (
     <footer className="relative isolate overflow-hidden bg-background pb-[2.6rem] pt-[2.2rem] text-foreground lg:pb-10 lg:pt-20">
       {backgrounds.footer ? (
@@ -87,13 +99,13 @@ export function Footer() {
           <p className="mt-[0.6rem] font-display text-[2.15rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-5 lg:whitespace-nowrap lg:text-[2.25rem] xl:text-[2.6rem]">
             {business.shortName}
           </p>
-          <nav aria-label="Our barbershops">
+          <nav aria-label={t.shops}>
             <ul className="mt-[0.55rem] flex items-center gap-[0.6em] text-[0.58rem] uppercase leading-none tracking-[0.38em] lg:mt-3 lg:text-[0.7rem]">
               {locations.map((location, index) => (
                 <li key={location.id} className="flex items-center gap-[0.6em]">
                   {index > 0 ? <span aria-hidden="true">·</span> : null}
                   <Link
-                    href={locationPath(location.id)}
+                    href={locationPath(location.id, locale)}
                     className="py-[0.4rem] transition-colors duration-200 hover:text-primary focus-visible:text-primary"
                   >
                     {location.name}
@@ -103,15 +115,15 @@ export function Footer() {
             </ul>
           </nav>
           <p className="mt-[1.25rem] text-[0.55rem] uppercase leading-[1.95] tracking-[0.46em] text-foreground/90 lg:mt-6 lg:text-[0.64rem]">
-            Two Gold Coast locations.
+            {t.twoShops[0]}
             <br />
-            One Mr Moustache.
+            {t.twoShops[1]}
           </p>
         </div>
 
         <div>
           <ul className="mx-auto mt-[1.15rem] grid w-[19.7rem] grid-cols-3 divide-x divide-white/35 lg:mt-0 lg:w-full">
-            {socialLinks.map(
+            {socialLinks(locale).map(
               ({ label, href, ariaLabel, event, Icon }) => (
                 <li key={label} className="flex justify-center">
                   <a
@@ -152,7 +164,7 @@ export function Footer() {
                     {street}
                     <br />
                     {suburb}
-                    <span className="sr-only">: get directions (opens in a new tab)</span>
+                    <span className="sr-only">{t.directions}</span>
                   </span>
                   <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
                 </a>
@@ -201,9 +213,32 @@ export function Footer() {
       </div>
 
       <div className="shell lg:px-10">
-        <p className="mt-[2.5rem] text-center text-[0.48rem] uppercase leading-none tracking-[0.22em] text-foreground/85 lg:mt-20 lg:border-t lg:border-white/20 lg:pt-8 lg:text-[0.66rem] lg:tracking-[0.3em]">
-          © {new Date().getFullYear()} Mr Moustache Barbershop
-        </p>
+        <div className="mt-[2.5rem] flex flex-col items-center gap-[0.9rem] text-[0.48rem] uppercase leading-none tracking-[0.22em] text-foreground/85 lg:mt-20 lg:flex-row lg:justify-between lg:border-t lg:border-white/20 lg:pt-8 lg:text-[0.66rem] lg:tracking-[0.3em]">
+          <p>© {new Date().getFullYear()} Mr Moustache Barbershop</p>
+          <nav aria-label={t.languages}>
+            <ul className="flex items-center gap-[0.8em]">
+              {(["en", "es"] as const).map((language, index) => (
+                <li key={language} className="flex items-center gap-[0.8em]">
+                  {index > 0 ? <span aria-hidden="true">·</span> : null}
+                  {language === locale ? (
+                    <span aria-current="page" className="text-primary">
+                      {language === "en" ? "English" : "Español"}
+                    </span>
+                  ) : (
+                    <a
+                      href={languagePaths[language]}
+                      hrefLang={LANGUAGE_TAGS[language]}
+                      lang={LANGUAGE_TAGS[language]}
+                      className="-my-2 py-2 transition-colors duration-200 hover:text-primary focus-visible:text-primary"
+                    >
+                      {language === "en" ? "English" : "Español"}
+                    </a>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </div>
       </div>
     </footer>
   );

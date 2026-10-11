@@ -2,7 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { ChevronRightIcon } from "@/components/ui/Icons";
-import { WEEK, formatRange, hoursFor, shopNow, statusLine, type ShopNow } from "@/lib/opening-hours";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
+import { WEEK, dayName, formatRange, hoursFor, shopNow, statusLine, type ShopNow } from "@/lib/opening-hours";
 import type { OpeningHours, SpecialHours } from "@/types";
 
 /**
@@ -15,11 +17,14 @@ export function OpeningHoursDetails({
   hours,
   special = [],
   defaultOpen = false,
+  locale = "en",
 }: {
   hours: OpeningHours[];
   special?: SpecialHours[];
   defaultOpen?: boolean;
+  locale?: Locale;
 }) {
+  const t = getDictionary(locale);
   const [now, setNow] = useState<ShopNow | null>(null);
 
   useEffect(() => {
@@ -33,10 +38,10 @@ export function OpeningHoursDetails({
     <details className="group" open={defaultOpen}>
       <summary className="flex w-fit cursor-pointer list-none items-center gap-[0.6rem] transition-colors duration-200 hover:text-teal-dark focus-visible:text-teal-dark lg:gap-3 [&::-webkit-details-marker]:hidden">
         <span>
-          {now ? statusLine(hours, now, special) : "Opening hours"}
+          {now ? statusLine(hours, now, special, locale) : t.shop.openingHours}
           <span className="mt-[0.2rem] block text-ink-muted">
-            <span className="group-open:hidden">See all hours</span>
-            <span className="hidden group-open:inline">Hide hours</span>
+            <span className="group-open:hidden">{t.hours.seeAll}</span>
+            <span className="hidden group-open:inline">{t.hours.hide}</span>
           </span>
         </span>
         <ChevronRightIcon
@@ -59,15 +64,15 @@ export function OpeningHoursDetails({
               }`}
             >
               <dt className={`flex items-center gap-[0.4rem] ${isToday ? "font-semibold" : ""}`}>
-                {day}
+                {dayName(day, locale)}
                 {isToday ? (
                   <span className="rounded-full bg-teal-dark px-[0.35rem] py-[0.15rem] text-[0.5rem] font-semibold uppercase leading-none tracking-[0.12em] text-white lg:text-[0.62rem]">
-                    Today
+                    {t.hours.today}
                   </span>
                 ) : null}
               </dt>
               <dd className={`whitespace-nowrap text-right tabular-nums ${closed && !isToday ? "text-ink/55" : ""}`}>
-                {item ? formatRange(item) : "Closed"}
+                {item ? formatRange(item, locale) : formatRange({ day, opens: null, closes: null, closed: true }, locale)}
               </dd>
             </div>
           );
@@ -75,7 +80,7 @@ export function OpeningHoursDetails({
       </dl>
       {now && hoursFor(hours, now, special)?.special ? (
         <p className="mt-[0.5rem] text-[0.78rem] text-ink-muted lg:text-[0.9rem]">
-          Special hours today (public holiday or event).
+          {t.hours.special}
         </p>
       ) : null}
     </details>

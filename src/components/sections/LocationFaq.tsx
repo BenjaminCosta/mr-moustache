@@ -1,11 +1,22 @@
 import { ChevronRightIcon } from "@/components/ui/Icons";
 import { RuleLabel } from "@/components/ui/RuleLabel";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { locationFaqs } from "@/lib/faq";
 import type { Service, ShopLocation } from "@/types";
 
 /** Short answers to what people ask before booking; the same data feeds the FAQ JSON-LD. */
-export function LocationFaq({ location, services }: { location: ShopLocation; services: Service[] }) {
-  const faqs = locationFaqs(location, services);
+export function LocationFaq({
+  location,
+  services,
+  locale = "en",
+}: {
+  location: ShopLocation;
+  services: Service[];
+  locale?: Locale;
+}) {
+  const t = getDictionary(locale).faq;
+  const faqs = locationFaqs(location, services, locale);
 
   return (
     <section
@@ -23,11 +34,11 @@ export function LocationFaq({ location, services }: { location: ShopLocation; se
               id="faq-title"
               className="font-sans text-[0.6rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]"
             >
-              {location.name} barber FAQ
+              {t.title(location.name)}
             </h2>
           </RuleLabel>
           <p className="mt-[1.15rem] text-balance text-center font-display text-[1.87rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-8 lg:text-left lg:text-[3.25rem] lg:leading-[1.02] xl:text-[4rem]">
-            Good to know.
+            {t.headline}
           </p>
         </div>
 

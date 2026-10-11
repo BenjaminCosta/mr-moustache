@@ -3,7 +3,8 @@
 Brand landing for Mr Moustache Barbershop and its two Gold Coast shops,
 Surfers Paradise and Broadbeach, with a careers section at the end of the
 landing page, plus one page per shop (`/surfers-paradise`, `/broadbeach`) for
-local SEO and each shop's Google Business Profile.
+local SEO and each shop's Google Business Profile. Every page also exists in
+Spanish under `/es` (`/es`, `/es/surfers-paradise`, `/es/broadbeach`).
 
 ## Local development
 
@@ -66,7 +67,7 @@ Square Appointments page.
 
 The careers form sends each application from the browser to
 [Web3Forms](https://web3forms.com) (`POST https://api.web3forms.com/submit`,
-`src/app/work-with-us/WorkWithUsForm.tsx`), which emails it to the inbox tied to
+`src/components/careers/WorkWithUsForm.tsx`), which emails it to the inbox tied to
 the access key. The visitor stays on the page and sees "Application sent"; the
 browser checks the required fields.
 
@@ -119,6 +120,28 @@ Each shop page (`src/components/pages/LocationPage.tsx`) has: hero with the
 reviews (`Reputation`), address and full hours (`LocationVisit`), an FAQ built
 from the shop data (`LocationFaq`) and a link to the other shop
 (`OtherLocation`).
+
+### English and Spanish
+
+- Routes: `src/app/(en)/` holds the English pages and `src/app/(es)/es/` the
+  Spanish ones. Each group has its own root layout, so each document declares
+  its language (`<html lang="en-AU">` / `<html lang="es">`); moving between
+  languages is a full page load. Both pages render the same components
+  (`src/components/pages/HomePage.tsx`, `LocationPage.tsx`) with a `locale`.
+- Text: every interface string is in `src/i18n/dictionary.ts` (English and
+  Spanish side by side, plus Spanish service descriptions). Each shop's
+  Spanish title, description, H1, intro and photo alt live in `es` in
+  `src/data/locations.ts`. Hours, review dates, the FAQ and the JSON-LD are
+  generated in the page's language.
+- SEO: every page lists its translation with hreflang (`en-AU`, `es`,
+  `x-default` = English), in the page head and in the sitemap; canonicals stay
+  per language. The header has an EN / ES switch, the footer links both
+  languages, and "Hablamos español" on English pages links to the Spanish one.
+- Brand taglines ("Gold Coast", "Good looks live here", "Good Hair Better
+  People") stay in English on purpose; the script font is a subset of those
+  glyphs.
+- URLs that match no page get `src/app/global-not-found.tsx` (bilingual 404),
+  since there is no single root layout.
 
 ### Google reviews
 

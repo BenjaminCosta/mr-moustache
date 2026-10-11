@@ -1,3 +1,4 @@
+import type { Locale } from "@/i18n/locales";
 import type { OpeningHours, SpecialHours } from "@/types";
 
 export const WEEK = [
@@ -10,6 +11,21 @@ export const WEEK = [
   "Sunday",
 ] as const;
 
+const SPANISH_DAYS: Record<(typeof WEEK)[number], string> = {
+  Monday: "Lunes",
+  Tuesday: "Martes",
+  Wednesday: "Miércoles",
+  Thursday: "Jueves",
+  Friday: "Viernes",
+  Saturday: "Sábado",
+  Sunday: "Domingo",
+};
+
+/** "Monday" in the page's language ("Lunes"). */
+export function dayName(day: string, locale: Locale = "en") {
+  return locale === "es" ? (SPANISH_DAYS[day as (typeof WEEK)[number]] ?? day) : day;
+}
+
 // Both shops are in Queensland, which has no daylight saving.
 const SHOP_TIME_ZONE = "Australia/Brisbane";
 
@@ -21,18 +37,22 @@ export function hasFullWeek(hours: OpeningHours[]) {
   });
 }
 
-/** "09:00" → "9:00 am", "13:30" → "1:30 pm". */
-export function formatTime(value: string) {
+/** "09:00" → "9:00 am", "13:30" → "1:30 pm"; in Spanish, 24-hour "13:30". */
+export function formatTime(value: string, locale: Locale = "en") {
   const [hours, minutes] = value.split(":").map(Number);
+  const mm = String(minutes).padStart(2, "0");
+  if (locale === "es") return `${hours}:${mm}`;
   const suffix = hours >= 12 ? "pm" : "am";
   const hour = hours % 12 || 12;
-  return `${hour}:${String(minutes).padStart(2, "0")} ${suffix}`;
+  return `${hour}:${mm} ${suffix}`;
 }
 
-export function formatRange(item: OpeningHours) {
+export function formatRange(item: OpeningHours, locale: Locale = "en") {
   return item.closed || !item.opens || !item.closes
-    ? "Closed"
-    : `${formatTime(item.opens)} – ${formatTime(item.closes)}`;
+    ? locale === "es"
+      ? "Cerrado"
+      : "Closed"
+    : `${formatTime(item.opens, locale)} – ${formatTime(item.closes, locale)}`;
 }
 
 export type ShopNow = { day: string; time: string; /** "YYYY-MM-DD" at the shops. */ date: string };
@@ -68,53 +88,73 @@ export function hoursFor(
   return hours.find((item) => item.day === now.day);
 }
 
-/** One-line status such as "Open now · until 7:00 pm". */
+/** One-line status such as "Open now · until 7:00 pm" ("Abierto ahora · hasta las 19:00"). */
 export function statusLine(
   hours: OpeningHours[],
   now: { day: string; time: string; date?: string },
   special: SpecialHours[] = [],
+  locale: Locale = "en",
 ) {
+  const es = locale === "es";
   const today = hoursFor(hours, now, special);
-  if (!today || today.closed || !today.opens || !today.closes) return "Closed today";
-  if (now.time < today.opens) return `Opens today at ${formatTime(today.opens)}`;
-  if (now.time < today.closes) return `Open now · until ${formatTime(today.closes)}`;
-  return "Closed now";
+  if (!today || today.closed || !today.opens || !today.closes) return es ? "Cerrado hoy" : "Closed today";
+  if (now.time < today.opens) {
+    return es ? `Abre hoy a las ${formatTime(today.opens, locale)}` : `Opens today at ${formatTime(today.opens)}`;
+  }
+  if (now.time < today.closes) {
+    return es
+      ? `Abierto ahora · hasta las ${formatTime(today.closes, locale)}`
+      : `Open now · until ${formatTime(today.closes)}`;
+  }
+  return es ? "Cerrado ahora" : "Closed now";
 }
 
-/** "a", "a and b", "a, b and c". */
-export function joinList(items: string[]) {
+/** "a", "a and b", "a, b and c" ("a, b y c" in Spanish). */
+export function joinList(items: string[], locale: Locale = "en") {
+  const and = locale === "es" ? "y" : "and";
   return items.length < 2
     ? (items[0] ?? "")
-    : `${items.slice(0, -1).join(", ")} and ${items[items.length - 1]}`;
+    : `${items.slice(0, -1).join(", ")} ${and} ${items[items.length - 1]}`;
 }
 
 /**
  * The week in one sentence, grouping consecutive days with the same hours:
  * "Tuesday–Wednesday 10:00 am – 6:30 pm and Saturday 9:00 am – 4:00 pm.
- * Closed Monday and Sunday."
+ * Closed Monday and Sunday." In Spanish: "Martes a miércoles de 10:00 a
+ * 18:30 y sábado de 9:00 a 16:00. Cerrado lunes y domingo."
  */
-export function hoursSentence(hours: OpeningHours[]) {
-  const groups: { days: string[]; range: string }[] = [];
+export function hoursSentence(hours: OpeningHours[], locale: Locale = "en") {
+  const es = locale === "es";
+  const groups: { days: string[]; item: OpeningHours | undefined; key: string }[] = [];
   for (const day of WEEK) {
     const item = hours.find((entry) => entry.day === day);
-    const range = item ? formatRange(item) : "Closed";
+    const key = item ? formatRange(item) : "Closed";
     const last = groups[groups.length - 1];
-    if (last && last.range === range) last.days.push(day);
-    else groups.push({ days: [day], range });
+    if (last && last.key === key) last.days.push(day);
+    else groups.push({ days: [day], item, key });
   }
 
   const open = groups
-    .filter((group) => group.range !== "Closed")
-    .map(({ days, range }) => {
-      const label = days.length > 1 ? `${days[0]}–${days[days.length - 1]}` : days[0];
-      return `${label} ${range}`;
+    .filter((group) => group.key !== "Closed")
+    .map(({ days, item }) => {
+      const first = dayName(days[0], locale);
+      const last = dayName(days[days.length - 1], locale);
+      if (es) {
+        const label = days.length > 1 ? `${first} a ${last.toLowerCase()}` : first;
+        return `${label.toLowerCase()} de ${formatTime(item!.opens!, locale)} a ${formatTime(item!.closes!, locale)}`;
+      }
+      return `${days.length > 1 ? `${first}–${last}` : first} ${formatRange(item!)}`;
     });
-  const closed = groups.filter((group) => group.range === "Closed").flatMap((group) => group.days);
+  const closed = groups
+    .filter((group) => group.key === "Closed")
+    .flatMap((group) => group.days)
+    .map((day) => (es ? dayName(day, locale).toLowerCase() : day));
 
-  return [
-    open.length > 0 ? `${joinList(open)}.` : "",
-    closed.length > 0 ? `Closed ${joinList(closed)}.` : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const sentences = [
+    open.length > 0 ? `${joinList(open, locale)}.` : "",
+    closed.length > 0 ? `${es ? "Cerrado" : "Closed"} ${joinList(closed, locale)}.` : "",
+  ].filter(Boolean);
+
+  // Spanish day names are lower case mid-sentence; capitalise the start.
+  return sentences.map((sentence) => sentence.charAt(0).toUpperCase() + sentence.slice(1)).join(" ");
 }

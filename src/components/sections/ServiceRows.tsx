@@ -1,11 +1,23 @@
 import { ChevronRightIcon } from "@/components/ui/Icons";
 import { getLocation } from "@/data/locations";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
+import { serviceDescription } from "@/i18n/services";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { squareServiceUrl } from "@/lib/constants";
 import type { LocationId, Service } from "@/types";
 
 /** Every service with its price; each row opens it in Square at `location`. */
-export function ServiceRows({ location, services }: { location: LocationId; services: Service[] }) {
+export function ServiceRows({
+  location,
+  services,
+  locale = "en",
+}: {
+  location: LocationId;
+  services: Service[];
+  locale?: Locale;
+}) {
+  const t = getDictionary(locale).services;
   const locationName = getLocation(location).name;
 
   return (
@@ -24,7 +36,7 @@ export function ServiceRows({ location, services }: { location: LocationId; serv
                 {service.name}
               </span>
               <span className="mt-[0.15rem] block whitespace-pre-line text-[0.75rem] leading-[1.25] text-foreground/75 lg:mt-2 lg:whitespace-normal lg:text-[0.95rem] lg:leading-normal">
-                {service.description}
+                {serviceDescription(service, locale)}
               </span>
             </span>
             <span className="whitespace-nowrap text-foreground">
@@ -32,12 +44,12 @@ export function ServiceRows({ location, services }: { location: LocationId; serv
                 <span className="text-[0.8rem] lg:text-[1.1rem] xl:text-[1.2rem]">{service.price}</span>
               ) : (
                 <span className="pl-[0.15rem] text-[0.78rem] lg:pl-0 lg:text-[1.1rem]">
-                  Price varies
+                  {t.priceVaries}
                 </span>
               )}
             </span>
             <span className="sr-only">
-              Book at {locationName} through Square (opens in a new tab)
+              {t.rowLabel(locationName)}
             </span>
             <ChevronRightIcon className="h-[0.95rem] w-[0.55rem] text-primary transition-transform duration-300 ease-out group-hover:translate-x-[0.2rem] group-focus-visible:translate-x-[0.2rem] lg:h-5 lg:w-3" />
           </a>

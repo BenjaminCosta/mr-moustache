@@ -5,6 +5,8 @@ import { RuleLabel } from "@/components/ui/RuleLabel";
 import { business } from "@/data/business";
 import { getLocation } from "@/data/locations";
 import { backgrounds } from "@/data/media";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { getSiteData } from "@/lib/site-data";
 import type { LocationId } from "@/types";
@@ -14,9 +16,11 @@ import { ServiceRows } from "./ServiceRows";
 type ServicesProps = {
   /** On a shop's page: that shop's prices and booking links, no shop switch. */
   location?: LocationId;
+  locale?: Locale;
 };
 
-export async function Services({ location }: ServicesProps) {
+export async function Services({ location, locale = "en" }: ServicesProps) {
+  const t = getDictionary(locale).services;
   const { services } = await getSiteData();
   const shop = location ? getLocation(location) : undefined;
   const bookingLinkProps = {
@@ -60,26 +64,26 @@ export async function Services({ location }: ServicesProps) {
             lineClassName="bg-foreground/85"
           >
             <h2 id="services-title" className="text-[0.5rem] font-sans font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              {shop ? `${shop.name} barber prices` : "Barber services & prices"}
+              {shop ? t.shopTitle(shop.name) : t.title}
             </h2>
           </RuleLabel>
 
           <p className="text-balance font-display font-bold mt-[1.15rem] text-center text-[1.87rem] leading-none tracking-[-0.02em] text-white lg:mt-8 lg:text-left lg:text-[3.25rem] lg:leading-[1.02] xl:text-[4rem]">
-            Tried. True. <br className="hidden lg:inline" />
-            Tailored.
+            {t.headline[0]} <br className="hidden lg:inline" />
+            {t.headline[1]}
           </p>
           <p className="mt-[0.5rem] text-center text-[0.857rem] leading-tight text-foreground/80 lg:mt-6 lg:text-left lg:text-[1.1rem] lg:leading-normal">
-            Book your next cut at Mr Moustache{shop ? ` ${shop.name}` : ""}.
+            {t.bookNext(shop?.name)}
           </p>
 
           <a
             {...bookingLinkProps}
-            aria-label="Book your appointment through Square (opens in a new tab)"
+            aria-label={t.bookAppointmentLabel}
             className="btn-sweep btn-sweep--fill-white group order-last mt-[1.05rem] flex h-[2.6rem] items-center justify-center gap-[1.1rem] rounded-[0.1875rem] border-[1.5px] border-foreground text-foreground lg:mt-10 lg:h-14 lg:gap-4 xl:gap-5"
           >
             <CalendarIcon className="mr-[0.1rem] size-[1.3rem] lg:size-6" />
             <span className="mr-[0.15rem] whitespace-nowrap text-[0.62rem] font-semibold uppercase tracking-[0.2em] lg:text-[0.7rem] xl:text-[0.78rem] xl:tracking-[0.26em]">
-              Book your appointment
+              {t.bookAppointment}
             </span>
             <ArrowRightIcon className="size-[0.8rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-4" />
           </a>
@@ -102,10 +106,10 @@ export async function Services({ location }: ServicesProps) {
 
         {location ? (
           <div className="mt-[1.3rem] lg:mt-0">
-            <ServiceRows location={location} services={services} />
+            <ServiceRows location={location} services={services} locale={locale} />
           </div>
         ) : (
-          <ServiceList services={services} />
+          <ServiceList services={services} locale={locale} />
         )}
       </div>
     </section>

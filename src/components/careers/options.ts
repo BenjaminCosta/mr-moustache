@@ -1,5 +1,7 @@
 import { locations } from "@/data/locations";
 
+// Values stay in English (they are what the shop reads in the email); the form
+// shows them in the page's language from the dictionary, in the same order.
 export const EXPERIENCE_OPTIONS = [
   "Apprentice / under 1 year",
   "1–3 years",

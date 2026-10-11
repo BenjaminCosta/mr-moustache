@@ -375,9 +375,10 @@ Slack y X para armar la tarjeta.
 
 | Página | Imagen de preview |
 | --- | --- |
-| `/` | `src/app/opengraph-image.jpg` (logo en la remera, dentro del local) |
-| `/surfers-paradise` | `src/app/surfers-paradise/opengraph-image.jpg`: foto + "Barber in Surfers Paradise", dirección y "Book online · Hablamos español" |
-| `/broadbeach` | `src/app/broadbeach/opengraph-image.jpg`: lo mismo para Broadbeach |
+| `/` y `/es` | `src/app/(en)/opengraph-image.jpg` y `src/app/(es)/es/opengraph-image.jpg` (logo en la remera, dentro del local) |
+| `/surfers-paradise` | `src/app/(en)/surfers-paradise/opengraph-image.jpg`: foto + "Barber in Surfers Paradise", dirección y "Book online · Hablamos español" |
+| `/broadbeach` | `src/app/(en)/broadbeach/opengraph-image.jpg`: lo mismo para Broadbeach |
+| `/es/surfers-paradise`, `/es/broadbeach` | `src/app/(es)/es/<sede>/opengraph-image.jpg`: "Barbería en …", "Skin fades · Degradados · Barba", "Reserva online · Hablamos español" |
 
 Cada imagen tiene su `twitter-image.jpg` y los `.alt.txt`; un test verifica
 que ninguna sede se quede sin ellos. Pesan ~85 KB (WhatsApp pide menos de
@@ -394,6 +395,52 @@ no hacen falta (Google ubica cada sede por su dirección y su ficha).
 | --- | --- |
 | Foto confirmada de cada local | `image` en `src/data/locations.ts` (y regenerar su imagen de preview) |
 | Keywords extra de Aitor | copy de las páginas |
+
+---
+
+## 10. Versión en español (octubre 2026)
+
+Para posicionar en búsquedas en español, que casi no tienen competencia en la
+Gold Coast: "barbería Gold Coast", "barbero en Surfers Paradise", "barbería
+Broadbeach", "barbero que hable español", etc.
+
+| URL | Title | H1 |
+| --- | --- | --- |
+| `/es` | Barbería en Gold Coast – Hablamos español \| Mr Moustache | Mr Moustache · Barbería en Gold Coast |
+| `/es/surfers-paradise` | Barbería en Surfers Paradise – Hablamos español \| Mr Moustache | Barbería en Surfers Paradise |
+| `/es/broadbeach` | Barbería en Broadbeach – Hablamos español \| Mr Moustache | Barbería en Broadbeach |
+
+- **Mismo contenido, traducido de verdad** (no automático): hero, servicios
+  (con las descripciones en español), reseñas, horarios en formato de 24 h,
+  preguntas frecuentes, formulario de "Trabaja con nosotros" y footer. Los
+  nombres de los servicios quedan como en Square ("Skin Fade", "Zero Fade"),
+  que es como se los busca y como aparecen al reservar.
+- **`<html lang="es">`**: las páginas en español tienen su propio root layout
+  (`src/app/(es)/layout.tsx`).
+- **hreflang** en las seis páginas y en el sitemap: `en-AU` ↔ `es`, con
+  `x-default` en la versión en inglés. Cada idioma tiene su canonical.
+- **Schema:** la página en español describe el mismo `HairSalon` (mismo `@id`
+  y `url`, que sigue siendo la página en inglés que enlaza el GBP), con su
+  propio `WebPage` (`inLanguage: es`), breadcrumb ("Inicio") y `FAQPage` en
+  español.
+- **Enlazado:** selector EN / ES en el header, "Hablamos español" en el hero
+  de cada página en inglés enlaza a la versión en español y el footer enlaza
+  los dos idiomas.
+- **Previews para compartir** en español para cada sede.
+- **404 bilingüe** (`src/app/global-not-found.tsx`) para URLs que no existen.
+
+Lighthouse móvil (local): `/es` 89–95, `/es/broadbeach` 92–96, `/es/surfers-paradise`
+93; escritorio 100. La home en inglés sigue en 95–96.
+
+**Qué hacer con los GBP:** el link "Sitio web" de cada ficha sigue apuntando a
+la página en inglés (`/surfers-paradise`, `/broadbeach`), que es la que Google
+asocia al negocio; Google muestra la versión en español a quien busca en
+español gracias al hreflang. En las publicaciones de la ficha y en Instagram se
+puede enlazar `/es/...` cuando el texto está en español.
+
+**Para el cliente:** que Aitor (o alguien del equipo) lea los textos en
+español y ajuste lo que no suene como hablan ellos. Están en
+`src/i18n/dictionary.ts` y en `es` de `src/data/locations.ts`.
 
 ---
 
@@ -415,5 +462,6 @@ no hacen falta (Google ubica cada sede por su dirección y su ficha).
 - [ ] Dominio asignado en Vercel, con `www` → apex (308)
 - [ ] GBP enlazados a su página (ver `docs/GOOGLE_BUSINESS_PROFILE.md`)
 - [ ] GA4 (`NEXT_PUBLIC_GA_MEASUREMENT_ID`) + evento clave `booking_click`
-- [ ] Search Console + sitemap + indexación de las tres URLs
+- [x] Versión en español (`/es`) con hreflang
+- [ ] Search Console + sitemap + indexación de las seis URLs
 - [ ] Rich Results Test en producción

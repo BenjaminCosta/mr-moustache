@@ -6,6 +6,8 @@ import {
   PinOutlineIcon,
 } from "@/components/ui/Icons";
 import { addressLines, locationPath } from "@/data/locations";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { hasFullWeek } from "@/lib/opening-hours";
 import type { ShopLocation } from "@/types";
@@ -19,6 +21,7 @@ type ShopDetailsProps = {
   hoursOpen?: boolean;
   /** Link to the shop's own page (from the landing page's tabs). */
   showPageLink?: boolean;
+  locale?: Locale;
 };
 
 /** Address, hours, phone, Book Now and directions for one shop, on a light background. */
@@ -27,7 +30,9 @@ export function ShopDetails({
   showName = true,
   hoursOpen = false,
   showPageLink = false,
+  locale = "en",
 }: ShopDetailsProps) {
+  const t = getDictionary(locale).shop;
   const [street, suburb] = addressLines(location);
 
   return (
@@ -56,6 +61,7 @@ export function ShopDetails({
               hours={location.openingHours}
               special={location.specialHours}
               defaultOpen={hoursOpen}
+              locale={locale}
             />
           ) : location.hours ? (
             <p>
@@ -67,9 +73,9 @@ export function ShopDetails({
           ) : (
             // Placeholder until the shop's hours are confirmed.
             <p>
-              Opening hours
+              {t.openingHours}
               <span className="mt-[0.2rem] block text-ink-muted">
-                To be confirmed
+                {t.toBeConfirmed}
               </span>
             </p>
           )}
@@ -91,32 +97,32 @@ export function ShopDetails({
           href={location.links.booking}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Book now at ${location.name} through Square (opens in a new tab)`}
+          aria-label={t.bookNowLabel(location.name)}
           className="btn-sweep btn-sweep--invert-primary group flex h-[2.2rem] items-center justify-center gap-[0.9rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.8rem] font-medium text-white lg:h-14 lg:w-[15rem] lg:gap-[1.3rem] lg:text-[1rem]"
           {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick, location.id)}
         >
-          Book Now
+          {t.bookNow}
           <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
         </a>
         <a
           href={location.links.directions}
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={`Get directions to Mr Moustache ${location.name} in Google Maps (opens in a new tab)`}
+          aria-label={t.directionsLabel(location.name)}
           className="btn-sweep btn-sweep--fill-ink group flex h-[2.2rem] items-center justify-center gap-[0.9rem] rounded-full border-[1.5px] border-ink text-[0.8rem] font-medium lg:h-14 lg:w-[15rem] lg:gap-[1.3rem] lg:text-[1rem]"
           {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick, location.id)}
         >
-          Get Directions
+          {t.directions}
           <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
         </a>
       </div>
 
       {showPageLink ? (
         <Link
-          href={locationPath(location.id)}
+          href={locationPath(location.id, locale)}
           className="group mt-[1rem] inline-flex items-center gap-[0.5rem] text-[0.85rem] font-medium text-teal-dark underline decoration-teal-dark/35 underline-offset-4 transition-colors duration-200 hover:decoration-teal-dark lg:mt-8 lg:text-[1rem]"
         >
-          More about Mr Moustache {location.name}
+          {t.more(location.name)}
           <ArrowRightIcon className="size-[0.9rem] transition-transform duration-300 ease-out group-hover:translate-x-1 lg:size-4" />
         </Link>
       ) : null}

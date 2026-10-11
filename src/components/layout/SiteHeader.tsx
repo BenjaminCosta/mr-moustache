@@ -1,8 +1,11 @@
 import Link from "next/link";
+import { LanguageSwitch } from "@/components/layout/LanguageSwitch";
 import { SiteMenu } from "@/components/layout/SiteMenu";
 import { Logo } from "@/components/ui/Logo";
 import { business } from "@/data/business";
-import { navigationFor } from "@/data/navigation";
+import { alternateLanguagePath, navigationFor } from "@/data/navigation";
+import { getDictionary } from "@/i18n/dictionary";
+import { localePath, type Locale } from "@/i18n/locales";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import type { LocationId } from "@/types";
 
@@ -11,19 +14,22 @@ type SiteHeaderProps = {
   location?: LocationId;
   /** Book Now target; defaults to the brand's booking site. */
   bookingUrl?: string;
+  locale?: Locale;
 };
 
 /** Logo, primary navigation and Book Now, shared by every page. */
-export function SiteHeader({ location, bookingUrl = business.links.booking }: SiteHeaderProps) {
-  const navigation = navigationFor(location);
+export function SiteHeader({ location, bookingUrl = business.links.booking, locale = "en" }: SiteHeaderProps) {
+  const t = getDictionary(locale).nav;
+  const navigation = navigationFor(location, locale);
+  const switchHref = alternateLanguagePath(location, locale);
 
   return (
     <header className="shell flex items-start justify-between pl-[1.625rem] pr-[1.25rem] pt-[1.4375rem] lg:items-center lg:px-10 lg:pt-8">
-      <Link href="/" aria-label={`${business.name}, home`}>
+      <Link href={localePath(locale, "/")} aria-label={t.home(business.name)}>
         <Logo size={112} eager className="size-[5.3125rem] lg:size-[7rem]" />
       </Link>
 
-      <nav aria-label="Primary navigation" className="hidden lg:block">
+      <nav aria-label={t.label} className="hidden lg:block">
         <ul className="flex items-center gap-7 xl:gap-10">
           {navigation.map((item) => (
             <li key={item.href}>
@@ -41,22 +47,34 @@ export function SiteHeader({ location, bookingUrl = business.links.booking }: Si
             </li>
           ))}
           <li>
+            <LanguageSwitch
+              locale={locale}
+              href={switchHref}
+              className="py-2 text-[0.75rem] font-semibold tracking-[0.2em] text-foreground/80 transition-colors duration-200 hover:text-primary focus-visible:text-primary"
+            />
+          </li>
+          <li>
             <a
               href={bookingUrl}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Book now through Square (opens in a new tab)"
+              aria-label={t.bookNowLabel}
               className="btn-sweep btn-sweep--invert-primary inline-flex h-11 items-center whitespace-nowrap rounded-full border-[1.5px] border-primary bg-primary px-7 text-[0.75rem] font-semibold uppercase tracking-[0.24em] text-white"
               {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick, location)}
             >
-              Book now
+              {t.bookNow}
             </a>
           </li>
         </ul>
       </nav>
 
-      <div className="pt-[0.6rem] lg:hidden">
-        <SiteMenu location={location} bookingUrl={bookingUrl} />
+      <div className="flex items-center gap-[1.4rem] pt-[0.6rem] lg:hidden">
+        <LanguageSwitch
+          locale={locale}
+          href={switchHref}
+          className="-my-3 py-3 text-[0.75rem] font-semibold tracking-[0.18em] text-foreground/85 transition-colors duration-200 hover:text-primary focus-visible:text-primary"
+        />
+        <SiteMenu location={location} bookingUrl={bookingUrl} locale={locale} />
       </div>
     </header>
   );

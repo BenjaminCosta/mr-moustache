@@ -2,13 +2,16 @@ import Image from "next/image";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { ScriptText } from "@/components/ui/ScriptText";
 import { backgrounds } from "@/data/media";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { joinList } from "@/lib/opening-hours";
 import type { ShopLocation } from "@/types";
 import { ShopDetails } from "./ShopDetails";
 
 /** "Find us" on a shop's page: address, the full week of hours, phone and maps. */
-export function LocationVisit({ location }: { location: ShopLocation }) {
+export function LocationVisit({ location, locale = "en" }: { location: ShopLocation; locale?: Locale }) {
+  const t = getDictionary(locale).findUs;
   return (
     <section
       id="find-us"
@@ -37,19 +40,19 @@ export function LocationVisit({ location }: { location: ShopLocation }) {
             id="find-us-title"
             className="font-sans text-[0.75rem] font-semibold uppercase leading-none tracking-[0.4em] text-teal-dark lg:text-[0.78rem] lg:tracking-[0.5em]"
           >
-            Find us in {location.name}
+            {t.shopTitle(location.name)}
           </h2>
           <p className="mt-[0.75rem] text-balance font-display text-[2.02rem] font-bold leading-[1.05] tracking-[-0.03em] text-ink lg:mt-6 lg:text-[2.75rem] lg:leading-[1.15] xl:text-[3.2rem]">
-            See you in
+            {t.shopHeadline[0]}
             <br />
-            the chair.
+            {t.shopHeadline[1]}
           </p>
           <p className="mt-[0.6rem] max-w-[20rem] text-[0.86rem] leading-[1.3] text-ink-muted lg:mt-5 lg:max-w-none lg:text-[1.15rem] lg:leading-[1.4]">
-            A short trip from {joinList(location.page.nearby)}.
+            {t.nearby(joinList(location.page.nearby, locale))}
           </p>
 
           <div className="mt-[1.55rem] lg:mt-12">
-            <ShopDetails location={location} showName={false} hoursOpen />
+            <ShopDetails location={location} showName={false} hoursOpen locale={locale} />
           </div>
 
           <p className="mt-[1.1rem] text-[0.85rem] leading-[1.5] lg:mt-8 lg:text-[1rem]">
@@ -60,8 +63,8 @@ export function LocationVisit({ location }: { location: ShopLocation }) {
               className="font-medium text-teal-dark underline decoration-teal-dark/35 underline-offset-4 transition-colors duration-200 hover:decoration-teal-dark"
               {...analyticsAttributes(ANALYTICS_EVENTS.googleClick, location.id)}
             >
-              See Mr Moustache {location.name} on Google Maps
-              <span className="sr-only"> (opens in a new tab)</span>
+              {t.onMaps(location.name)}
+              <span className="sr-only"> {getDictionary(locale).newTab}</span>
             </a>
           </p>
         </div>
@@ -70,7 +73,7 @@ export function LocationVisit({ location }: { location: ShopLocation }) {
           {backgrounds.locationFeature ? (
             <Image
               src={backgrounds.locationFeature}
-              alt="Aerial view of the Gold Coast coastline from Broadbeach to Surfers Paradise"
+              alt={t.aerialAlt}
               fill
               sizes="(min-width: 1024px) 55vw, 100vw"
               className="-z-10 object-cover"
@@ -85,9 +88,9 @@ export function LocationVisit({ location }: { location: ShopLocation }) {
               Gold Coast
             </ScriptText>
             <span className="mt-[0.4rem] block pl-[1rem] font-display text-[0.79rem] uppercase leading-[1.25] tracking-[0.42em] lg:mt-4 lg:pl-8 lg:text-[1.2rem]">
-              Good looks
+              {t.tagline[0]}
               <br />
-              live here
+              {t.tagline[1]}
             </span>
           </figcaption>
         </figure>
@@ -98,8 +101,8 @@ export function LocationVisit({ location }: { location: ShopLocation }) {
         lineClassName="bg-ink/30"
       >
         <p className="text-[0.6rem] font-medium uppercase leading-none tracking-[0.32em] text-ink/70 lg:text-[0.72rem] lg:tracking-[0.4em]">
-          Cuts <span className="px-[0.4em]">•</span> Community{" "}
-          <span className="px-[0.4em]">•</span> Coastline
+          {t.values[0]} <span className="px-[0.4em]">•</span> {t.values[1]}{" "}
+          <span className="px-[0.4em]">•</span> {t.values[2]}
         </p>
       </RuleLabel>
     </section>

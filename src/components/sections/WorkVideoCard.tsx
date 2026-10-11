@@ -8,9 +8,11 @@ import type { WorkVideo } from "@/types";
 
 type WorkVideoCardProps = {
   video: WorkVideo;
+  /** Button text in the page's language. */
+  labels: { mute: string; unmute: string; muteLabel: string; unmuteLabel: string };
 };
 
-export function WorkVideoCard({ video }: WorkVideoCardProps) {
+export function WorkVideoCard({ video, labels }: WorkVideoCardProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [muted, setMuted] = useState(true);
   // The clip and its poster only download once the card nears the viewport.
@@ -51,7 +53,7 @@ export function WorkVideoCard({ video }: WorkVideoCardProps) {
 
       <button
         type="button"
-        aria-label={muted ? "Unmute video" : "Mute video"}
+        aria-label={muted ? labels.unmuteLabel : labels.muteLabel}
         aria-pressed={!muted}
         onClick={toggleMuted}
         className="group absolute bottom-3 right-3 inline-flex h-9 items-center gap-2 rounded-[0.25rem] border border-white/25 bg-black/60 px-3 text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] backdrop-blur-md transition-[background-color,border-color,color,transform] duration-300 ease-out hover:border-primary hover:bg-primary hover:text-black active:scale-[0.98] lg:bottom-5 lg:right-5 lg:h-10 lg:px-3.5"
@@ -62,7 +64,7 @@ export function WorkVideoCard({ video }: WorkVideoCardProps) {
           <SpeakerSimpleHighIcon className="size-4" weight="regular" />
         )}
         <span className="text-[0.55rem] font-semibold uppercase leading-none tracking-[0.2em] lg:text-[0.62rem]">
-          {muted ? "Unmute" : "Mute"}
+          {muted ? labels.unmute : labels.mute}
         </span>
       </button>
     </figure>

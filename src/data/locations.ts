@@ -1,3 +1,4 @@
+import { localePath, type Locale } from "@/i18n/locales";
 import type { LocationId, ShopLocation } from "@/types";
 import {
   DIRECTIONS_URL_BROADBEACH,
@@ -57,6 +58,16 @@ export const locations = [
         "The original Mr Moustache, on Orchid Ave in the heart of Surfers Paradise. Skin fades, taper fades, classic cuts and beard trims by Spanish-speaking barbers.",
       nearby: ["Main Beach", "Bundall", "Chevron Island", "Broadbeach"],
     },
+    es: {
+      tag: "El original",
+      title: "Barbería en Surfers Paradise – Hablamos español | Mr Moustache",
+      description:
+        "Mr Moustache Barbershop, 3 Orchid Ave, Surfers Paradise. Skin fades, degradados, cortes clásicos y barba con barberos que hablan español. Reserva online.",
+      heading: "Barbería en Surfers Paradise",
+      intro:
+        "El Mr Moustache original, en Orchid Ave, en pleno Surfers Paradise. Skin fades, taper fades, cortes clásicos y arreglo de barba con barberos que hablan español.",
+      imageAlt: "Barbero de Mr Moustache cortando el pelo a un cliente junto al poste de barbería",
+    },
   },
   {
     id: "broadbeach",
@@ -105,6 +116,16 @@ export const locations = [
         "Our second Gold Coast shop, on the Gold Coast Hwy in Broadbeach. Skin fades, taper fades, classic cuts and beard trims by Spanish-speaking barbers, with the same standards as Surfers Paradise.",
       nearby: ["Mermaid Beach", "Broadbeach Waters", "Mermaid Waters", "Surfers Paradise"],
     },
+    es: {
+      tag: "Nuestro segundo local",
+      title: "Barbería en Broadbeach – Hablamos español | Mr Moustache",
+      description:
+        "Mr Moustache Barbershop, Unit 5/2623 Gold Coast Hwy, Broadbeach. Skin fades, degradados, cortes y barba con barberos que hablan español. Reserva online.",
+      heading: "Barbería en Broadbeach",
+      intro:
+        "Nuestro segundo local en la Gold Coast, sobre la Gold Coast Hwy en Broadbeach. Skin fades, taper fades, cortes clásicos y arreglo de barba con barberos que hablan español, con el mismo nivel que en Surfers Paradise.",
+      imageAlt: "Barbero de Mr Moustache perfilando la barba de un cliente, visto en el espejo",
+    },
   },
 ] satisfies ShopLocation[];
 
@@ -119,9 +140,23 @@ export function otherLocation(id: LocationId) {
   return locations.find((item) => item.id !== id) as ShopLocation;
 }
 
-/** Path of the shop's own landing page. */
-export function locationPath(id: LocationId) {
-  return `/${id}`;
+/** Path of the shop's own landing page, in English or (under /es) in Spanish. */
+export function locationPath(id: LocationId, locale: Locale = "en") {
+  return localePath(locale, `/${id}`);
+}
+
+/** The shop page's copy in one language. */
+export function locationCopy(location: ShopLocation, locale: Locale = "en") {
+  return locale === "es"
+    ? location.es
+    : {
+        tag: location.tag,
+        title: location.page.title,
+        description: location.page.description,
+        heading: location.page.heading,
+        intro: location.page.intro,
+        imageAlt: location.image.alt,
+      };
 }
 
 /** One-line postal address, e.g. "3 Orchid Ave, Surfers Paradise QLD 4217". */
