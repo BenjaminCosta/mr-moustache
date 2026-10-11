@@ -76,6 +76,15 @@ export type ShopLocation = {
     /** Neighbouring suburbs the shop serves (copy and JSON-LD `areaServed`). */
     nearby: string[];
   };
+  /** The same page in Spanish (`/es/surfers-paradise`, `/es/broadbeach`). */
+  es: {
+    tag: string;
+    title: string;
+    description: string;
+    heading: string;
+    intro: string;
+    imageAlt: string;
+  };
 };
 
 export type Service = {

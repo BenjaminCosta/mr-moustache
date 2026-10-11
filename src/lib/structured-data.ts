@@ -1,16 +1,20 @@
 import { business } from "@/data/business";
-import { locationPath, locations } from "@/data/locations";
+import { locationCopy, locationPath, locations } from "@/data/locations";
 import { services as siteServices } from "@/data/services";
 import { locationFaqs } from "@/lib/faq";
 import { SITE_URL, isConfiguredUrl, squareServiceUrl } from "@/lib/constants";
 import { hasFullWeek } from "@/lib/opening-hours";
-import { HOME_DESCRIPTION, HOME_TITLE } from "@/lib/seo";
+import { getDictionary } from "@/i18n/dictionary";
+import { LANGUAGE_TAGS, localePath, type Locale } from "@/i18n/locales";
+import { HOME_SEO } from "@/lib/seo";
 import type { Service, ShopLocation } from "@/types";
 
 const ORGANIZATION_ID = `${SITE_URL}/#organization`;
 const WEBSITE_ID = `${SITE_URL}/#website`;
 const LOGO_URL = `${SITE_URL}/images/branding/mr-moustache-logo.webp`;
-const SHARE_IMAGE_URL = `${SITE_URL}/opengraph-image.jpg`;
+// Stable copy of the landing page's share image (the opengraph-image route's
+// own URL carries a build hash).
+const SHARE_IMAGE_URL = `${SITE_URL}/images/branding/mr-moustache-barbershop-logo-tee.jpg`;
 
 /** Absolute URL of a site path ("/" → "https://site/"). */
 function absolute(path: string) {
@@ -95,7 +99,7 @@ function websiteNode() {
     name: business.name,
     // The Surfers Paradise Google profile spells it "Mr. Moustache".
     alternateName: [business.shortName, "Mr. Moustache Barbershop"],
-    inLanguage: "en-AU",
+    inLanguage: [LANGUAGE_TAGS.en, LANGUAGE_TAGS.es],
     publisher: { "@id": ORGANIZATION_ID },
   };
 }
@@ -162,23 +166,36 @@ function shopNode(location: ShopLocation, services: Service[] = siteServices) {
   };
 }
 
-function breadcrumbNode(location: ShopLocation) {
+/** URL of the shop's page in one language (the HairSalon itself keeps the English page). */
+function shopPageUrl(location: ShopLocation, locale: Locale) {
+  return absolute(locationPath(location.id, locale));
+}
+
+function breadcrumbNode(location: ShopLocation, locale: Locale) {
+  const url = shopPageUrl(location, locale);
   return {
     "@type": "BreadcrumbList",
-    "@id": `${shopUrl(location)}#breadcrumb`,
+    "@id": `${url}#breadcrumb`,
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: `${SITE_URL}/` },
-      { "@type": "ListItem", position: 2, name: location.name, item: shopUrl(location) },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: getDictionary(locale).shopHero.home,
+        item: absolute(localePath(locale, "/")),
+      },
+      { "@type": "ListItem", position: 2, name: location.name, item: url },
     ],
   };
 }
 
-function faqNode(location: ShopLocation, services: Service[]) {
+function faqNode(location: ShopLocation, services: Service[], locale: Locale) {
+  const url = shopPageUrl(location, locale);
   return {
     "@type": "FAQPage",
-    "@id": `${shopUrl(location)}#faq`,
-    url: shopUrl(location),
-    mainEntity: locationFaqs(location, services).map((faq) => ({
+    "@id": `${url}#faq`,
+    url,
+    inLanguage: LANGUAGE_TAGS[locale],
+    mainEntity: locationFaqs(location, services, locale).map((faq) => ({
       "@type": "Question",
       name: faq.question,
       acceptedAnswer: { "@type": "Answer", text: faq.answer },
@@ -189,31 +206,9 @@ function faqNode(location: ShopLocation, services: Service[]) {
 /** Home: the brand, the website and both shops (with live hours and prices when given). */
 export function homeJsonLd(
   site: { locations: ShopLocation[]; services: Service[] } = { locations, services: siteServices },
+  locale: Locale = "en",
 ) {
-  return {
-    "@context": "https://schema.org",
-    "@graph": [
-      organizationNode(),
-      websiteNode(),
-      {
-        "@type": "WebPage",
-        "@id": `${SITE_URL}/#webpage`,
-        url: `${SITE_URL}/`,
-        name: HOME_TITLE,
-        description: HOME_DESCRIPTION,
-        inLanguage: "en-AU",
-        isPartOf: { "@id": WEBSITE_ID },
-        about: { "@id": ORGANIZATION_ID },
-        primaryImageOfPage: SHARE_IMAGE_URL,
-      },
-      ...site.locations.map((location) => shopNode(location, site.services)),
-    ],
-  };
-}
-
-/** A shop's landing page: that shop in full, its breadcrumb and its FAQ. */
-export function locationJsonLd(location: ShopLocation, services: Service[] = siteServices) {
-  const url = shopUrl(location);
+  const url = absolute(localePath(locale, "/"));
 
   return {
     "@context": "https://schema.org",
@@ -224,17 +219,51 @@ export function locationJsonLd(location: ShopLocation, services: Service[] = sit
         "@type": "WebPage",
         "@id": `${url}#webpage`,
         url,
-        name: location.page.title,
-        description: location.page.description,
-        inLanguage: "en-AU",
+        name: HOME_SEO[locale].title,
+        description: HOME_SEO[locale].description,
+        inLanguage: LANGUAGE_TAGS[locale],
+        isPartOf: { "@id": WEBSITE_ID },
+        about: { "@id": ORGANIZATION_ID },
+        primaryImageOfPage: SHARE_IMAGE_URL,
+      },
+      ...site.locations.map((location) => shopNode(location, site.services)),
+    ],
+  };
+}
+
+/**
+ * A shop's landing page: that shop in full, its breadcrumb and its FAQ. The
+ * Spanish page describes the same HairSalon (same @id and url) in its own
+ * WebPage, breadcrumb and FAQ.
+ */
+export function locationJsonLd(
+  location: ShopLocation,
+  services: Service[] = siteServices,
+  locale: Locale = "en",
+) {
+  const url = shopPageUrl(location, locale);
+  const copy = locationCopy(location, locale);
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      organizationNode(),
+      websiteNode(),
+      {
+        "@type": "WebPage",
+        "@id": `${url}#webpage`,
+        url,
+        name: copy.title,
+        description: copy.description,
+        inLanguage: LANGUAGE_TAGS[locale],
         isPartOf: { "@id": WEBSITE_ID },
         about: { "@id": shopId(location) },
         breadcrumb: { "@id": `${url}#breadcrumb` },
         primaryImageOfPage: absolute(location.image.src),
       },
       shopNode(location, services),
-      breadcrumbNode(location),
-      faqNode(location, services),
+      breadcrumbNode(location, locale),
+      faqNode(location, services, locale),
     ],
   };
 }

@@ -2,13 +2,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { ArrowRightIcon, StarIcon } from "@/components/ui/Icons";
+import { locationCopy } from "@/data/locations";
+import { getDictionary } from "@/i18n/dictionary";
+import { LANGUAGE_TAGS, localePath, type Locale } from "@/i18n/locales";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { reviewCountLabel } from "@/lib/relative-time";
 import { getSiteData } from "@/lib/site-data";
 import type { ShopLocation } from "@/types";
 
 /** Top of a shop's page: breadcrumb, the "Barber in …" H1, booking and directions. */
-export async function LocationHero({ location }: { location: ShopLocation }) {
+export async function LocationHero({ location, locale = "en" }: { location: ShopLocation; locale?: Locale }) {
+  const t = getDictionary(locale);
+  const copy = locationCopy(location, locale);
   const { ratings } = await getSiteData();
   const rating = ratings.find((item) => item.id === location.id);
 
@@ -20,7 +25,7 @@ export async function LocationHero({ location }: { location: ShopLocation }) {
           <div className="absolute inset-0 lg:left-auto lg:w-[55%]">
             <Image
               src={location.image.src}
-              alt={location.image.alt}
+              alt={copy.imageAlt}
               fill
               preload
               fetchPriority="high"
@@ -49,15 +54,18 @@ export async function LocationHero({ location }: { location: ShopLocation }) {
           />
         </div>
 
-        <SiteHeader location={location.id} bookingUrl={location.links.booking} />
+        <SiteHeader location={location.id} bookingUrl={location.links.booking} locale={locale} />
 
         <div className="shell mt-auto px-[1.625rem] pb-[2.75rem] pt-12 lg:px-10 lg:pb-20">
           <div className="lg:max-w-[46rem]">
-            <nav aria-label="Breadcrumb">
+            <nav aria-label={t.shopHero.breadcrumb}>
               <ol className="flex items-center gap-[0.6rem] text-[0.75rem] font-medium uppercase leading-none tracking-[0.2em] text-foreground/75 lg:text-[0.8rem] lg:tracking-[0.28em]">
                 <li>
-                  <Link href="/" className="transition-colors duration-200 hover:text-primary focus-visible:text-primary">
-                    Home
+                  <Link
+                    href={localePath(locale, "/")}
+                    className="transition-colors duration-200 hover:text-primary focus-visible:text-primary"
+                  >
+                    {t.shopHero.home}
                   </Link>
                 </li>
                 <li aria-hidden="true">/</li>
@@ -68,13 +76,13 @@ export async function LocationHero({ location }: { location: ShopLocation }) {
             </nav>
 
             <p className="mt-[1.1rem] text-[0.75rem] font-medium uppercase leading-none tracking-[0.19em] text-foreground/90 lg:mt-8 lg:text-[0.8rem] lg:tracking-[0.3em]">
-              Mr Moustache Barbershop · {location.tag}
+              Mr Moustache Barbershop · {copy.tag}
             </p>
             <h1 className="mt-[0.55rem] text-balance font-display text-[2.4rem] font-bold leading-[0.95] tracking-[-0.015em] text-white lg:mt-5 lg:text-[4.5rem] xl:text-[5.25rem]">
-              {location.page.heading}
+              {copy.heading}
             </h1>
             <p className="mt-[0.75rem] text-[0.95rem] leading-[1.35] text-foreground/85 lg:mt-6 lg:max-w-[34rem] lg:text-[1.2rem] lg:leading-[1.45]">
-              {location.page.intro}
+              {copy.intro}
             </p>
 
             <div className="mt-[1.2rem] flex flex-col gap-[0.6rem] lg:mt-9 lg:flex-row lg:gap-4">
@@ -82,22 +90,22 @@ export async function LocationHero({ location }: { location: ShopLocation }) {
                 href={location.links.booking}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Book at ${location.name} through Square (opens in a new tab)`}
+                aria-label={t.shopHero.bookAtLabel(location.name)}
                 className="btn-sweep btn-sweep--invert-primary group flex h-[2.6rem] items-center justify-center gap-[1.15rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.75rem] font-medium uppercase tracking-[0.2em] text-white lg:h-14 lg:px-10 lg:text-[0.85rem] lg:tracking-[0.24em]"
                 {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick, location.id)}
               >
-                Book at {location.name}
+                {t.shopHero.bookAt(location.name)}
                 <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
               </a>
               <a
                 href={location.links.directions}
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label={`Get directions to Mr Moustache ${location.name} in Google Maps (opens in a new tab)`}
+                aria-label={t.shop.directionsLabel(location.name)}
                 className="btn-sweep btn-sweep--fill-white group flex h-[2.6rem] items-center justify-center gap-[1.15rem] rounded-full border-[1.5px] border-foreground text-[0.75rem] font-medium uppercase tracking-[0.2em] text-foreground lg:h-14 lg:px-10 lg:text-[0.85rem] lg:tracking-[0.24em]"
                 {...analyticsAttributes(ANALYTICS_EVENTS.directionsClick, location.id)}
               >
-                Get Directions
+                {t.shop.directions}
                 <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
               </a>
             </div>
@@ -110,15 +118,25 @@ export async function LocationHero({ location }: { location: ShopLocation }) {
                   ))}
                 </span>
                 <span>
-                  {rating.rating.toFixed(1)} from {reviewCountLabel(rating.reviewCount, rating.exact)} Google reviews
+                  {t.shopHero.rating(rating.rating.toFixed(1), reviewCountLabel(rating.reviewCount, rating.exact))}
                 </span>
               </p>
             ) : null}
             <p className="mt-[0.5rem] text-[0.8rem] leading-tight tracking-[0.02em] text-foreground/80 lg:mt-3 lg:text-[0.9rem]">
-              Spanish-speaking barbers ·{" "}
-              <span lang="es" className="text-primary">
-                Hablamos español
-              </span>
+              {t.shopHero.spanish}
+              {locale === "en" ? (
+                <>
+                  {" · "}
+                  <a
+                    href={localePath("es", `/${location.id}`)}
+                    hrefLang={LANGUAGE_TAGS.es}
+                    lang={LANGUAGE_TAGS.es}
+                    className="text-primary underline-offset-2 hover:underline focus-visible:underline"
+                  >
+                    Hablamos español
+                  </a>
+                </>
+              ) : null}
             </p>
           </div>
         </div>

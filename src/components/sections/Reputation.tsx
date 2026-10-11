@@ -5,6 +5,8 @@ import { Moustache } from "@/components/ui/Moustache";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { getLocation } from "@/data/locations";
 import { backgrounds } from "@/data/media";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { reviewCountLabel } from "@/lib/relative-time";
 import { getSiteData } from "@/lib/site-data";
@@ -17,9 +19,11 @@ const BUILT_AT = Date.now();
 type ReputationProps = {
   /** On a shop's page: only that shop's Google rating and reviews. */
   location?: LocationId;
+  locale?: Locale;
 };
 
-export async function Reputation({ location }: ReputationProps) {
+export async function Reputation({ location, locale = "en" }: ReputationProps) {
+  const t = getDictionary(locale).reviews;
   const site = await getSiteData();
   const shop = location ? getLocation(location) : undefined;
   const ratings = shop ? site.ratings.filter((item) => item.id === shop.id) : site.ratings;
@@ -59,19 +63,17 @@ export async function Reputation({ location }: ReputationProps) {
             lineClassName="bg-foreground/85"
           >
             <h2 id="reviews-title" className="text-[0.5rem] font-sans font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              {shop ? `${shop.name} Google reviews` : "Google reviews"}
+              {shop ? t.shopTitle(shop.name) : t.title}
             </h2>
           </RuleLabel>
 
           <p className="text-balance font-display font-bold mt-[0.95rem] whitespace-nowrap px-[1.85rem] text-[2.6rem] leading-[0.84] tracking-[-0.02em] text-white lg:mt-8 lg:px-0 lg:text-[3.6rem] lg:leading-[1.02] xl:text-[4.25rem]">
-            Trusted on
+            {t.headline[0]}
             <br />
-            the Gold Coast.
+            {t.headline[1]}
           </p>
           <p className="mt-[0.6rem] max-w-[21.9rem] px-[1.9rem] text-[0.9rem] leading-[1.15] text-foreground/85 lg:mt-6 lg:max-w-[30rem] lg:px-0 lg:text-[1.15rem] lg:leading-[1.45]">
-            {shop
-              ? `What clients say about Mr Moustache ${shop.name}, straight from Google.`
-              : "From Surfers Paradise to Broadbeach, both shops carry the reputation Mr Moustache has built on the Gold Coast."}
+            {shop ? t.shopIntro(shop.name) : t.intro}
           </p>
         </div>
 
@@ -91,7 +93,7 @@ export async function Reputation({ location }: ReputationProps) {
                     {item.location}
                   </span>
                   <span className="mt-[0.2rem] block text-[0.44rem] uppercase leading-none tracking-[0.35em] text-foreground/70 lg:mt-2 lg:text-[0.62rem]">
-                    On Google
+                    {t.onGoogle}
                   </span>
                 </span>
 
@@ -109,11 +111,11 @@ export async function Reputation({ location }: ReputationProps) {
                     />
                   </span>
                   <span className="mt-[0.35rem] block text-[0.52rem] uppercase leading-none tracking-[0.3em] text-foreground lg:mt-3 lg:text-[0.72rem]">
-                    {reviewCountLabel(item.reviewCount, item.exact)} reviews
+                    {t.count(reviewCountLabel(item.reviewCount, item.exact))}
                   </span>
                 </span>
 
-                <span className="sr-only">(opens in a new tab)</span>
+                <span className="sr-only">{getDictionary(locale).newTab}</span>
                 <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] text-primary transition-transform duration-300 ease-out group-hover:translate-x-[0.2rem] group-focus-visible:translate-x-[0.2rem] lg:h-6 lg:w-3.5" />
               </a>
             </li>
@@ -125,11 +127,11 @@ export async function Reputation({ location }: ReputationProps) {
         <div className="shell mt-[1rem] lg:mt-24 lg:px-10">
           <RuleLabel className="gap-[0.55rem] px-[1.1rem] lg:gap-8 lg:px-0" lineClassName="bg-foreground/85">
             <p className="text-[0.46rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              What people are saying
+              {t.saying}
             </p>
           </RuleLabel>
           <div className="mt-[0.75rem] lg:mt-12">
-            <ReviewsCarousel reviews={reviews} renderedAt={BUILT_AT} />
+            <ReviewsCarousel reviews={reviews} renderedAt={BUILT_AT} locale={locale} />
           </div>
         </div>
       ) : null}
@@ -139,9 +141,9 @@ export async function Reputation({ location }: ReputationProps) {
           <Moustache width={25} className="text-foreground/55 lg:w-11" />
         </RuleLabel>
         <p className="mt-[0.75rem] font-display text-[0.95rem] font-bold leading-[1.1] text-white lg:mt-6 lg:text-[2.25rem]">
-          Two Gold Coast locations.
+          {t.twoShops[0]}
           <br />
-          One Mr Moustache.
+          {t.twoShops[1]}
         </p>
         <p className="mt-[0.95rem] text-[0.47rem] uppercase leading-none tracking-[0.36em] text-foreground/55 lg:mt-6 lg:text-[0.66rem]">
           Mr Moustache

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import { GoogleG, GoogleStars } from "@/components/ui/Google";
 import { ChevronLeftIcon, ChevronRightIcon } from "@/components/ui/Icons";
 import { useNearViewport } from "@/hooks/useNearViewport";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { googleRelativeTime } from "@/lib/relative-time";
 import type { Review } from "@/types";
 
@@ -11,6 +13,7 @@ type ReviewsCarouselProps = {
   reviews: Review[];
   /** When the page was rendered; dates read from it until the browser takes over. */
   renderedAt: number;
+  locale?: Locale;
 };
 
 // The visitor's clock, read once in the browser, so "2 weeks ago" is right on
@@ -21,7 +24,8 @@ const noSubscription = () => () => {};
 const controlClasses =
   "btn-sweep btn-sweep--fill-light grid size-[1.45rem] place-items-center rounded-full border-[1.5px] border-foreground/85 text-foreground lg:size-12";
 
-export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
+export function ReviewsCarousel({ reviews, renderedAt, locale = "en" }: ReviewsCarouselProps) {
+  const t = getDictionary(locale).reviews;
   const now = useSyncExternalStore(noSubscription, () => browserNow ?? renderedAt, () => renderedAt);
   const trackRef = useRef<HTMLUListElement>(null);
   const [page, setPage] = useState(0);
@@ -69,7 +73,7 @@ export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
     <div>
       <ul
         ref={trackRef}
-        aria-label="Google reviews"
+        aria-label={t.listLabel}
         className={`${nearViewport ? "font-google" : ""} flex snap-x snap-mandatory gap-[0.4rem] overflow-x-auto scroll-px-[0.5rem] px-[0.5rem] [scrollbar-width:none] lg:scroll-px-0 lg:gap-6 lg:px-0 [&::-webkit-scrollbar]:hidden`}
       >
         {reviews.map((review) => (
@@ -114,9 +118,9 @@ export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
               <p className="mt-auto flex items-center gap-[0.5rem] pt-[0.55rem] lg:gap-3 lg:pt-6">
                 <GoogleG className="size-[1.15rem] shrink-0 lg:size-6" />
                 <span className="text-[0.6875rem] leading-[1.3] text-[#bdc1c6] lg:text-[0.8rem]">
-                  Google review
+                  {t.googleReview}
                   <span className="block text-[#9aa0a6]">
-                    {review.location} · {googleRelativeTime(review.publishedAt, now)}
+                    {review.location} · {googleRelativeTime(review.publishedAt, now, locale)}
                   </span>
                 </span>
               </p>
@@ -129,7 +133,7 @@ export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
         <button
           type="button"
           className={controlClasses}
-          aria-label="Previous reviews"
+          aria-label={t.previous}
           onClick={() => goTo((page - 1 + pageCount) % pageCount)}
         >
           <ChevronLeftIcon className="h-[0.6rem] w-[0.35rem] lg:h-4 lg:w-2.5" />
@@ -141,7 +145,7 @@ export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
               key={index}
               type="button"
               aria-current={index === page ? "true" : undefined}
-              aria-label={`Show review page ${index + 1}`}
+              aria-label={t.page(index + 1)}
               className={`size-[0.34rem] rounded-full transition-colors duration-300 lg:size-2.5 ${
                 index === page ? "bg-primary" : "bg-white/35 hover:bg-white/60"
               }`}
@@ -153,7 +157,7 @@ export function ReviewsCarousel({ reviews, renderedAt }: ReviewsCarouselProps) {
         <button
           type="button"
           className={controlClasses}
-          aria-label="Next reviews"
+          aria-label={t.next}
           onClick={() => goTo((page + 1) % pageCount)}
         >
           <ChevronRightIcon className="h-[0.6rem] w-[0.35rem] lg:h-4 lg:w-2.5" />

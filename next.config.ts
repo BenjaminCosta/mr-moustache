@@ -5,6 +5,11 @@ import type { NextConfig } from "next";
 const publicAssetCache = "public, max-age=604800, stale-while-revalidate=86400";
 
 const nextConfig: NextConfig = {
+  experimental: {
+    // English and Spanish pages have separate root layouts, so URLs that match
+    // no page get their 404 from src/app/global-not-found.tsx.
+    globalNotFound: true,
+  },
   images: {
     // AVIF first for browsers that support it, WebP as the fallback.
     formats: ["image/avif", "image/webp"],

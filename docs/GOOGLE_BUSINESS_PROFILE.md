@@ -123,13 +123,19 @@ requieren el plan Pro.
 1. Verificar el dominio (registro DNS). Si no hay acceso al DNS, usar la
    verificación por etiqueta HTML: poner el código en
    `GOOGLE_SITE_VERIFICATION` (Vercel) y desplegar.
-2. Enviar `https://moustachebarbersgc.com/sitemap.xml` (incluye la home, las dos sedes y
-   sus fotos).
-3. Inspeccionar `/`, `/surfers-paradise` y `/broadbeach` → "Solicitar
-   indexación".
+2. Enviar `https://moustachebarbersgc.com/sitemap.xml` (incluye la home, las dos sedes,
+   sus versiones en español y las fotos).
+3. Inspeccionar `/`, `/surfers-paradise`, `/broadbeach`, `/es`,
+   `/es/surfers-paradise` y `/es/broadbeach` → "Solicitar indexación".
 4. A las 3–6 semanas: Rendimiento → filtrar por página para ver con qué
    búsquedas aparece cada sede (`barber broadbeach`, `skin fade surfers
-   paradise`, `spanish speaking barber gold coast`, …) y ajustar textos.
+   paradise`, `spanish speaking barber gold coast`, `barbería gold coast`, …)
+   y ajustar textos.
+
+El link "Sitio web" de cada ficha sigue siendo la página en inglés: Google
+muestra la versión en español (`/es/...`) a quien busca en español, por el
+hreflang. En publicaciones de la ficha escritas en español se puede enlazar
+directamente `/es/broadbeach` o `/es/surfers-paradise`.
 
 ### Más adelante (opcional)
 

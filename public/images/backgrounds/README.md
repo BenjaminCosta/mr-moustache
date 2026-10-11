@@ -19,11 +19,14 @@ The "Our Work" clip (`public/videos/mr-moustache-fade-haircut.mp4`) is a 720p
 H.264 export (CRF 27, AAC 96k, faststart) of the original 1080p file, about
 1.6 MB instead of 7.1 MB.
 
-The share image (`src/app/opengraph-image.jpg` / `twitter-image.jpg`) is a
+The share image (`src/app/(en)/opengraph-image.jpg` / `twitter-image.jpg`, and
+the same file for `/es` in `src/app/(es)/es/`) is a
 1200×630 crop of `mr-moustache-barbershop-3.jpg`, centred on the logo tee.
 
-Each shop page has its own share image (`src/app/surfers-paradise/opengraph-image.jpg`,
-`src/app/broadbeach/opengraph-image.jpg`, plus identical `twitter-image.jpg`):
+Each shop page has its own share image (`src/app/(en)/surfers-paradise/opengraph-image.jpg`,
+`src/app/(en)/broadbeach/opengraph-image.jpg`, plus identical `twitter-image.jpg`;
+the Spanish ones in `src/app/(es)/es/<shop>/` say "Barbería en …",
+"Skin fades · Degradados · Barba" and "Reserva online · Hablamos español"):
 1200×630, the shop photo from `public/images/locations` on the right, fading
 into black behind the logo, "Barber in …" in Cherry Swash Bold, the services,
 the address and "Book online · Hablamos español" in Instrument Sans.

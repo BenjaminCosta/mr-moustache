@@ -1,10 +1,13 @@
 import Image from "next/image";
-import { WorkWithUsForm } from "@/app/work-with-us/WorkWithUsForm";
+import { WorkWithUsForm } from "@/components/careers/WorkWithUsForm";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { backgrounds } from "@/data/media";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 
 /** Careers form, kept in the landing flow after the two shop locations. */
-export function WorkWithUs() {
+export function WorkWithUs({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).careers;
   return (
     <section
       id="work-with-us"
@@ -38,7 +41,7 @@ export function WorkWithUs() {
             lineClassName="bg-foreground/85"
           >
             <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-              Join the team
+              {t.kicker}
             </p>
           </RuleLabel>
 
@@ -46,17 +49,15 @@ export function WorkWithUs() {
             id="work-with-us-title"
             className="mt-[1.15rem] text-center text-[2.6rem] leading-[0.95] tracking-[-0.02em] text-white lg:mt-8 lg:text-left lg:text-[3.25rem] lg:leading-[1.02] xl:text-[4rem]"
           >
-            Work With Us
+            {t.title}
           </h2>
           <p className="mx-auto mt-[0.7rem] max-w-[21rem] text-center text-[0.9rem] leading-[1.3] text-foreground/80 lg:mx-0 lg:mt-6 lg:text-left lg:text-[1.1rem] lg:leading-normal">
-            We&rsquo;re always keen to meet barbers who care about the craft.
-            Tell us a little about yourself and which shop suits you, Surfers
-            Paradise or Broadbeach, and we&rsquo;ll be in touch.
+            {t.intro}
           </p>
         </div>
 
         <div className="mt-[1.9rem] lg:mt-0">
-          <WorkWithUsForm />
+          <WorkWithUsForm locale={locale} />
         </div>
       </div>
     </section>

@@ -6,12 +6,16 @@ import { Moustache } from "@/components/ui/Moustache";
 import { Palm } from "@/components/ui/Palm";
 import { RuleLabel } from "@/components/ui/RuleLabel";
 import { business } from "@/data/business";
-import { locationPath, locations } from "@/data/locations";
+import { locationCopy, locationPath, locations } from "@/data/locations";
 import { backgrounds } from "@/data/media";
+import { getDictionary } from "@/i18n/dictionary";
+import { LANGUAGE_TAGS, localePath, type Locale } from "@/i18n/locales";
 import { ANALYTICS_EVENTS, analyticsAttributes } from "@/lib/analytics";
 import { getSiteData } from "@/lib/site-data";
 
-export async function Hero() {
+export async function Hero({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).hero;
+  const nav = getDictionary(locale).nav;
   const { ratings } = await getSiteData();
   const ratingSummary = locations
     .map((location) => {
@@ -51,35 +55,35 @@ export async function Hero() {
           <div className="absolute inset-y-0 left-0 hidden w-[65%] bg-gradient-to-r from-black/85 via-black/45 to-transparent lg:block" />
         </div>
 
-        <SiteHeader />
+        <SiteHeader locale={locale} />
 
         <div className="shell mt-auto px-[1.625rem] pt-12 lg:px-10 lg:pb-14">
           <div className="lg:max-w-[52rem]">
             {/* The business name and area are the page's H1; the headline below stays the visual lead. */}
             <h1 className="font-sans text-[0.6rem] font-medium uppercase leading-none tracking-[0.19em] text-foreground/90 lg:text-[0.8rem] lg:tracking-[0.3em]">
-              {business.name} · Gold Coast
+              {t.title}
             </h1>
             <p className="mt-[0.4rem] text-balance font-display text-[2.4rem] font-bold leading-[0.92] tracking-[-0.015em] text-white lg:mt-5 lg:whitespace-nowrap lg:text-[4.5rem] lg:leading-[0.95] xl:text-[5.25rem]">
-              Good cuts.
-              <br />
-              Good people.
-              <br />
-              Proper barbering.
+              {t.headline.map((line, index) => (
+                <span key={line}>
+                  {index > 0 ? <br /> : null}
+                  {line}
+                </span>
+              ))}
             </p>
             <p className="mt-[0.55rem] text-[0.865rem] leading-[1.17] text-foreground/85 lg:mt-6 lg:max-w-[30rem] lg:text-[1.2rem] lg:leading-[1.45]">
-              Classic cuts, skin fades, taper fades and beard trims — in
-              Surfers Paradise and Broadbeach.
+              {t.intro}
             </p>
 
             <a
               href={business.links.booking}
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Book now through Square (opens in a new tab)"
+              aria-label={nav.bookNowLabel}
               className="btn-sweep btn-sweep--invert-primary group mt-[0.95rem] flex h-[2.35rem] items-center justify-center gap-[1.15rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.72rem] font-medium uppercase tracking-[0.2em] text-white lg:mt-9 lg:inline-flex lg:h-14 lg:gap-5 lg:px-10 lg:text-[0.85rem] lg:tracking-[0.24em]"
               {...analyticsAttributes(ANALYTICS_EVENTS.bookingClick)}
             >
-              Book Now
+              {nav.bookNow}
               <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
             </a>
 
@@ -89,16 +93,28 @@ export async function Hero() {
                   <StarIcon key={index} className="size-[0.8rem] lg:size-[1.05rem]" />
                 ))}
               </span>
-              <span>{ratingSummary} on Google</span>
+              <span>
+                {ratingSummary} {t.onGoogle}
+              </span>
             </p>
             <p className="mt-[0.35rem] text-[0.66rem] leading-tight tracking-[0.03em] text-foreground/80 lg:mt-3 lg:text-[0.9rem]">
-              Two Gold Coast barbershops. One Mr Moustache.
+              {t.twoShops}
             </p>
             <p className="mt-[0.35rem] text-[0.66rem] leading-tight tracking-[0.03em] text-foreground/80 lg:mt-2 lg:text-[0.9rem]">
-              Spanish-speaking barbers ·{" "}
-              <span lang="es" className="text-primary">
-                Hablamos español
-              </span>
+              {t.spanish}
+              {locale === "en" ? (
+                <>
+                  {" · "}
+                  <a
+                    href={localePath("es", "/")}
+                    hrefLang={LANGUAGE_TAGS.es}
+                    lang={LANGUAGE_TAGS.es}
+                    className="text-primary underline-offset-2 hover:underline focus-visible:underline"
+                  >
+                    Hablamos español
+                  </a>
+                </>
+              ) : null}
             </p>
           </div>
         </div>
@@ -110,13 +126,13 @@ export async function Hero() {
             <Palm width={27} className="text-primary lg:w-10" />
             <div>
               <p className="text-[0.38rem] font-medium uppercase leading-none tracking-[0.2em] text-foreground/70 lg:text-[0.68rem] lg:tracking-[0.34em]">
-                Our second location
+                {t.secondLocation}
               </p>
               <p className="mt-[0.3rem] font-sans text-[0.68rem] font-semibold uppercase leading-none tracking-[0.13em] text-foreground lg:mt-2 lg:text-[1.2rem] lg:tracking-[0.24em]">
                 Broadbeach
               </p>
               <p className="mt-[0.26rem] text-[0.35rem] font-medium uppercase leading-none tracking-[0.18em] text-foreground/70 lg:mt-2 lg:text-[0.62rem] lg:tracking-[0.32em]">
-                After Surfers Paradise
+                {t.afterSurfers}
               </p>
             </div>
           </div>
@@ -124,9 +140,9 @@ export async function Hero() {
           <div className="grid min-w-0 grid-cols-[1.85rem_1fr] items-center gap-x-[0.8rem] border-l border-white/45 pl-5 lg:grid-cols-[3.4rem_1fr] lg:gap-x-6 lg:pl-16">
             <Moustache width={34} className="text-foreground lg:w-14" />
             <p className="text-[0.4rem] font-medium uppercase leading-[1.45] tracking-[0.18em] text-foreground lg:text-[0.7rem] lg:leading-[1.45] lg:tracking-[0.34em]">
-              Same standards.
+              {t.sameStandards[0]}
               <br />
-              A fresh spot.
+              {t.sameStandards[1]}
             </p>
           </div>
         </div>
@@ -135,7 +151,7 @@ export async function Hero() {
       <div className="shell mt-[1.25rem] px-[1.625rem] lg:mt-10 lg:px-10">
         <RuleLabel className="gap-[0.8rem] px-[0.4rem] lg:gap-6 lg:px-0" lineClassName="bg-foreground/85">
           <p className="text-[0.5rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]">
-            Our locations
+            {t.ourLocations}
           </p>
         </RuleLabel>
 
@@ -146,12 +162,12 @@ export async function Hero() {
               className="border-white/25 [&:not(:first-child)]:border-t"
             >
               <Link
-                href={locationPath(location.id)}
+                href={locationPath(location.id, locale)}
                 className="group flex items-center justify-between gap-5 py-[1.2rem] text-left text-foreground lg:py-9"
               >
                 <span>
                   <span className="block text-[0.47rem] font-medium uppercase leading-none tracking-[0.3em] text-primary lg:text-[0.74rem] lg:tracking-[0.4em]">
-                    {location.tag}
+                    {locationCopy(location, locale).tag}
                   </span>
                   <span className="mt-[0.58rem] block font-display text-[2rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-4 lg:text-[3.5rem] xl:text-[4rem]">
                     {location.name}

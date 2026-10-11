@@ -2,6 +2,8 @@
 
 import { useState, type FormEvent, type ReactNode } from "react";
 import { ArrowRightIcon, ChevronRightIcon } from "@/components/ui/Icons";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import { WEB3FORMS_ACCESS_KEY, WEB3FORMS_ENDPOINT } from "@/lib/constants";
 import { EXPERIENCE_OPTIONS, LOCATION_OPTIONS, type ApplicationField } from "./options";
 
@@ -43,7 +45,8 @@ function SelectChevron() {
  * which emails it to the inbox behind the access key. The visitor stays on the
  * page; the browser checks the required fields before this runs.
  */
-export function WorkWithUsForm() {
+export function WorkWithUsForm({ locale = "en" }: { locale?: Locale }) {
+  const t = getDictionary(locale).careers;
   const [status, setStatus] = useState<"idle" | "sending" | "sent" | "error">("idle");
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -59,7 +62,7 @@ export function WorkWithUsForm() {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
         body: JSON.stringify({
           access_key: WEB3FORMS_ACCESS_KEY,
-          subject: "New Work With Us application",
+          subject: locale === "es" ? "New Work With Us application (Spanish page)" : "New Work With Us application",
           from_name: "Mr Moustache website",
           ...fields,
         }),
@@ -80,10 +83,10 @@ export function WorkWithUsForm() {
         className="rounded-[0.5rem] border border-white/20 bg-[#0c0c0c]/85 px-[1.2rem] py-[1.6rem] text-center lg:rounded-[0.75rem] lg:px-12 lg:py-14"
       >
         <p className="font-display text-[1.6rem] font-bold leading-none text-white lg:text-[2.5rem]">
-          Application sent
+          {t.sent}
         </p>
         <p className="mt-[0.7rem] text-[0.9rem] leading-[1.3] text-foreground/80 lg:mt-5 lg:text-[1.1rem]">
-          Thanks for applying. We&apos;ll be in touch soon.
+          {t.thanks}
         </p>
       </div>
     );
@@ -93,31 +96,31 @@ export function WorkWithUsForm() {
     <form onSubmit={handleSubmit} className="space-y-[1.15rem] lg:space-y-7">
       <input type="checkbox" name="botcheck" className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
       <div className="grid gap-[1.15rem] lg:grid-cols-2 lg:gap-7">
-        <Field name="name" label="Name">
+        <Field name="name" label={t.name}>
           {(props) => (
             <input {...props} type="text" autoComplete="name" required className={`${controlClasses} h-[2.9rem] lg:h-14`} />
           )}
         </Field>
-        <Field name="email" label="Email">
+        <Field name="email" label={t.email}>
           {(props) => (
             <input {...props} type="email" autoComplete="email" required className={`${controlClasses} h-[2.9rem] lg:h-14`} />
           )}
         </Field>
-        <Field name="phone" label="Phone">
+        <Field name="phone" label={t.phone}>
           {(props) => (
             <input {...props} type="tel" autoComplete="tel" className={`${controlClasses} h-[2.9rem] lg:h-14`} />
           )}
         </Field>
-        <Field name="experience" label="Experience">
+        <Field name="experience" label={t.experience}>
           {(props) => (
             <span className="group relative block">
               <select {...props} required defaultValue="" className={`${controlClasses} h-[2.9rem] appearance-none pr-10 lg:h-14`}>
                 <option value="" disabled>
-                  Select
+                  {t.select}
                 </option>
-                {EXPERIENCE_OPTIONS.map((option) => (
+                {EXPERIENCE_OPTIONS.map((option, index) => (
                   <option key={option} value={option}>
-                    {option}
+                    {t.experienceOptions[index] ?? option}
                   </option>
                 ))}
               </select>
@@ -127,16 +130,16 @@ export function WorkWithUsForm() {
         </Field>
       </div>
 
-      <Field name="location" label="Preferred location">
+      <Field name="location" label={t.location}>
         {(props) => (
           <span className="group relative block">
             <select {...props} required defaultValue="" className={`${controlClasses} h-[2.9rem] appearance-none pr-10 lg:h-14`}>
               <option value="" disabled>
-                Select
+                {t.select}
               </option>
-              {LOCATION_OPTIONS.map((option) => (
+              {LOCATION_OPTIONS.map((option, index) => (
                 <option key={option} value={option}>
-                  {option}
+                  {index === LOCATION_OPTIONS.length - 1 ? t.eitherLocation : option}
                 </option>
               ))}
             </select>
@@ -145,13 +148,13 @@ export function WorkWithUsForm() {
         )}
       </Field>
 
-      <Field name="message" label="Message">
+      <Field name="message" label={t.message}>
         {(props) => (
           <textarea
             {...props}
             required
             rows={5}
-            placeholder="Tell us about your experience, the cuts you love and when you could start."
+            placeholder={t.messagePlaceholder}
             className={`${controlClasses} resize-y py-[0.8rem] leading-[1.4] lg:py-4`}
           />
         )}
@@ -159,7 +162,7 @@ export function WorkWithUsForm() {
 
       {status === "error" ? (
         <p role="alert" className="text-[0.85rem] leading-[1.35] text-[#f28b82] lg:text-[0.95rem]">
-          Something went wrong sending your application. Please try again in a moment.
+          {t.error}
         </p>
       ) : null}
 
@@ -168,7 +171,7 @@ export function WorkWithUsForm() {
         disabled={status === "sending"}
         className="btn-sweep btn-sweep--invert-primary group flex h-[2.6rem] w-full items-center justify-center gap-[1.15rem] rounded-full border-[1.5px] border-primary bg-primary text-[0.72rem] font-medium uppercase tracking-[0.2em] text-white disabled:cursor-progress disabled:opacity-70 lg:h-14 lg:w-auto lg:gap-5 lg:px-12 lg:text-[0.85rem] lg:tracking-[0.24em]"
       >
-        {status === "sending" ? "Sending…" : "Send application"}
+        {status === "sending" ? t.sending : t.send}
         <ArrowRightIcon className="size-[1rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1 lg:size-5" />
       </button>
     </form>

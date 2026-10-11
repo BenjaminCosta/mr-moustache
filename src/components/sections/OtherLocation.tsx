@@ -1,11 +1,14 @@
 import Link from "next/link";
 import { ArrowRightIcon } from "@/components/ui/Icons";
 import { RuleLabel } from "@/components/ui/RuleLabel";
-import { addressLine, locationPath, otherLocation } from "@/data/locations";
+import { addressLine, locationCopy, locationPath, otherLocation } from "@/data/locations";
+import { getDictionary } from "@/i18n/dictionary";
+import type { Locale } from "@/i18n/locales";
 import type { LocationId } from "@/types";
 
 /** Link from one shop's page to the other one. */
-export function OtherLocation({ location }: { location: LocationId }) {
+export function OtherLocation({ location, locale = "en" }: { location: LocationId; locale?: Locale }) {
+  const t = getDictionary(locale).otherShop;
   const other = otherLocation(location);
 
   return (
@@ -16,17 +19,17 @@ export function OtherLocation({ location }: { location: LocationId }) {
             id="other-shop-title"
             className="font-sans text-[0.6rem] font-medium uppercase leading-none tracking-[0.4em] text-foreground lg:text-[0.72rem]"
           >
-            Also on the Gold Coast
+            {t.title}
           </h2>
         </RuleLabel>
 
         <Link
-          href={locationPath(other.id)}
+          href={locationPath(other.id, locale)}
           className="group mt-[1rem] flex items-center justify-between gap-5 border-b border-white/25 py-[1.2rem] text-foreground lg:mt-10 lg:py-9"
         >
           <span>
             <span className="block text-[0.6rem] font-medium uppercase leading-none tracking-[0.3em] text-primary lg:text-[0.74rem] lg:tracking-[0.4em]">
-              {other.tag}
+              {locationCopy(other, locale).tag}
             </span>
             <span className="mt-[0.58rem] block font-display text-[2rem] font-bold leading-none tracking-[-0.02em] text-white lg:mt-4 lg:text-[3.5rem] xl:text-[4rem]">
               {other.name}
