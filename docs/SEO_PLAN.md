@@ -388,7 +388,7 @@ Inspector.
 
 ### Pendiente del cliente
 
-Teléfono (uno para las dos sedes) y horarios: **confirmados**. Coordenadas:
+Teléfonos (Surfers Paradise 0421 574 445, Broadbeach 0403 930 440) y horarios: **confirmados**. Coordenadas:
 no hacen falta (Google ubica cada sede por su dirección y su ficha).
 
 | Dato | Dónde va |
