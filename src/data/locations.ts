@@ -24,7 +24,7 @@ export const locations = [
       country: "Australia",
       countryCode: "AU",
     },
-    // Confirmed by the client: one number for both shops.
+    // Each shop has its own number (confirmed by the client).
     phone: { display: "0421 574 445", href: "tel:+61421574445" },
     hours: null as ShopLocation["hours"],
     // Official hours, confirmed by the client (September 2026).
@@ -82,7 +82,7 @@ export const locations = [
       country: "Australia",
       countryCode: "AU",
     },
-    phone: { display: "0421 574 445", href: "tel:+61421574445" },
+    phone: { display: "0403 930 440", href: "tel:+61403930440" },
     hours: null as ShopLocation["hours"],
     // Official hours, confirmed by the client (September 2026).
     openingHours: [

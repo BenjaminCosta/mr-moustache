@@ -123,6 +123,19 @@ describe("location structured data", () => {
     });
   }
 
+  it("gives each shop its own phone number", () => {
+    const phones = Object.fromEntries(
+      graph(homeJsonLd())
+        .filter((node) => node["@type"] === "HairSalon")
+        .map((node) => [node.name, node.telephone]),
+    );
+    assert.deepEqual(phones, {
+      "Mr Moustache Barbershop Surfers Paradise": "+61421574445",
+      "Mr Moustache Barbershop Broadbeach": "+61403930440",
+    });
+    assert.equal(getLocation("broadbeach").phone.display, "0403 930 440");
+  });
+
   it("lists both shops on the home page with the same ids as their pages", () => {
     const home = graph(homeJsonLd());
     const shopIds = home.filter((node) => node["@type"] === "HairSalon").map((node) => node["@id"]);

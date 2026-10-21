@@ -170,17 +170,26 @@ export function Footer({ locale = "en", languagePaths = { en: "/", es: localePat
                 </a>
               );
             })}
-            <a
-              href={locations[0].phone.href}
-              className="group grid grid-cols-[2.25rem_1fr_auto] items-center pb-[1.3rem] pl-[3.55rem] pr-[0.9rem] pt-[0.55rem] transition-colors lg:grid-cols-[2.75rem_1fr_auto] lg:pb-7 lg:pl-6 lg:pr-4 lg:pt-3 duration-200 hover:text-primary focus-visible:text-primary"
-              {...analyticsAttributes(ANALYTICS_EVENTS.phoneClick)}
-            >
-              <PhoneIcon className="size-[1.1rem] origin-bottom-left text-white transition-transform duration-300 ease-out group-hover:-rotate-12" />
-              <span className="text-[0.74rem] leading-[1.3] tracking-[0.03em] lg:text-[0.95rem]">
-                {locations[0].phone.display}
-              </span>
-              <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
-            </a>
+            {/* Each shop has its own number. */}
+            {locations.map((location, index) => (
+              <a
+                key={location.id}
+                href={location.phone.href}
+                className={`group grid grid-cols-[2.25rem_1fr_auto] items-center pl-[3.55rem] pr-[0.9rem] pt-[0.55rem] transition-colors lg:grid-cols-[2.75rem_1fr_auto] lg:pl-6 lg:pr-4 lg:pt-3 duration-200 hover:text-primary focus-visible:text-primary ${
+                  index === locations.length - 1 ? "pb-[1.3rem] lg:pb-7" : "pb-[0.55rem] lg:pb-3"
+                }`}
+                {...analyticsAttributes(ANALYTICS_EVENTS.phoneClick, location.id)}
+              >
+                <PhoneIcon className="size-[1.1rem] origin-bottom-left text-white transition-transform duration-300 ease-out group-hover:-rotate-12" />
+                <span className="text-[0.74rem] leading-[1.3] tracking-[0.03em] lg:text-[0.95rem]">
+                  <span className="block text-[0.5rem] font-medium uppercase tracking-[0.3em] text-foreground/60 lg:text-[0.62rem]">
+                    {location.name}
+                  </span>
+                  {location.phone.display}
+                </span>
+                <ChevronRightIcon className="h-[0.85rem] w-[0.5rem] transition-transform duration-300 ease-out group-hover:translate-x-1 group-focus-visible:translate-x-1" />
+              </a>
+            ))}
             <span
               aria-hidden="true"
               className="mx-auto block h-px w-[17.6rem] bg-white/40 lg:w-full"

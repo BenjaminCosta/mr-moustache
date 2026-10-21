@@ -55,7 +55,7 @@ Yelp AU, True Local, Hotfrog).
 | --- | --- | --- |
 | Nombre | Mr Moustache Barbershop Surfers Paradise | Mr Moustache Barbershop Broadbeach |
 | Dirección | 3 Orchid Ave, Surfers Paradise QLD 4217 | Unit 5/2623 Gold Coast Hwy, Broadbeach QLD 4218 |
-| Teléfono | 0421 574 445 (el mismo en las dos, confirmado) | 0421 574 445 |
+| Teléfono | 0421 574 445 | 0403 930 440 |
 
 ⚠️ La ficha de Surfers Paradise figura como **"Mr. Moustache"** (con punto) y la
 web usa "Mr Moustache". Conviene unificar la marca en las dos fichas (el schema
